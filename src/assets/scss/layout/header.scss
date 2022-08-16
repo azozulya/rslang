@@ -1,0 +1,39 @@
+header {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  padding: 1.3rem 0;
+}
+.header {
+  &__container {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+}
+.logo {
+  // font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 36px;
+  line-height: 42px;
+  text-decoration: none;
+
+  color: $logo-color;
+
+  &::before {
+    content: '';
+    width: 54px;
+    height: 58px;
+    position: absolute;
+    left: 0;
+    background-image: url(../../../img/logo.svg);
+  }
+}
+h1 {
+  position: relative;
+  line-height: 58px;
+  margin: 0;
+  padding: 0 0 0 2em;
+}
