@@ -1,0 +1,60 @@
+$bg-width: 1510px;
+$bg-height: 1200px;
+$bg-color: #b2ebf2;
+
+.hero {
+  box-sizing: border-box;
+  height: 880px;
+
+  @include desktop {
+    background-image: url(../../../img/bg_top.png);
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-size: 100% auto;
+  }
+
+  @include large-screens {
+    overflow: hidden;
+    z-index: 5;
+    position: relative;
+
+    &::before {
+      content: '';
+      display: block;
+      height: $bg-height;
+      width: $bg-width;
+      background-color: $bg-color;
+      opacity: 0.4;
+      mix-blend-mode: normal;
+      border-radius: 4.4rem;
+      transform: rotate(-10deg);
+      position: absolute;
+      left: calc((100vw - $bg-width) / 2);
+      top: -27rem;
+    }
+  }
+
+  &__container {
+    align-items: center;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    padding-top: 10rem;
+    // background-image: url(../../../img/hero.png);
+    // background-repeat: no-repeat;
+    // background-position: right bottom;
+    // background-size: 50% auto;
+    // height: 20rem;
+  }
+  &__content {
+    // position: relative;
+    // z-index: 2;
+    max-width: 50%;
+    min-width: 16rem;
+  }
+
+  &__img {
+    // position: relative;
+    // z-index: 2;
+  }
+}
