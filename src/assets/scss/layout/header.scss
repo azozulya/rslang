@@ -2,39 +2,73 @@ header {
   position: fixed;
   left: 0;
   right: 0;
-  z-index: 2;
-  padding: 1.3rem 0;
-  background-color: $bg-header-color;
+  z-index: 10;
 }
+
 .header {
   &__container {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
+    background-color: $bg-header-color;
+    padding-top: 1.3rem;
+    padding-bottom: 1.3rem;
+    box-shadow: -0.5rem 0.3rem 0.5rem $bg-header-color;
+    border-bottom-left-radius: 1rem;
+  }
+  &__right-block {
+    display: flex;
+    align-items: center;
   }
 }
+
 .logo {
-  // font-family: 'Roboto';
   font-style: normal;
   font-weight: 500;
-  font-size: 36px;
-  line-height: 42px;
+  font-size: 2rem;
+  line-height: 2.3rem;
   text-decoration: none;
 
   color: $logo-color;
 
   &::before {
     content: '';
-    width: 54px;
-    height: 58px;
+    width: 3rem;
+    height: 3.2rem;
     position: absolute;
     left: 0;
     background-image: url(../../../img/logo.svg);
   }
 }
+
 h1 {
   position: relative;
-  line-height: 58px;
+  line-height: 3.2rem;
   margin: 0;
-  padding: 0 0 0 2em;
+  padding: 0 0 0 4rem;
+}
+
+.auth {
+  border: solid 1px red;
+  display: flex;
+  justify-content: flex-end;
+  position: relative;
+
+  &:after {
+    content: '';
+    width: 20.8rem;
+    height: 14.4rem;
+    position: absolute;
+    right: -8.8rem;
+    top: -10rem;
+    z-index: 1;
+    background: $primary-light;
+    border-radius: 2rem;
+    transform: rotate(-11deg);
+  }
+
+  &__btn {
+    position: relative;
+    z-index: 2;
+  }
 }

@@ -1,4 +1,8 @@
+import BurgerMenu from '../utils/menu';
+
 class App {
-  start() {}
+  start() {
+    BurgerMenu.init();
+  }
 }
 export default App;

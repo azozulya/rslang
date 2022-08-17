@@ -17,12 +17,19 @@
       <h1><a href="/" class="logo">RS Lang</a></h1>
       <nav class="menu">
         <ul class="menu__list">
-          <li class="menu__item"><a href="">Учебник</a></li>
-          <li class="menu__item"><a href="">Игры</a></li>
-          <li class="menu__item"><a href="">Статистика</a></li>
+          <li class="menu__item"><a href="/dictionary" class="menu__item--link">Учебник</a></li>
+          <li class="menu__item"><a href="/games" class="menu__item--link">Игры</a></li>
+          <li class="menu__item"><a href="/statistic" class="menu__item--link">Статистика</a></li>
         </ul>
       </nav>
-      <button>Login</button>
+      <div class="header__right-block">
+        <div class="auth">
+          <button class="btn btn--orange auth__btn">Войти</button>
+        </div>
+        <div id="burgerMenu" class="burger-menu">
+          <span class="burger-menu__line"></span>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -31,26 +38,118 @@
       <div class="container hero__container">
         <div class="hero__content">
           <h2>Aнглийский <br>с RS Lang</h2>
-          <div class="subtitle"></div>Приложение для эффективного изучения иностранных слов в игровой форме. Всегда
-          под
-          рукой. На любом устройстве.
+          <div class="hero__text">Игровое приложение для&nbsp;эффективного изучения иностранных&nbsp;слов</div>
+          <button class="btn btn--blue">Начать</button>
         </div>
-        <img src="./assets/img/hero.png" alt="" class="hero__img">
+        <div class="hero__img">
+          <img src="./assets/img/hero.png" alt="" class="hero__img--img">
+        </div>
+      </div>
+
+    </section>
+
+
+    <section class="feature">
+      <div class="container feature__container">
+        <h3 class="feature__title">Наши преимущества</h3>
+        <div class="subtitle">Зарегистрируйтесь, чтобы получить доступ ко всем возможностям</div>
+        <ul class="feature__list">
+          <li class="feature__item">
+            <div class="feature__img">
+              <img src="./assets/img/feature1.png" class="feature__img--img" />
+            </div>
+            <p class="feature__content"><b>+3600</b>слов</p>
+          </li>
+          <li class="feature__item">
+            <div class="feature__img">
+              <img src="./assets/img/feature4.png" class="feature__img--img" />
+            </div>
+            <p class="feature__content"><b>9</b> уровней</p>
+          </li>
+          <li class="feature__item">
+            <div class="feature__img">
+              <img src="./assets/img/feature2.png" class="feature__img--img" />
+            </div>
+            <p class="feature__content"><b>Игры</b></p>
+          </li>
+          <li class="feature__item">
+            <div class="feature__img">
+              <img src="./assets/img/feature3.png" class="feature__img--img" />
+            </div>
+            <p class="feature__content"><b>$</b>Бесплатно</p>
+          </li>
+        </ul>
       </div>
     </section>
+
     <section class="team">
-      <h3>Наша команда</h3>
-      <ul>
-        <li><img src="./assets/img/photo.jpg" alt="" class="photo">Наталья</li>
-        <li>Александр</li>
-        <li>Анна</li>
-      </ul>
+      <div class="container team__container">
+
+        <h3>Наша команда</h3>
+        <ul class="team__list">
+          <li class="team__item">
+            <img src="./assets/img/avatar.jpg" alt="" class="team__item--photo">
+            <div class="team__item--name">Наталья
+              <a href="https://github.com/sarafashka"><svg class="github-icon team__item--github-icon">
+                  <use xlink:href="./assets/img/github_logo.svg#github_logo"></use>
+                </svg></a>
+            </div>
+          </li>
+          <li class="team__item"><img src="./assets/img/avatar.jpg" alt="" class="team__item--photo">
+            <div class="team__item--name">Александр
+              <a href="https://github.com/AdvisorGML"><svg class="github-icon team__item--github-icon">
+                  <use xlink:href="./assets/img/github_logo.svg#github_logo"></use>
+                </svg></a>
+            </div>
+          </li>
+          <li class="team__item"><img src="./assets/img/avatar.jpg" alt="" class="team__item--photo">
+            <div class="team__item--name">Анна
+              <a href="https://github.com/azozulya"><svg class="github-icon team__item--github-icon">
+                  <use xlink:href="./assets/img/github_logo.svg#github_logo"></use>
+                </svg></a>
+
+            </div>
+          </li>
+        </ul>
+
     </section>
   </main>
 
   <footer>
-    <div class="rslogo"></div>
-    <div class="github-links"></div>
+    <div class="footer__bg">
+      <svg class="footer__leaves">
+        <use xlink:href="./assets/img/leaves.svg#leaves"></use>
+      </svg>
+    </div>
+    <div class="container footer__container">
+      <div>
+        <a href="/" class="rs-link"><img src="./assets/img/rs.svg" alt="" width="100"></a>
+        <p class="rs-about">Бесплатный курс от сообщества The Rolling Scopes для тех, кто хочет получить знания и опыт.
+        </p>
+        <p class="copyright">©2022 RS LANG. Project for&nbsp;<a href="https://rs.school/js/">RS School Course.</a>
+        </p>
+      </div>
+      <div>
+        <h4>Меню</h4>
+        <div class="footer__menu">
+          <a href="/dictionary" class="footer__menu--link">Учебник</a>
+          <a href="/games" class="footer__menu--link">Игры</a>
+          <a href="/statistic" class="footer__menu--link">Статистика</a>
+        </div>
+      </div>
+      <div>
+        <h4>Команда</h4>
+        <div class="footer__menu">
+          <a href="https://github.com/AdvisorGML" class="footer__menu--link">@AdvisorGML</a>
+          <a href="https://github.com/sarafashka" class="footer__menu--link">@sarafashka</a>
+          <a href="https://github.com/azozulya" class="footer__menu--link">@azozulya</a>
+        </div>
+      </div>
+
+      <svg class="footer__plant">
+        <use xlink:href="./assets/img/plant.svg#plant"></use>
+      </svg>
+    </div>
   </footer>
 
 </body>
