@@ -1,0 +1,56 @@
+.dictionary__levels_list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2em;
+  list-style: none;
+}
+.dictionary__levels_item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 8.5em;
+  height: 2em;
+  text-transform: uppercase;
+  color: #ffffff;
+  border-radius: 0.65em;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: 0.25s;
+}
+.dictionary__levels_item:nth-child(1) {
+  background-color: #6DB4A7;
+}
+.dictionary__levels_item:nth-child(2) {
+  background-color: #00A8FF;
+}
+.dictionary__levels_item:nth-child(3) {
+  background-color: #C583FF;
+}
+.dictionary__levels_item:nth-child(4) {
+  background-color: #FFB300;
+}
+.dictionary__levels_item:nth-child(5) {
+  background-color: #B45A1B;
+}
+.dictionary__levels_item:nth-child(6) {
+  background-color: #FF8374;
+}
+.dictionary__levels_item:hover {
+  opacity: 1;
+}
+.dictionary__words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2em;
+}
+.dictionary__words_item {
+  width: 12em;
+  height: 10em;
+  border: 1px #00BCD4 solid;
+}
+.dictionary__pagination {
+  display: flex;
+  gap: 2em;
+  cursor: pointer;
+  transition: 0.25s;
+}
