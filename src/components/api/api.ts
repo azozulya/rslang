@@ -1,6 +1,6 @@
 import {
   IWord, IUser, IAuth, ILogin,
-} from './interfaces';
+} from '../interfaces';
 
 export class LangAPI {
   private baseUrl: string;
