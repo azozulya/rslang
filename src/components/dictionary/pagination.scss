@@ -1,0 +1,17 @@
+.dictionary__pagination {
+  display: flex;
+  gap: 2em;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.dictionary__pagination_prev,
+.dictionary__pagination_next {
+  width: 1em;
+  height: 1em;
+  background-image: url(../../assets/img/arrow-forward.svg);
+  background-size: contain;
+}
+.dictionary__pagination_prev {
+  background-image: url(../../assets/img/arrow-back.svg);
+}
