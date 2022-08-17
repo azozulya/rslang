@@ -7,6 +7,8 @@ export interface ICreateElement {
   text?: string;
 }
 export interface IWord {
+  [key: string]: string | number;
+
   id: string;
   group: number;
   page: number;
@@ -22,3 +24,26 @@ export interface IWord {
   textMeaningTranslate: string;
   textExampleTranslate: string;
 }
+
+export interface IUser {
+  [key: string]: string;
+
+  name: string;
+  email: string;
+  password: string;
+}
+
+export interface IAuth {
+  message: string;
+  token: string;
+  refreshToken: string;
+  userId: string;
+  name: string;
+}
+
+export interface ILogin {
+  message: string;
+  token: string,
+  userId: string;
+}
+
