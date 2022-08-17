@@ -12,6 +12,7 @@ html {
 body {
   line-height: $line-height;
   color: $text-primary;
+  background-color: $bg-page-color;
 }
 
 h2 {
@@ -21,14 +22,38 @@ h2 {
   line-height: 56px;
   color: $text-primary;
   margin-top: 0;
+  position: relative;
+
+  // background-color: $h1-line-color;
+  // background-size: 40% 1rem;
+  // background-position: left bottom;
+
+  // &::after {
+  //   content: '';
+  //   background-color: $h1-line-color;
+  //   max-width: 40%;
+  //   width: 100%;
+  //   position: absolute;
+  //   height: 1rem;
+  //   left: 0;
+  //   bottom: 0;
+  // }
 }
 main {
   height: 100vh;
 }
 .container {
+  box-sizing: border-box;
   max-width: 1215px;
   width: 100%;
   margin: 0 auto;
+
+  @include desktop {
+    padding: 0 2em;
+  }
+  @include tablet {
+    margin: 0 2em;
+  }
 }
 
 .subtitle {
