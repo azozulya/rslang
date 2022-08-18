@@ -23,25 +23,34 @@ h2 {
   color: $text-primary;
   margin-top: 0;
   position: relative;
+  z-index: 5;
 
-  // background-color: $h1-line-color;
-  // background-size: 40% 1rem;
-  // background-position: left bottom;
+  background-image: linear-gradient(to right, #ffecb3, #ffecb3 100%);
+  background-position: 0 100%;
+  background-size: 40% 20px;
+  background-repeat: no-repeat;
+}
 
-  // &::after {
-  //   content: '';
-  //   background-color: $h1-line-color;
-  //   max-width: 40%;
-  //   width: 100%;
-  //   position: absolute;
-  //   height: 1rem;
-  //   left: 0;
-  //   bottom: 0;
-  // }
+h3 {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 2.2rem;
+  line-height: 2.6rem;
+  display: inline-block;
+  color: $text-primary;
+  margin-top: 0;
+  margin-bottom: 4rem;
+
+  @include title-gradient(#b2ebf2);
 }
-main {
-  height: 100vh;
+
+h4 {
+  font-weight: 700;
+  text-transform: uppercase;
+  color: $h4-color;
+  margin-top: 0;
 }
+
 .container {
   box-sizing: border-box;
   max-width: 1215px;
@@ -52,17 +61,44 @@ main {
     padding: 0 2em;
   }
   @include tablet {
-    margin: 0 2em;
+    padding: 0 2em;
   }
 }
 
 .subtitle {
-  // font-family: 'Roboto';
   font-style: normal;
   font-weight: 500;
-  font-size: 32px;
-  line-height: 48px;
-  /* or 150% */
-
+  font-size: 1.1rem;
+  line-height: 2.4rem;
   color: $text-secondary;
+  margin-bottom: 2rem;
+}
+.btn {
+  cursor: pointer;
+  box-shadow: 0px 0px 6px 2px rgba(0, 0, 0, 0.16);
+  border-radius: 0.6rem;
+  border-style: solid;
+  border-width: 0.1rem;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 0.8rem;
+  line-height: 0.9rem;
+  text-align: center;
+  text-transform: uppercase;
+  padding: 0.5rem 1.2rem 0.3rem;
+
+  &--orange {
+    @include button($auth-btn-color, $auth-btn-second-color);
+  }
+
+  &--blue {
+    @include button(#00bcd4, $auth-btn-second-color);
+    font-size: 1.5rem;
+    padding: 1.2rem 1.5rem;
+  }
+}
+
+.noscroll {
+  overflow: hidden;
+  padding-right: 0.91rem;
 }
