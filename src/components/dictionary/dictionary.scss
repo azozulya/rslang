@@ -40,36 +40,8 @@
 }
 .dictionary__words {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-.dictionary__words_list {
-  display: flex;
   flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
   gap: 2em;
-}
-.dictionary__word {
-  flex-basis: 160%;
-  height: 50em;
-  border-radius: 0.65em;
-  border: 1px #00BCD4 solid;
-}
-.dictionary__words_item {
-  width: 6em;
-  height: 3em;
-  padding: 0.3em;
-  font-size: 2em;
-  font-weight: 600;
-  border-radius: 0.65em;
-  border: 1px #00BCD4 solid;
-  cursor: pointer;
-  transition: 0.25s;
-}
-  .dictionary__words_item:hover {
-  background-color: #b8dad3 ;
-}
-
-.dictionary__words_translate {
-  font-weight: 300;
-  font-size: 0.8em;
 }

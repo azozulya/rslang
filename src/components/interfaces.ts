@@ -26,6 +26,10 @@ export interface IWord {
   textExampleTranslate: string;
 }
 
+export interface IWordApp {
+  word: IWord;
+  draw(): void;
+}
 export interface IUser {
   [key: string]: string;
 
