@@ -1,11 +1,3 @@
-export interface ICreateElement {
-  tagname: string;
-  class?: string;
-  id?: string;
-  parent?: HTMLElement;
-  child?: HTMLElement;
-  text?: string;
-}
 export interface IWord {
   [key: string]: string | number;
 
@@ -41,9 +33,17 @@ export interface IAuth {
   name: string;
 }
 
-export interface ILogin {
-  message: string;
-  token: string,
-  userId: string;
+export interface IUserWord {
+  difficulty: string;
+  optional?: {};
 }
 
+export interface IUserStatistics {
+  learnedWords: number;
+  optional?: {};
+}
+
+export interface IUserSettings {
+  wordsPerDay: number;
+  optional?: {};
+}
