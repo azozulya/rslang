@@ -43,3 +43,21 @@
     }
   }
 }
+
+@mixin title-gradient($color, $width: 10rem, $height: 1.1rem) {
+  background-image: linear-gradient(to right, $color, $color 100%);
+  background-position: 0 100%;
+  background-size: $width $height;
+  background-repeat: no-repeat;
+}
+
+@mixin button($color, $second-color) {
+  background-color: $color;
+  border-color: $color;
+  color: $second-color;
+
+  &:hover {
+    background-color: $second-color;
+    color: $color;
+  }
+}
