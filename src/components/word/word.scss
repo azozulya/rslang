@@ -1,0 +1,97 @@
+.word {
+  display: flex;
+  gap: 2em;
+  width: 45%;
+  height: 17em;
+  border: 2px #6DB4A7 solid;
+  border-radius: 0.65em;
+  padding: 0.5em;
+}
+.word__image {
+  width: 16em;
+  flex-shrink: 0;
+  background-image: url(../../assets/img/test.jpeg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 0.65em;
+}
+.word__description {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 40em;
+  padding: 1em 0;
+}
+.word__header {
+  display: flex;
+  justify-content: space-between;
+}
+.word__item {
+  display: flex;
+  gap: 1em;
+}
+.word__name {
+  font-size: 1.5em;
+  font-weight: 500;
+}
+.word__audio {
+  width: 1.5em;
+  height: 1.5em;
+  background-image: url(../../assets/img/audio.svg);
+  background-repeat: no-repeat;
+  background-size: contain;
+  cursor: pointer;
+  transition: 0.25s;
+}
+.word__marks {
+  display: flex;
+  gap: 1em;
+}
+.word__hard, 
+.word__learned {
+  width: 1.5em;
+  height: 1.5em;
+  background-image: url(../../assets/img/hard_word.svg);
+  background-repeat: no-repeat;
+  background-size: contain;
+  cursor: pointer;
+  transition: 0.25s;
+}
+.word__hard:hover, 
+.word__learned:hover,
+.word__audio:hover {
+  filter: invert(67%) sepia(15%) saturate(5650%) hue-rotate(359deg) brightness(101%) contrast(105%);
+}
+.word__learned {
+  background-image: url(../../assets/img/learned_word.svg);
+}
+.word__text {
+  color: rgba(0, 0, 0, 0.54);
+  flex-grow: 1;
+}
+.word__meaning,
+.word__meaning_translate,
+.word__example,
+.word__example_translate {
+  font-size: 0.75em;
+}
+.word__meaning,
+.word__example {
+  margin-top: 1.5em;
+}
+.word__progress {
+  display: flex;
+  justify-content: space-between;
+}
+.word__sprint, 
+.word__audio {
+  display: flex;
+  gap: 0.5em;
+  font-size: 0.75em;
+}
+
+@media only screen and (min-width: 769px) and (max-width: 1440px) {
+  .word {
+    width: 50em;
+  }
+}

@@ -22,3 +22,8 @@ export interface IWord {
   textMeaningTranslate: string;
   textExampleTranslate: string;
 }
+
+export interface IWordApp {
+  word: IWord;
+  draw(): void;
+}
