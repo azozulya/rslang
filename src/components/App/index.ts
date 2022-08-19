@@ -5,50 +5,54 @@ class App {
   router: Router;
 
   constructor() {
-    this.router = new Router();
+    const rootContainer = document.getElementById('main') || document.body;
+    this.router = new Router(rootContainer);
   }
 
-  // eslint-disable-next-line max-lines-per-function
   start() {
-    const menu = document.getElementById('menu');
+    document?.addEventListener('click', this.onLinkClickHandler);
 
-    menu?.addEventListener('click', (event) => {
-      event.preventDefault();
-      const menuItem = <HTMLElement>(
-        (<HTMLLinkElement>event.target)?.closest('.menu__item--link')
-      );
-      if (menuItem) {
-        const pageName = menuItem?.dataset.page;
+    window.addEventListener('load', this.onPageLoadHandler);
 
-        if (pageName) {
-          window.history.pushState(
-            { page: pageName },
-            pageName,
-            `/${pageName}`
-          );
-          this.router.openPage(pageName);
-        }
-      }
-      console.log(menuItem?.dataset.page);
-    });
-
-    // Listen on page load:
-    window.addEventListener('load', () => {
-      // eslint-disable-next-line no-console
-      console.log('load page', document.location.pathname);
-      // this.router.openPage(document.location.pathname.split('/'));
-      window.history.pushState({ page: 'main' }, 'main', '/');
-    });
-
-    window.addEventListener('popstate', (event) => {
-      console.log(
-        `location: ${document.location}, state: ${JSON.stringify(event.state)}`
-      );
-      const { page } = event.state;
-      if (page) this.router.openPage(page);
-    });
+    window.addEventListener('popstate', this.onPopStateHandler);
 
     BurgerMenu.init();
   }
+
+  private onLinkClickHandler = (event: Event) => {
+    event.preventDefault();
+
+    const linkItem = <HTMLElement>(
+      (<HTMLLinkElement>event.target)?.closest('[data-page]')
+    );
+
+    if (!linkItem) return;
+
+    const pageName = linkItem?.dataset.page;
+
+    if (pageName) {
+      window.history.pushState({ page: pageName }, '', `/${pageName}`);
+      this.router.openPage(pageName);
+    }
+  };
+
+  private onPageLoadHandler = () => {
+    // eslint-disable-next-line no-console
+    console.log('load page', document.location.pathname);
+    this.router.openPage('main');
+    window.history.pushState({ page: 'main' }, '', '/');
+  };
+
+  private onPopStateHandler = (event: { state: { page: string } }) => {
+    // eslint-disable-next-line no-console
+    console.log(`popstate, state: ${JSON.stringify(event.state)}`, event.state);
+    if (!event.state) {
+      this.router.openPage('main');
+      return;
+    }
+
+    const { page } = event.state;
+    if (page) this.router.openPage(page);
+  };
 }
 export default App;

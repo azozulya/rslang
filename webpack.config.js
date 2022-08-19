@@ -7,11 +7,11 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const baseConfig = {
   entry: {
     main: path.resolve(__dirname, './src/index.ts'),
-    dictionary: path.resolve(
-      __dirname,
-      './src/components/dictionary/dictionary.ts'
-    ),
-    games: path.resolve(__dirname, './src/components/games/index.ts'),
+    // dictionary: path.resolve(
+    //   __dirname,
+    //   './src/components/dictionary/dictionary.ts'
+    // ),
+    // games: path.resolve(__dirname, './src/components/games/index.ts'),
   },
   mode: 'development',
   module: {

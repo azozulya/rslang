@@ -3,7 +3,7 @@ import create from '../utils/createElement';
 import './dictionary.scss';
 import './pagination.scss';
 
-class Dictionary {
+class DictionaryView {
   words: Array<IWord>;
 
   COUNT_OF_LEVELS: number;
@@ -21,7 +21,9 @@ class Dictionary {
       document.getElementById('dictionaryLevels')
     );
     console.log(dictionaryLevels);
-    dictionaryLevels.addEventListener('click', (e: Event) => this.requestWords(e));
+    dictionaryLevels.addEventListener('click', (e: Event) =>
+      this.requestWords(e)
+    );
   }
 
   requestWords(event: Event) {
@@ -33,13 +35,10 @@ class Dictionary {
 
   // eslint-disable-next-line max-lines-per-function
   draw() {
-    const root = document.getElementById('main') || undefined;
-    if (root) root.innerText = '';
-
     const dictionary = create({
       tagname: 'div',
       class: 'dictionary',
-      parent: root,
+      //parent: root,
     });
     create({
       tagname: 'h2',
@@ -124,6 +123,8 @@ class Dictionary {
       class: 'dictionary__pagination_next',
       parent: dictionaryPagination,
     });
+
+    return dictionary;
   }
 }
-export default Dictionary;
+export default DictionaryView;

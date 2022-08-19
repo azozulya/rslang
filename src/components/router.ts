@@ -6,8 +6,7 @@
 
 import Games from './games';
 import Main from './main';
-import Dictionary from './dictionary/dictionary';
-import wordsList from './utils/testWord';
+import Dictionary from './dictionary';
 import Statistic from './statistic';
 
 class Router {
@@ -15,40 +14,41 @@ class Router {
     {
       page: 'main',
       url: '/',
-      view: () => new Main(),
+      controller: () => new Main(),
     },
     {
       page: 'dictionary',
       url: '/dictionary',
-      view: () => new Dictionary(wordsList),
+      controller: () => new Dictionary(),
     },
     {
       page: 'games',
       url: '/games',
-      view: () => new Games(),
+      controller: () => new Games(),
     },
     {
       page: 'statistic',
       url: '/statistic',
-      view: () => new Statistic(),
+      controller: () => new Statistic(),
     },
   ];
+
+  private rootContainer: HTMLElement;
+
+  constructor(rootContainer: HTMLElement) {
+    this.rootContainer = rootContainer;
+  }
 
   openPage = (pageName: string) => {
     const currentRouter = this.routers.find(
       (router) => router.page === pageName
     );
-    // eslint-disable-next-line no-console
-
-    if (currentRouter) currentRouter.view().draw();
-    console.log('router: ', currentRouter);
+    console.log('open page: ', currentRouter);
+    if (currentRouter) {
+      this.rootContainer.innerText = '';
+      currentRouter.controller().draw(this.rootContainer);
+    }
   };
-
-  // parseRequestURL() {
-  //   this.request.resource = this.r[1];
-  //   this.request.id = this.r[2];
-  //   this.request.verb = this.r[3];
-  //   return this.request;
-  // }
 }
+
 export default Router;
