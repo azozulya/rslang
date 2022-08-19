@@ -2,7 +2,7 @@ import {
   IWord, IUser, IAuth, IUserWord, IUserStatistics, IUserSettings,
 } from '../interfaces';
 
-export class LangAPI {
+export class Api {
   private baseUrl: string;
 
   private words: string;
@@ -20,7 +20,8 @@ export class LangAPI {
 
   async getWords(group: number, page: number): Promise<IWord[]> {
     const response = await fetch(`${this.words}?group=${group}&page=${page}`);
-    return (await response.json()) as IWord[];
+    const words: IWord [] = await response.json();
+    return words;
   }
 
   async getWord(id: string): Promise<IWord> {
@@ -268,4 +269,4 @@ export class LangAPI {
   }
 }
 
-export default LangAPI;
+export default Api;
