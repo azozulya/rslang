@@ -11,13 +11,12 @@ class Word implements IWordApp {
   }
 
   draw() {
-    console.log(this.word);
     const dictionary = <HTMLElement>document.getElementById('dictionaryWords');
     const wordInDictionary = create({
       tagname: 'div', class: 'word', parent: dictionary, id: `${this.word.id}`,
     });
     const wordImage = <HTMLElement>create({ tagname: 'div', class: 'word__image', parent: wordInDictionary });
-    // TODO add image from api
+    wordImage.style.backgroundImage = `url(http://127.0.0.1:3000/${this.word.image})`; // TODO change url after deploy backend
     const wordDescription = create({
       tagname: 'div', class: 'word__description', parent: wordInDictionary,
     });
@@ -39,7 +38,7 @@ class Word implements IWordApp {
     const wordText = create({ tagname: 'div', class: 'word__text', parent: wordDescription });
     create({
       tagname: 'div', class: 'word__meaning', parent: wordText, text: `${this.word.textMeaning}`,
-    }); // TODO need convert asterisks into tags
+    });
     create({
       tagname: 'div', class: 'word__meaning_translate', parent: wordText, text: `${this.word.textMeaningTranslate}`,
     });
