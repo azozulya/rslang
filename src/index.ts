@@ -7,7 +7,6 @@ import Dictionary from './components/dictionary/dictionary';
 const app = new App();
 app.start();
 
-const dictionary = new Dictionary(wordsList);
-dictionary.draw(wordsList);
-dictionary.addHandlers();
-
+// const dictionary = new Dictionary(wordsList);
+// dictionary.draw(wordsList);
+// dictionary.addHandlers();

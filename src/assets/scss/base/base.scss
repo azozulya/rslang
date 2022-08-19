@@ -8,11 +8,13 @@
 }
 html {
   scroll-behavior: smooth;
+  height: 100%;
 }
 body {
   line-height: $line-height;
   color: $text-primary;
   background-color: $bg-page-color;
+  height: 100%;
 }
 
 h2 {

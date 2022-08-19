@@ -5,7 +5,14 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const baseConfig = {
-  entry: path.resolve(__dirname, './src/index.ts'),
+  entry: {
+    main: path.resolve(__dirname, './src/index.ts'),
+    dictionary: path.resolve(
+      __dirname,
+      './src/components/dictionary/dictionary.ts'
+    ),
+    games: path.resolve(__dirname, './src/components/games/index.ts'),
+  },
   mode: 'development',
   module: {
     rules: [
@@ -51,7 +58,7 @@ const baseConfig = {
     extensions: ['.ts', '.tsx', '.js'],
   },
   output: {
-    filename: 'index.js',
+    filename: '[name].js',
     path: path.resolve(__dirname, './dist'),
     assetModuleFilename: 'img/[hash][ext][query]',
   },
