@@ -1,8 +1,8 @@
 import {
-  IWord, IUser, IAuth, ILogin,
+  IWord, IUser, IAuth, IUserWord, IUserStatistics, IUserSettings,
 } from '../interfaces';
 
-export class LangAPI {
+export class Api {
   private baseUrl: string;
 
   private words: string;
@@ -20,10 +20,11 @@ export class LangAPI {
 
   async getWords(group: number, page: number): Promise<IWord[]> {
     const response = await fetch(`${this.words}?group=${group}&page=${page}`);
-    return (await response.json()) as IWord[];
+    const words: IWord [] = await response.json();
+    return words;
   }
 
-  async getWordsId(id: string): Promise<IWord> {
+  async getWord(id: string): Promise<IWord> {
     const response = await fetch(`${this.words}/${id}`);
     return (await response.json()) as IWord;
   }
@@ -69,19 +70,7 @@ export class LangAPI {
     return (await response.json()) as IUser;
   }
 
-  // async deleteUser(token: string, id: string): Promise<string> {
-  //   const response = await fetch(`${this.users}/${id}`, {
-  //     method: 'DELETE',
-  //     headers: {
-  //       Authorization: `Bearer ${token}`,
-  //       Accept: 'application/json',
-  //       'Content-Type': 'application/json',
-  //     },
-  //   });
-  //   return (await response.json()) as string;
-  // }
-
-  async deleteUser(token: string, id: string): Promise<number> {
+  async deleteUser(token: string, id: string): Promise<string> {
     const response = await fetch(`${this.users}/${id}`, {
       method: 'DELETE',
       headers: {
@@ -90,22 +79,194 @@ export class LangAPI {
         'Content-Type': 'application/json',
       },
     }).catch();
-    return response.status;
+    return `${response.status}: ${response.statusText}`;
   }
 
-  async getUserToken(id: string): Promise<IAuth | string> {
-    const response = await fetch(`${this.users}/${id}/tokens`);
-    return (await response.json()) as IAuth | string;
+  async getUserToken(id: string): Promise<IAuth> {
+    const rtoken = localStorage.getItem('refreshToken');
+    const response = await fetch(`${this.users}/${id}/tokens`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${rtoken}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+    const result = (await response.json()) as IAuth;
+    const { token, refreshToken } = result;
+    localStorage.setItem('token', token);
+    localStorage.setItem('refreshToken', refreshToken);
+    return result;
   }
 
-  async loginUser(body: { email: string; password: string }): Promise<ILogin> {
+  async loginUser(body: { email: string; password: string }): Promise<IAuth> {
     const response = await fetch(this.signin, {
       method: 'POST',
       body: JSON.stringify(body),
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
     });
-    return (await response.json()) as ILogin;
+    // return (await response.json()) as ILogin;
+
+    const result = (await response.json()) as IAuth;
+    const { userId, token, refreshToken } = result;
+    localStorage.setItem('id', userId);
+    localStorage.setItem('token', token);
+    localStorage.setItem('refreshToken', refreshToken);
+
+    return result;
+  }
+
+  async getUserWords(id: string): Promise<IUserWord[] | string> {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${this.users}/${id}/words`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+    return (await response.json()) as IUserWord[] | string;
+  }
+
+  async createUserWord(userId: string, wordId: string, word?: IUserWord): Promise<IUserWord> {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${this.users}/${userId}/words/${wordId}`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(word),
+    });
+    return (await response.json()) as IUserWord;
+  }
+
+  async getUserWord(userId: string, wordId: string): Promise<IUserWord> {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${this.users}/${userId}/words/${wordId}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+      },
+    });
+    return (await response.json()) as IUserWord;
+  }
+
+  async updateUserWord(userId: string, wordId: string, word?: IUserWord): Promise<IUserWord> {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${this.users}/${userId}/words/${wordId}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(word),
+    });
+    return (await response.json()) as IUserWord;
+  }
+
+  async deleteUserWord(userId: string, wordId: string): Promise<string> {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${this.users}/${userId}/words/${wordId}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }).catch();
+    return `${response.status}: ${response.statusText}`;
+  }
+
+  async getUserAggregatedWords(
+    userId: string,
+    group: string,
+    page: string,
+    wordsPerPage: string,
+    filter: string,
+  ): Promise<IWord[]> {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${this.users}/${userId}/AggregatedWords?group=${group}&page=${page}&wordsPerPage=${wordsPerPage}&filter=${filter}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+    return (await response.json()) as IWord[];
+  }
+
+  async getUserAggregatedWord(userId: string, wordId: string): Promise<IWord> {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${this.users}/${userId}/AggregatedWords/${wordId}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+    return (await response.json()) as IWord;
+  }
+
+  async getUserStatistics(userId: string): Promise<IUserStatistics> {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${this.users}/${userId}/statistics`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+    return (await response.json()) as IUserStatistics;
+  }
+
+  async updateUserStatistics(userId: string, body: IUserStatistics): Promise<IUserStatistics> {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${this.users}/${userId}/statistics`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+    return (await response.json()) as IUserStatistics;
+  }
+
+  async getUserSettings(userId: string): Promise<IUserSettings> {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${this.users}/${userId}/settings`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+    return (await response.json()) as IUserSettings;
+  }
+
+  async updateUserSettings(userId: string, body: IUserSettings): Promise<IUserSettings> {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${this.users}/${userId}/settings`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+    return (await response.json()) as IUserSettings;
   }
 }
 
-export default LangAPI;
+export default Api;
