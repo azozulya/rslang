@@ -32,7 +32,7 @@ class DictionaryView {
 
   async updateWords(
     event: Event,
-    callback: (group: number, page: number) => Promise<IWord[]>
+    callback: (group: number, page: number) => Promise<IWord[]>,
   ) {
     this.changeWordsGroup(event);
     this.activeGroupBtn();
@@ -45,9 +45,7 @@ class DictionaryView {
     const dictionaryGroups = <HTMLElement>(
       document.getElementById('dictionaryGroups')
     );
-    dictionaryGroups.addEventListener('click', (e: Event) =>
-      this.updateWords(e, callback)
-    );
+    dictionaryGroups.addEventListener('click', (e: Event) => this.updateWords(e, callback));
   }
 
   changeWordsGroup(event: Event) {
@@ -64,12 +62,11 @@ class DictionaryView {
   }
 
   async requestWords(
-    callback: (group: number, page: number) => Promise<IWord[]>
+    callback: (group: number, page: number) => Promise<IWord[]>,
   ) {
     let page: number;
     let group: number;
-    const groupAndPage: { page: number; group: number } =
-      getLocalStorage('wordsGroupAndPage');
+    const groupAndPage: { page: number; group: number } = getLocalStorage('wordsGroupAndPage');
     if (groupAndPage) {
       page = groupAndPage.page;
       group = groupAndPage.group;
@@ -116,11 +113,16 @@ class DictionaryView {
     console.log(groupBtns);
   }
 
+  // eslint-disable-next-line max-lines-per-function
   draw() {
+    const container = create({
+      tagname: 'div',
+      class: 'container',
+    });
     const dictionary = create({
       tagname: 'div',
       class: 'dictionary',
-      parent: document.body,
+      parent: container,
     });
     create({
       tagname: 'h2',
@@ -160,10 +162,22 @@ class DictionaryView {
       id: 'dictionaryWords',
       parent: dictionary,
     });
+    const dictionaryPagination = create({
+      tagname: 'div',
+      class: 'dictionary__pagination',
+      parent: dictionary,
+    });
     create({
       tagname: 'div',
-      class: 'dictionary__pagination_next',
+      class: 'dictionary__pagination_prev',
       parent: dictionaryPagination,
+    });
+    create({
+      tagname: 'div',
+      class: 'dictionary__pagination_cur',
+      id: 'dictionaryPage',
+      parent: dictionaryPagination,
+      text: '1',
     });
     create({
       tagname: 'div',
@@ -172,6 +186,7 @@ class DictionaryView {
     });
 
     this.drawWords();
+    return container;
   }
 }
 export default DictionaryView;

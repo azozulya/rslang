@@ -6,6 +6,14 @@ class App {
 
   constructor() {
     const rootContainer = document.getElementById('main') || document.body;
+
+    // const innerContainer = create({
+    //   tagname: 'div',
+    //   class: 'container main__container',
+    // });
+
+    // rootContainer.append(innerContainer);
+
     this.router = new Router(rootContainer);
   }
 

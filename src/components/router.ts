@@ -14,21 +14,25 @@ class Router {
     {
       page: 'main',
       url: '/',
+      class: 'index-page',
       controller: () => new Main(),
     },
     {
       page: 'dictionary',
       url: '/dictionary',
+      class: 'inner-page',
       controller: () => new Dictionary(),
     },
     {
       page: 'games',
       url: '/games',
+      class: 'inner-page',
       controller: () => new Games(),
     },
     {
       page: 'statistic',
       url: '/statistic',
+      class: 'inner-page',
       controller: () => new Statistic(),
     },
   ];
@@ -46,7 +50,10 @@ class Router {
     // eslint-disable-next-line no-console
     console.log('open page: ', currentRouter);
     if (currentRouter) {
+      this.rootContainer.removeAttribute('class');
+      this.rootContainer.classList.add(currentRouter.class);
       this.rootContainer.innerText = '';
+
       currentRouter.controller().draw(this.rootContainer);
     }
   };

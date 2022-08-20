@@ -61,6 +61,7 @@ const baseConfig = {
     extensions: ['.ts', '.tsx', '.js'],
   },
   output: {
+    publicPath: '/',
     filename: '[name].js',
     path: path.resolve(__dirname, './dist'),
     assetModuleFilename: 'img/[hash][ext][query]',
@@ -70,14 +71,14 @@ const baseConfig = {
       template: path.resolve(__dirname, './src/index.html'),
       filename: 'index.html',
     }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: './src/assets/img',
-          to: './assets/img',
-        },
-      ],
-    }),
+    // new CopyWebpackPlugin({
+    //   patterns: [
+    //     {
+    //       from: './src/assets/img',
+    //       to: './assets/img',
+    //     },
+    //   ],
+    // }),
     new CleanWebpackPlugin(),
   ],
 };
