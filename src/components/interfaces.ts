@@ -47,8 +47,9 @@ export interface IAuth {
 }
 
 export interface IUserWord {
-  difficulty: string;
-  optional?: Record<string, unknown>;
+  difficulty?: boolean;
+  learned?: boolean;
+  wordID: string;
 }
 
 export interface IUserStatistics {

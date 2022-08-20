@@ -1,14 +1,14 @@
 import Dictionary from '../dictionary/dictionary';
-import LangAPI from '../api/api';
+import Api from '../api/api';
 
 class App {
   dictionary: Dictionary;
 
-  api: LangAPI;
+  api: Api;
 
   constructor() {
     this.dictionary = new Dictionary();
-    this.api = new LangAPI();
+    this.api = Api.getInstance();
   }
 
   async start() {

@@ -1,14 +1,44 @@
 /* eslint-disable max-lines-per-function */
-import { IWord, IWordApp } from '../interfaces';
+import Api from '../api/api';
+import { IWord, IWordApp, IUserWord } from '../interfaces';
 import create from '../utils/createElement';
 import './word.scss';
 
 class Word implements IWordApp {
   word: IWord;
 
+  api: Api;
+
   constructor(word: IWord) {
     this.word = word;
+    this.api = Api.getInstance();
   }
+
+  addHandlers() {
+    const dictionaryWords = <HTMLElement>document.getElementById('dictionaryWords');
+    dictionaryWords.addEventListener('click', (e:Event) => this.defineTarget(e));
+  }
+
+  defineTarget(event:Event) {
+    const element = <HTMLElement>event.target;
+    if (element.closest('.word')) {
+      const word = <HTMLElement>element.closest('.word');
+      if (element.classList.contains('word__audio')) this.listenWord(word.id);
+    // if (element.classList.contains('word__hard')) this.addToHardWord(word.id);
+      // if (element.classList.contains('word__hard')) this.addToHardWord(word.id);
+    }
+  }
+
+  listenWord(wordId:string) {
+    console.log(wordId);
+  }
+
+ /* addToHardWord(wordId:string) {
+    const userId = '1111';
+    const word: IUserWord = { difficulty: true, wordId: wordId};
+    this.api.createUserWord();
+  }
+  */
 
   draw() {
     const dictionary = <HTMLElement>document.getElementById('dictionaryWords');
@@ -62,6 +92,7 @@ class Word implements IWordApp {
     create({
       tagname: 'div', class: 'word__sprint_score', parent: wordAudio, text: '17/40',
     });
+    this.addHandlers();
   }
 }
 export default Word;

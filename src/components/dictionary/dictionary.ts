@@ -1,3 +1,5 @@
+/* eslint-disable max-lines-per-function */
+import Api from '../api/api';
 import { IWord, IWordApp } from '../interfaces';
 import Word from '../word/word';
 import create from '../utils/createElement';
@@ -6,6 +8,8 @@ import './pagination.scss';
 import { getLocalStorage, setLocalStorage } from '../utils/LocalStorage';
 
 class Dictionary {
+  api: Api;
+
   words: Array<IWordApp>;
 
   COUNT_OF_LEVELS: number;
@@ -15,6 +19,7 @@ class Dictionary {
   group: number;
 
   constructor() {
+    this.api = Api.getInstance();
     this.words = [];
     this.COUNT_OF_LEVELS = 5;
     this.page = 0;
@@ -120,8 +125,20 @@ class Dictionary {
         tagname: 'li', class: 'dictionary__groups_item', id: `${i}group`, parent: dictionaryGroupsList, text: `${i + 1} уровень`,
       });
     }
+    const dictionaryExtentions = create({
+      tagname: 'div', class: 'dictionary__extentions', parent: dictionaryGroups,
+    });
     create({
-      tagname: 'div', class: 'dictionary__hardwords', parent: dictionaryGroups, text: 'Сложные слова',
+      tagname: 'div', class: 'dictionary__hardwords', id: 'dictionaryHardWords', parent: dictionaryExtentions, text: 'Мои слова',
+    });
+    const dictionaryGames = create({
+      tagname: 'div', class: 'dictionary__games', parent: dictionaryExtentions,
+    });
+    create({
+      tagname: 'div', class: 'dictionary__sprint', id: 'dictionarySprint', parent: dictionaryGames, text: 'Спринт',
+    });
+    create({
+      tagname: 'div', class: 'dictionary__audio', id: 'dictionaryAudio', parent: dictionaryGames, text: 'Аудиовызов',
     });
     create({
       tagname: 'div', class: 'dictionary__words', id: 'dictionaryWords', parent: dictionary,

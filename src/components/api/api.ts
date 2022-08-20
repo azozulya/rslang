@@ -2,7 +2,9 @@ import {
   IWord, IUser, IAuth, IUserWord, IUserStatistics, IUserSettings,
 } from '../interfaces';
 
-export class Api {
+class Api {
+  private static instance: Api;
+
   private baseUrl: string;
 
   private words: string;
@@ -11,11 +13,18 @@ export class Api {
 
   private signin: string;
 
-  constructor() {
+  private constructor() {
     this.baseUrl = 'http://127.0.0.1:3000';
     this.words = `${this.baseUrl}/words`;
     this.users = `${this.baseUrl}/users`;
     this.signin = `${this.baseUrl}/signin`;
+  }
+
+  static getInstance() {
+    if (!Api.instance) {
+      Api.instance = new Api();
+    }
+    return Api.instance;
   }
 
   async getWords(group: number, page: number): Promise<IWord[]> {
