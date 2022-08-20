@@ -14,6 +14,9 @@ const baseConfig = {
     // games: path.resolve(__dirname, './src/components/games/index.ts'),
   },
   mode: 'development',
+  devServer: {
+    historyApiFallback: true,
+  },
   module: {
     rules: [
       {

@@ -2,8 +2,7 @@ class Main {
   draw(rootContainer: HTMLElement) {
     const container = rootContainer;
 
-    container.innerHTML =
-      this.addHeroSection() + this.addFeatureSection() + this.addTeamSection();
+    container.innerHTML = this.addHeroSection() + this.addFeatureSection() + this.addTeamSection();
   }
 
   addHeroSection = () => `

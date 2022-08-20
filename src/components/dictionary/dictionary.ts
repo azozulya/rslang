@@ -20,15 +20,15 @@ class DictionaryView {
     const dictionaryLevels = <HTMLElement>(
       document.getElementById('dictionaryLevels')
     );
+    // eslint-disable-next-line no-console
     console.log(dictionaryLevels);
-    dictionaryLevels.addEventListener('click', (e: Event) =>
-      this.requestWords(e)
-    );
+    dictionaryLevels.addEventListener('click', (e: Event) => this.requestWords(e));
   }
 
   requestWords(event: Event) {
     const dictionaryLevel = <HTMLElement>event.target;
     if (dictionaryLevel.classList.contains('dictionary__levels_item')) {
+      // eslint-disable-next-line no-console
       console.log('requestwords', event.target); // TODO - add request
     }
   }
@@ -38,7 +38,7 @@ class DictionaryView {
     const dictionary = create({
       tagname: 'div',
       class: 'dictionary',
-      //parent: root,
+      // parent: root,
     });
     create({
       tagname: 'h2',
@@ -81,7 +81,7 @@ class DictionaryView {
       class: 'dictionary__words_list',
       parent: dictionaryWords,
     });
-    const dictionaryWord = create({
+    create({
       tagname: 'div',
       class: 'dictionary__word',
       parent: dictionaryWords,

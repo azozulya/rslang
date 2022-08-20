@@ -39,8 +39,10 @@ class App {
   private onPageLoadHandler = () => {
     // eslint-disable-next-line no-console
     console.log('load page', document.location.pathname);
-    this.router.openPage('main');
-    window.history.pushState({ page: 'main' }, '', '/');
+    const pageName = document.location.pathname.split('/')[1] || 'main';
+
+    this.router.openPage(pageName);
+    window.history.pushState({ page: pageName }, '', `/${pageName}`);
   };
 
   private onPopStateHandler = (event: { state: { page: string } }) => {

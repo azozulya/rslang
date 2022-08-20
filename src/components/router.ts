@@ -41,8 +41,9 @@ class Router {
 
   openPage = (pageName: string) => {
     const currentRouter = this.routers.find(
-      (router) => router.page === pageName
+      (router) => router.page === pageName,
     );
+    // eslint-disable-next-line no-console
     console.log('open page: ', currentRouter);
     if (currentRouter) {
       this.rootContainer.innerText = '';
