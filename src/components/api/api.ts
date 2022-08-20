@@ -2,7 +2,7 @@ import {
   IWord, IUser, IAuth, IUserWord, IUserStatistics, IUserSettings,
 } from '../interfaces';
 
-export default class Api {
+export class Api {
   private baseUrl: string;
 
   private words: string;
@@ -279,3 +279,4 @@ export default class Api {
     return (await response.json()) as IUserSettings;
   }
 }
+export default Api;
