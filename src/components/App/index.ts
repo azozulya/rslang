@@ -2,17 +2,12 @@ import BurgerMenu from '../utils/menu';
 import Router from '../router';
 
 class App {
-  router: Router;
+  private router: Router;
+
+  private INDEX_PAGE = 'main';
 
   constructor() {
     const rootContainer = document.getElementById('main') || document.body;
-
-    // const innerContainer = create({
-    //   tagname: 'div',
-    //   class: 'container main__container',
-    // });
-
-    // rootContainer.append(innerContainer);
 
     this.router = new Router(rootContainer);
   }
@@ -21,8 +16,6 @@ class App {
     document?.addEventListener('click', this.onLinkClickHandler);
 
     window.addEventListener('load', this.onPageLoadHandler);
-
-    window.addEventListener('popstate', this.onPopStateHandler);
 
     BurgerMenu.init();
   }
@@ -39,30 +32,12 @@ class App {
     const pageName = linkItem?.dataset.page;
 
     if (pageName) {
-      window.history.pushState({ page: pageName }, '', `/${pageName}`);
       this.router.openPage(pageName);
     }
   };
 
   private onPageLoadHandler = () => {
-    // eslint-disable-next-line no-console
-    console.log('load page', document.location.pathname);
-    const pageName = document.location.pathname.split('/')[1] || 'main';
-
-    this.router.openPage(pageName);
-    window.history.pushState({ page: pageName }, '', `/${pageName}`);
-  };
-
-  private onPopStateHandler = (event: { state: { page: string } }) => {
-    // eslint-disable-next-line no-console
-    console.log(`popstate, state: ${JSON.stringify(event.state)}`, event.state);
-    if (!event.state) {
-      this.router.openPage('main');
-      return;
-    }
-
-    const { page } = event.state;
-    if (page) this.router.openPage(page);
+    this.router.openPage(this.INDEX_PAGE);
   };
 }
 export default App;

@@ -5,18 +5,14 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const baseConfig = {
-  entry: {
-    main: path.resolve(__dirname, './src/index.ts'),
-    // dictionary: path.resolve(
-    //   __dirname,
-    //   './src/components/dictionary/dictionary.ts'
-    // ),
-    // games: path.resolve(__dirname, './src/components/games/index.ts'),
-  },
+  entry: [
+    path.resolve(__dirname, './src/index.ts'),
+    path.resolve(__dirname, './src/assets/scss/index.scss'),
+  ],
   mode: 'development',
-  devServer: {
-    historyApiFallback: true,
-  },
+  // devServer: {
+  //   historyApiFallback: true,
+  // },
   module: {
     rules: [
       {
@@ -28,9 +24,14 @@ const baseConfig = {
         use: ['style-loader', 'css-loader', 'sass-loader'],
       },
       {
-        test: /\.(png|jpg|gif|svg|ico)$/i,
+        test: /\.(png|svg|jpg|jpeg|gif|ico)$/i,
         type: 'asset/resource',
       },
+      {
+        test: /\.html$/,
+        use: 'html-loader',
+      },
+
       {
         test: /\.tsx?$/,
         use: 'ts-loader',
@@ -42,10 +43,6 @@ const baseConfig = {
         generator: {
           filename: 'assets/fonts/[name][ext]',
         },
-      },
-      {
-        test: /\.html$/,
-        use: 'html-loader',
       },
       {
         test: /\.tsx$/,
@@ -61,15 +58,15 @@ const baseConfig = {
     extensions: ['.ts', '.tsx', '.js'],
   },
   output: {
-    publicPath: '/',
     filename: '[name].js',
     path: path.resolve(__dirname, './dist'),
-    assetModuleFilename: 'img/[hash][ext][query]',
+    assetModuleFilename: 'img/[hash][ext]',
   },
   plugins: [
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, './src/index.html'),
       filename: 'index.html',
+      inject: 'body',
     }),
     new CopyWebpackPlugin({
       patterns: [
