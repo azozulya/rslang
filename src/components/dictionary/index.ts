@@ -24,7 +24,7 @@ class Dictionary {
     //   password: '11111111',
     // });
 
-    //console.log(login);
+    // console.log(login);
   }
 }
 

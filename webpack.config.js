@@ -28,7 +28,7 @@ const baseConfig = {
         use: ['style-loader', 'css-loader', 'sass-loader'],
       },
       {
-        test: /\.(png|jpg|gif|svg)$/i,
+        test: /\.(png|jpg|gif|svg|ico)$/i,
         type: 'asset/resource',
       },
       {
@@ -71,14 +71,14 @@ const baseConfig = {
       template: path.resolve(__dirname, './src/index.html'),
       filename: 'index.html',
     }),
-    // new CopyWebpackPlugin({
-    //   patterns: [
-    //     {
-    //       from: './src/assets/img',
-    //       to: './assets/img',
-    //     },
-    //   ],
-    // }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: './src/assets/img',
+          to: './assets/img',
+        },
+      ],
+    }),
     new CleanWebpackPlugin(),
   ],
 };
