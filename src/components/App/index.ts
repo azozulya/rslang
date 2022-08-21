@@ -1,15 +1,18 @@
-import BurgerMenu from '../utils/menu';
 import Router from '../router';
+import Menu from '../utils/menu';
 
 class App {
   private router: Router;
 
   private INDEX_PAGE = 'main';
 
+  private menu: Menu;
+
   constructor() {
     const rootContainer = document.getElementById('main') || document.body;
 
     this.router = new Router(rootContainer);
+    this.menu = new Menu();
   }
 
   start() {
@@ -17,7 +20,7 @@ class App {
 
     window.addEventListener('load', this.onPageLoadHandler);
 
-    BurgerMenu.init();
+    this.menu.init();
   }
 
   private onLinkClickHandler = (event: Event) => {
@@ -33,11 +36,14 @@ class App {
 
     if (pageName) {
       this.router.openPage(pageName);
+      this.menu.setActive(pageName);
+      this.menu.hide();
     }
   };
 
   private onPageLoadHandler = () => {
     this.router.openPage(this.INDEX_PAGE);
+    this.menu.hide();
   };
 }
 export default App;

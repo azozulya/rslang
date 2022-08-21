@@ -1,6 +1,17 @@
 .menu {
   @include media($max-width: $burger-menu-start-from) {
-    display: none;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    background-color: $popup-bg-color;
+    right: -30rem;
+    transition: right 0.2s;
+    z-index: 3;
+
+    &--active {
+      right: 0;
+      left: 0;
+    }
   }
 
   &__list {
@@ -8,25 +19,41 @@
     margin: 0;
     padding: 0;
     display: flex;
+
+    @include media($max-width: $burger-menu-start-from) {
+      width: 20rem;
+      background-color: $light-color;
+      flex-direction: column;
+      align-items: center;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      padding-top: 6rem;
+    }
   }
   &__item {
     margin: 0 1em;
 
-    &--link {
-      font-weight: 500;
-      text-transform: uppercase;
-      text-decoration: none;
+    @include media($max-width: $burger-menu-start-from) {
+      margin-top: 1.5rem;
+    }
+  }
+  &__link {
+    font-weight: 500;
+    text-transform: uppercase;
+    text-decoration: none;
 
-      color: $text-primary;
+    color: $text-primary;
 
-      mix-blend-mode: normal;
-      opacity: 0.75;
+    mix-blend-mode: normal;
+    opacity: 0.75;
 
-      &:hover {
-        color: #00838f;
+    &:hover,
+    &--active {
+      color: $primary-dark;
 
-        @include title-gradient(#b2ebf2, 4rem, 0.5rem);
-      }
+      @include title-gradient($primary-light, 4rem, 0.5rem);
     }
   }
 }
@@ -38,17 +65,23 @@
   @include media($burger-menu-start-from) {
     position: relative;
     z-index: 3;
-    width: 30px;
-    height: 22px;
+    width: 2.2rem;
+    height: 1.9rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     margin-left: 2rem;
+    border-radius: 0.2rem;
 
-    &__line {
-      width: 100%;
+    @include phone {
+      margin-left: 1rem;
     }
   }
+
+  &:hover {
+    background-color: $light-color;
+  }
+
   &__show {
     position: static;
   }
@@ -56,9 +89,11 @@
   &:before,
   &:after {
     position: absolute;
+    left: 0.3rem;
+    right: 0.3rem;
     height: 2px;
     transition: all 0.3s ease-in-out;
-    background-color: $accent-dark;
+    background-color: $text-secondary;
   }
 
   &:before,
@@ -66,41 +101,34 @@
     content: '';
   }
   &:before {
-    top: 0;
-    width: 100%;
+    top: 0.3rem;
   }
   &:after {
-    bottom: 0;
-    width: 100%;
+    bottom: 0.3rem;
   }
 
   &__active {
     @include media($burger-menu-start-from) {
-      height: 30px;
-      width: 30px;
-      margin-right: 0.91rem;
+      background-color: $light-color;
 
+      & .burger-menu__line,
       &:before,
       &:after {
-        position: absolute;
-        content: ' ';
-        top: 15px;
-        background-color: $accent-light;
+        width: 70%;
+        top: 0.9rem;
+        background-color: $text-primary;
       }
 
       & .burger-menu__line {
-        top: 15px;
-        left: -1px;
-        transform: rotate(90deg);
+        transform: rotate(45deg);
+        left: 0.35rem;
       }
 
       &:before {
-        transform: rotate(-90deg);
-        left: 9px;
+        transform: rotate(-45deg);
       }
       &:after {
-        transform: rotate(-90deg);
-        left: -11px;
+        transform: rotate(-45deg);
       }
     }
   }

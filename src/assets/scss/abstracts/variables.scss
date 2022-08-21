@@ -2,22 +2,27 @@ $font: 'Roboto', sans-serif;
 $font-size: 18px;
 $line-height: 24px;
 
-$text-primary: rgba(0, 0, 0, 0.87);
-$text-secondary: rgba(0, 0, 0, 0.54);
-$h4-color: #00838f;
-
 $logo-color: #302f2f;
-
-$bg-page-color: #ffffff;
 $bg-header-color: #e0f7fa;
 
-$h1-line-color: #ffecb3;
+$text-primary: #212121;
+$text-secondary: #757575;
+$text-disabled: rgb(158, 158, 158);
 
-$auth-btn-color: #ffa000;
-$auth-btn-second-color: #fff;
+$light-color: #fff;
+$dark-color: #424242;
 
 $primary-light: #b2ebf2;
+$primary-dark: #00838f;
+
+$secondary-main: #ffa000;
+$secondary-light: #ffecb3;
+
+$accent-main: #e91e63;
 $accent-light: #f8bbd0;
 $accent-dark: #ad1457;
 
+$popup-bg-color: rgba(158, 158, 158, 0.6);
+
 $burger-menu-start-from: 980px;
+$min-width: 375px;
