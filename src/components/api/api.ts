@@ -50,7 +50,7 @@ class Api {
     return (await response.json()) as IUser;
   }
 
-  async createUser(user: IUser): Promise<IUser> {
+  async createUser(user: IUser): Promise<IUser | number> {
     const response = await fetch(this.users, {
       method: 'POST',
       body: JSON.stringify(user),
@@ -58,8 +58,9 @@ class Api {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-    });
-    return (await response.json()) as IUser;
+    }).catch();
+    // return response.status !== 200 ? response.status : { ...(await response.json()) as IUser };
+    return response.status;
   }
 
   async updateUser(
@@ -91,41 +92,42 @@ class Api {
     return `${response.status}: ${response.statusText}`;
   }
 
-  async getUserToken(id: string): Promise<IAuth> {
-    const rtoken = localStorage.getItem('refreshToken');
+  async getUserToken(rToken: string, id: string): Promise<IAuth> {
     const response = await fetch(`${this.users}/${id}/tokens`, {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${rtoken}`,
+        Authorization: `Bearer ${rToken}`,
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
     });
     const result = (await response.json()) as IAuth;
-    const { token, refreshToken } = result;
+    const { userId, token, refreshToken } = result;
     localStorage.setItem('token', token);
     localStorage.setItem('refreshToken', refreshToken);
+    localStorage.setItem('RSLang_Auth', JSON.stringify({ userId, token, refreshToken }));
     return result;
   }
 
-  async loginUser(body: { email: string; password: string }): Promise<IAuth> {
+  async loginUser(body: { email: string; password: string }): Promise<IAuth | number> {
+    let result: IAuth;
     const response = await fetch(this.signin, {
       method: 'POST',
       body: JSON.stringify(body),
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-    });
-    // return (await response.json()) as ILogin;
-
-    const result = (await response.json()) as IAuth;
-    const { userId, token, refreshToken } = result;
-    localStorage.setItem('id', userId);
-    localStorage.setItem('token', token);
-    localStorage.setItem('refreshToken', refreshToken);
-
-    return result;
+    }).catch();
+    if (response.status === 200) {
+      result = await response.json();
+      const { userId, token, refreshToken } = result;
+      localStorage.setItem('userId', userId);
+      localStorage.setItem('token', token);
+      localStorage.setItem('refreshToken', refreshToken);
+      localStorage.setItem('RSLang_Auth', JSON.stringify({ userId, token, refreshToken }));
+    }
+    return response.status;
   }
 
-  async getUserWords(id: string): Promise<IUserWord[] | string> {
+  async getUserWords(id: string): Promise<IUserWord[]> {
     const token = localStorage.getItem('token');
     const response = await fetch(`${this.users}/${id}/words`, {
       method: 'GET',
@@ -135,11 +137,16 @@ class Api {
         'Content-Type': 'application/json',
       },
     });
-    return (await response.json()) as IUserWord[] | string;
+    const userWords: IUserWord[] = await response.json();
+    return userWords;
   }
 
-  async createUserWord(userId: string, wordId: string, word?: IUserWord): Promise<IUserWord> {
-    const token = localStorage.getItem('token');
+  async createUserWord(
+    token: string,
+    userId: string,
+    wordId: string,
+    word?: IUserWord,
+  ): Promise<IUserWord> {
     const response = await fetch(`${this.users}/${userId}/words/${wordId}`, {
       method: 'POST',
       headers: {
@@ -152,8 +159,7 @@ class Api {
     return (await response.json()) as IUserWord;
   }
 
-  async getUserWord(userId: string, wordId: string): Promise<IUserWord> {
-    const token = localStorage.getItem('token');
+  async getUserWord(token: string, userId: string, wordId: string): Promise<IUserWord> {
     const response = await fetch(`${this.users}/${userId}/words/${wordId}`, {
       method: 'GET',
       headers: {
@@ -164,8 +170,12 @@ class Api {
     return (await response.json()) as IUserWord;
   }
 
-  async updateUserWord(userId: string, wordId: string, word?: IUserWord): Promise<IUserWord> {
-    const token = localStorage.getItem('token');
+  async updateUserWord(
+    token: string,
+    userId: string,
+    wordId: string,
+    word?: IUserWord,
+  ): Promise<IUserWord> {
     const response = await fetch(`${this.users}/${userId}/words/${wordId}`, {
       method: 'PUT',
       headers: {
@@ -178,8 +188,7 @@ class Api {
     return (await response.json()) as IUserWord;
   }
 
-  async deleteUserWord(userId: string, wordId: string): Promise<string> {
-    const token = localStorage.getItem('token');
+  async deleteUserWord(token: string, userId: string, wordId: string): Promise<string> {
     const response = await fetch(`${this.users}/${userId}/words/${wordId}`, {
       method: 'DELETE',
       headers: {
@@ -192,13 +201,13 @@ class Api {
   }
 
   async getUserAggregatedWords(
+    token: string,
     userId: string,
     group: string,
     page: string,
     wordsPerPage: string,
     filter: string,
   ): Promise<IWord[]> {
-    const token = localStorage.getItem('token');
     const response = await fetch(`${this.users}/${userId}/AggregatedWords?group=${group}&page=${page}&wordsPerPage=${wordsPerPage}&filter=${filter}`, {
       method: 'GET',
       headers: {
@@ -210,8 +219,7 @@ class Api {
     return (await response.json()) as IWord[];
   }
 
-  async getUserAggregatedWord(userId: string, wordId: string): Promise<IWord> {
-    const token = localStorage.getItem('token');
+  async getUserAggregatedWord(token: string, userId: string, wordId: string): Promise<IWord> {
     const response = await fetch(`${this.users}/${userId}/AggregatedWords/${wordId}`, {
       method: 'GET',
       headers: {
@@ -223,8 +231,7 @@ class Api {
     return (await response.json()) as IWord;
   }
 
-  async getUserStatistics(userId: string): Promise<IUserStatistics> {
-    const token = localStorage.getItem('token');
+  async getUserStatistics(token: string, userId: string): Promise<IUserStatistics> {
     const response = await fetch(`${this.users}/${userId}/statistics`, {
       method: 'GET',
       headers: {
@@ -236,8 +243,11 @@ class Api {
     return (await response.json()) as IUserStatistics;
   }
 
-  async updateUserStatistics(userId: string, body: IUserStatistics): Promise<IUserStatistics> {
-    const token = localStorage.getItem('token');
+  async updateUserStatistics(
+    token: string,
+    userId: string,
+    body: IUserStatistics,
+  ): Promise<IUserStatistics> {
     const response = await fetch(`${this.users}/${userId}/statistics`, {
       method: 'PUT',
       headers: {
@@ -250,8 +260,7 @@ class Api {
     return (await response.json()) as IUserStatistics;
   }
 
-  async getUserSettings(userId: string): Promise<IUserSettings> {
-    const token = localStorage.getItem('token');
+  async getUserSettings(token: string, userId: string): Promise<IUserSettings> {
     const response = await fetch(`${this.users}/${userId}/settings`, {
       method: 'GET',
       headers: {
@@ -263,8 +272,11 @@ class Api {
     return (await response.json()) as IUserSettings;
   }
 
-  async updateUserSettings(userId: string, body: IUserSettings): Promise<IUserSettings> {
-    const token = localStorage.getItem('token');
+  async updateUserSettings(
+    token: string,
+    userId: string,
+    body: IUserSettings,
+  ): Promise<IUserSettings> {
     const response = await fetch(`${this.users}/${userId}/settings`, {
       method: 'PUT',
       headers: {
@@ -277,5 +289,4 @@ class Api {
     return (await response.json()) as IUserSettings;
   }
 }
-
 export default Api;

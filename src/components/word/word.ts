@@ -2,81 +2,142 @@
 import Api from '../api/api';
 import { IWord, IWordApp, IUserWord } from '../interfaces';
 import create from '../utils/createElement';
+import { getLocalStorage } from '../utils/LocalStorage';
 import './word.scss';
 
 class Word implements IWordApp {
   word: IWord;
 
-  api: Api;
-
   constructor(word: IWord) {
     this.word = word;
-    this.api = Api.getInstance();
   }
 
-  addHandlers() {
-    const dictionaryWords = <HTMLElement>document.getElementById('dictionaryWords');
-    dictionaryWords.addEventListener('click', (e:Event) => this.defineTarget(e));
+  addHandlers(word: HTMLElement) {
+    word.addEventListener('click', (e) => this.defineTarget(e));
   }
 
   defineTarget(event:Event) {
     const element = <HTMLElement>event.target;
-    if (element.closest('.word')) {
-      const word = <HTMLElement>element.closest('.word');
-      if (element.classList.contains('word__audio')) this.listenWord(word.id);
-    // if (element.classList.contains('word__hard')) this.addToHardWord(word.id);
-      // if (element.classList.contains('word__hard')) this.addToHardWord(word.id);
+    if (element.classList.contains('word__audio')) this.listenWord();
+    if (element.classList.contains('word__hard')) this.addToHardWord();
+    // if (element.classList.contains('word__hard')) this.addToHardWord();
+    // }
+  }
+
+  listenWord() {
+    console.log(this.word.id);
+  }
+
+  async addToHardWord() {
+    const api = Api.getInstance();
+    const token = localStorage.getItem('token');
+    const { userId } : { userId: string } = getLocalStorage('RSLang_Auth'); // TODO error no auth
+    // const optional: { wordID: string } = { wordID: this.word.id };
+    const word: IUserWord = { difficulty: 'hard' };
+    if (token) {
+      api.createUserWord(token, userId, this.word.id, word);
     }
   }
 
-  listenWord(wordId:string) {
-    console.log(wordId);
-  }
+  checkWord() {
 
- /* addToHardWord(wordId:string) {
-    const userId = '1111';
-    const word: IUserWord = { difficulty: true, wordId: wordId};
-    this.api.createUserWord();
   }
-  */
 
   draw() {
     const dictionary = <HTMLElement>document.getElementById('dictionaryWords');
     const wordInDictionary = create({
-      tagname: 'div', class: 'word', parent: dictionary, id: `${this.word.id}`,
+      tagname: 'div',
+      class: 'word',
+      parent: dictionary,
+      id: `${this.word.id}`,
     });
-    const wordImage = <HTMLElement>create({ tagname: 'div', class: 'word__image', parent: wordInDictionary });
+    const wordImage = <HTMLElement>create({
+      tagname: 'div',
+      class: 'word__image',
+      parent: wordInDictionary,
+    });
     wordImage.style.backgroundImage = `url(http://127.0.0.1:3000/${this.word.image})`; // TODO change url after deploy backend
     const wordDescription = create({
-      tagname: 'div', class: 'word__description', parent: wordInDictionary,
+      tagname: 'div',
+      class: 'word__description',
+      parent: wordInDictionary,
     });
-    const wordHeader = create({ tagname: 'div', class: 'word__header', parent: wordDescription });
-    const wordItem = create({ tagname: 'div', class: 'word__item', parent: wordHeader });
-    create({
-      tagname: 'div', class: 'word__name', parent: wordItem, text: `${this.word.word}`,
+    const wordHeader = create({
+      tagname: 'div',
+      class: 'word__header',
+      parent: wordDescription,
     });
-    create({
-      tagname: 'div', class: 'word__transcription', parent: wordItem, text: `${this.word.transcription}`,
-    });
-    create({ tagname: 'div', class: 'word__audio', parent: wordItem });
-    const wordMarks = create({ tagname: 'div', class: 'word__marks', parent: wordHeader });
-    create({ tagname: 'div', class: 'word__hard', parent: wordMarks });
-    create({ tagname: 'div', class: 'word__learned', parent: wordMarks });
-    create({
-      tagname: 'div', class: 'word__translate', parent: wordDescription, text: `${this.word.wordTranslate}`,
-    });
-    const wordText = create({ tagname: 'div', class: 'word__text', parent: wordDescription });
-    create({
-      tagname: 'div', class: 'word__meaning', parent: wordText, text: `${this.word.textMeaning}`,
+    const wordItem = create({
+      tagname: 'div',
+      class: 'word__item',
+      parent: wordHeader,
     });
     create({
-      tagname: 'div', class: 'word__meaning_translate', parent: wordText, text: `${this.word.textMeaningTranslate}`,
+      tagname: 'div',
+      class: 'word__name',
+      parent: wordItem,
+      text: `${this.word.word}`,
     });
     create({
-      tagname: 'div', class: 'word__example', parent: wordText, text: `${this.word.textExample}`,
+      tagname: 'div',
+      class: 'word__transcription',
+      parent: wordItem,
+      text: `${this.word.transcription}`,
     });
     create({
-      tagname: 'div', class: 'word__example_translate', parent: wordText, text: `${this.word.textExampleTranslate}`,
+      tagname: 'div',
+      class: 'word__audio',
+      parent: wordItem,
+    });
+    const wordMarks = create({
+      tagname: 'div',
+      class: 'word__marks',
+      parent: wordHeader,
+    });
+    create({
+      tagname: 'div',
+      class: 'word__hard',
+      parent: wordMarks,
+    });
+    create({
+      tagname: 'div',
+      class: 'word__learned',
+      parent: wordMarks,
+    });
+    create({
+      tagname: 'div',
+      class: 'word__translate',
+      parent: wordDescription,
+      text: `${this.word.wordTranslate}`,
+    });
+    const wordText = create({
+      tagname: 'div',
+      class: 'word__text',
+      parent: wordDescription,
+    });
+    create({
+      tagname: 'div',
+      class: 'word__meaning',
+      parent: wordText,
+      text: `${this.word.textMeaning}`,
+    });
+    create({
+      tagname: 'div',
+      class: 'word__meaning_translate',
+      parent: wordText,
+      text: `${this.word.textMeaningTranslate}`,
+    });
+    create({
+      tagname: 'div',
+      class: 'word__example',
+      parent: wordText,
+      text: `${this.word.textExample}`,
+    });
+    create({
+      tagname: 'div',
+      class: 'word__example_translate',
+      parent: wordText,
+      text: `${this.word.textExampleTranslate}`,
     });
     // TODO Check user login (need separate method)
     const wordProgress = create({ tagname: 'div', class: 'word__progress', parent: wordDescription });
@@ -92,7 +153,7 @@ class Word implements IWordApp {
     create({
       tagname: 'div', class: 'word__sprint_score', parent: wordAudio, text: '17/40',
     });
-    this.addHandlers();
+    this.addHandlers(wordInDictionary);
   }
 }
 export default Word;

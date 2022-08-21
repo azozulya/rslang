@@ -7,7 +7,7 @@ import './dictionary.scss';
 import './pagination.scss';
 import { getLocalStorage, setLocalStorage } from '../utils/LocalStorage';
 
-class Dictionary {
+class DictionaryView {
   api: Api;
 
   words: Array<IWordApp>;
@@ -35,7 +35,10 @@ class Dictionary {
     this.drawWords();
   }
 
-  async updateWords(event:Event, callback: (group: number, page: number) => Promise<IWord[]>) {
+  async updateWords(
+    event: Event,
+    callback: (group: number, page: number) => Promise<IWord[]>,
+  ) {
     this.changeWordsGroup(event);
     this.activeGroupBtn();
     const words = await this.requestWords(callback);
@@ -44,11 +47,39 @@ class Dictionary {
   }
 
   addHandlers(callback: (group: number, page: number) => Promise<IWord[]>) {
-    const dictionaryGroups = <HTMLElement>document.getElementById('dictionaryGroups');
-    dictionaryGroups.addEventListener('click', (e:Event) => this.updateWords(e, callback));
+    const dictionaryGroups = <HTMLElement>(
+      document.getElementById('dictionaryGroups')
+    );
+    dictionaryGroups.addEventListener('click', (e: Event) => this.updateWords(e, callback));
+
+    const dictionaryHardWords = <HTMLElement>(
+      document.getElementById('dictionaryHardWords')
+    );
+    dictionaryHardWords.addEventListener('click', this.showHardWords.bind(this));
   }
 
-  changeWordsGroup(event:Event) {
+  async showHardWords() {
+    const words = await this.getHardWords();
+    this.makeWords(words);
+    this.drawWords();
+  }
+
+  async getHardWords() {
+    const words: Promise<IWord>[] = [];
+    const { userId } : { userId: string } = getLocalStorage('RSLang_Auth'); // TODO error no auth
+    const hardWords = await this.api.getUserWords(userId);
+    // eslint-disable-next-line no-restricted-syntax
+    for (const userHardWord of hardWords) {
+      const { wordId } = userHardWord;
+      if (wordId) {
+        const wordInDictionary = this.api.getWord(wordId);
+        words.push(wordInDictionary);
+      }
+    }
+    return Promise.all(words);
+  }
+
+  changeWordsGroup(event: Event) {
     const dictionaryGroup = <HTMLElement>event.target;
     if (dictionaryGroup.classList.contains('dictionary__groups_item')) {
       this.group = Number(dictionaryGroup.id[0]);
@@ -61,7 +92,9 @@ class Dictionary {
     setLocalStorage('wordsGroupAndPage', groupAngPage);
   }
 
-  async requestWords(callback: (group: number, page: number) => Promise<IWord[]>) {
+  async requestWords(
+    callback: (group: number, page: number) => Promise<IWord[]>,
+  ) {
     let page: number;
     let group: number;
     const groupAndPage: { page: number; group: number } = getLocalStorage('wordsGroupAndPage');
@@ -78,21 +111,24 @@ class Dictionary {
 
   makeWords(words: Array<IWord>) {
     this.words = [];
+    console.log('3makeWords', words);
     words.forEach((word) => {
+      console.log('3.2word forEach', word);
       const wordInDictionary = new Word(word);
+      console.log('3.5wordInDictionary', wordInDictionary);
       this.words.push(wordInDictionary);
     });
+    console.log('4 makingwords', this.words);
   }
 
   drawWords() {
+    console.log('5draw', this.words);
     const dictionary = <HTMLElement>document.getElementById('dictionaryWords');
     if (dictionary) {
       while (dictionary.firstChild) {
         dictionary.removeChild(dictionary.firstChild);
       }
     }
-
-    console.log(this.words);
     this.words.forEach((wordInDictionary) => {
       wordInDictionary.draw();
     });
@@ -105,52 +141,111 @@ class Dictionary {
         button.classList.remove('dictionary__groups_item_active');
       }
       if (this.group === Number(button.id[0])) {
-        (button.classList.add('dictionary__groups_item_active'));
+        button.classList.add('dictionary__groups_item_active');
       }
     });
     console.log(groupBtns);
   }
 
+  // eslint-disable-next-line max-lines-per-function
   draw() {
-    const dictionary = create({ tagname: 'div', class: 'dictionary', parent: document.body });
+    const container = create({
+      tagname: 'div',
+      class: 'container',
+    });
+    const dictionary = create({
+      tagname: 'div',
+      class: 'dictionary',
+      parent: container,
+    });
     create({
-      tagname: 'h2', class: 'dictionary__title', parent: dictionary, text: 'Изучай новые слова',
+      tagname: 'h2',
+      class: 'dictionary__title',
+      parent: dictionary,
+      text: 'Изучай новые слова',
     });
     const dictionaryGroups = create({
-      tagname: 'div', class: 'dictionary__groups', id: 'dictionaryGroups', parent: dictionary,
+      tagname: 'div',
+      class: 'dictionary__groups',
+      parent: dictionary,
     });
-    const dictionaryGroupsList = create({ tagname: 'ul', class: 'dictionary__groups_list', parent: dictionaryGroups });
+    const dictionaryGroupsList = create({
+      tagname: 'ul',
+      class: 'dictionary__groups_list',
+      id: 'dictionaryGroups',
+      parent: dictionaryGroups,
+    });
     for (let i = 0; i <= this.COUNT_OF_LEVELS; i += 1) {
       create({
-        tagname: 'li', class: 'dictionary__groups_item', id: `${i}group`, parent: dictionaryGroupsList, text: `${i + 1} уровень`,
+        tagname: 'li',
+        class: 'dictionary__groups_item',
+        id: `${i}group`,
+        parent: dictionaryGroupsList,
+        text: `${i + 1} уровень`,
       });
     }
     const dictionaryExtentions = create({
-      tagname: 'div', class: 'dictionary__extentions', parent: dictionaryGroups,
+      tagname: 'div',
+      class: 'dictionary__extentions',
+      parent: dictionaryGroups,
     });
     create({
-      tagname: 'div', class: 'dictionary__hardwords', id: 'dictionaryHardWords', parent: dictionaryExtentions, text: 'Мои слова',
+      tagname: 'div',
+      class: 'dictionary__hardwords',
+      id: 'dictionaryHardWords',
+      parent: dictionaryExtentions,
+      text: 'Мои слова',
     });
     const dictionaryGames = create({
-      tagname: 'div', class: 'dictionary__games', parent: dictionaryExtentions,
+      tagname: 'div',
+      class: 'dictionary__games',
+      parent: dictionaryExtentions,
     });
     create({
-      tagname: 'div', class: 'dictionary__sprint', id: 'dictionarySprint', parent: dictionaryGames, text: 'Спринт',
+      tagname: 'div',
+      class: 'dictionary__sprint',
+      id: 'dictionarySprint',
+      parent: dictionaryGames,
+      text: 'Спринт',
     });
     create({
-      tagname: 'div', class: 'dictionary__audio', id: 'dictionaryAudio', parent: dictionaryGames, text: 'Аудиовызов',
+      tagname: 'div',
+      class: 'dictionary__audio',
+      id: 'dictionaryAudio',
+      parent: dictionaryGames,
+      text: 'Аудиовызов',
     });
     create({
-      tagname: 'div', class: 'dictionary__words', id: 'dictionaryWords', parent: dictionary,
+      tagname: 'div',
+      class: 'dictionary__words',
+      id: 'dictionaryWords',
+      parent: dictionary,
     });
-    const dictionaryPagination = create({ tagname: 'div', class: 'dictionary__pagination', parent: dictionary });
-    create({ tagname: 'div', class: 'dictionary__pagination_prev', parent: dictionaryPagination });
+    const dictionaryPagination = create({
+      tagname: 'div',
+      class: 'dictionary__pagination',
+      parent: dictionary,
+    });
     create({
-      tagname: 'div', class: 'dictionary__pagination_cur', id: 'dictionaryPage', parent: dictionaryPagination, text: '1',
+      tagname: 'div',
+      class: 'dictionary__pagination_prev',
+      parent: dictionaryPagination,
     });
-    create({ tagname: 'div', class: 'dictionary__pagination_next', parent: dictionaryPagination });
+    create({
+      tagname: 'div',
+      class: 'dictionary__pagination_cur',
+      id: 'dictionaryPage',
+      parent: dictionaryPagination,
+      text: '1',
+    });
+    create({
+      tagname: 'div',
+      class: 'dictionary__pagination_next',
+      parent: dictionaryPagination,
+    });
 
     this.drawWords();
+    return container;
   }
 }
-export default Dictionary;
+export default DictionaryView;

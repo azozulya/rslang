@@ -1,5 +1,5 @@
-import App from './components/App/app';
-import './assets/scss/pages/main/index.scss';
+import App from './components/App';
+import './assets/scss/index.scss';
 
 const app = new App();
 app.start();
