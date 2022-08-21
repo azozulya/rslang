@@ -13,7 +13,7 @@ header {
     background-color: $bg-header-color;
     padding-top: 1.3rem;
     padding-bottom: 1.3rem;
-    box-shadow: -0.5rem 0.3rem 0.5rem $bg-header-color;
+    box-shadow: 0 0.1rem 0.5rem $bg-header-color;
     border-bottom-left-radius: 1rem;
   }
   &__right-block {
@@ -28,8 +28,12 @@ header {
   font-size: 2rem;
   line-height: 2.3rem;
   text-decoration: none;
-
+  white-space: nowrap;
   color: $logo-color;
+
+  @include phone {
+    font-size: 1.5rem;
+  }
 
   &::before {
     content: '';
@@ -37,19 +41,30 @@ header {
     height: 3.2rem;
     position: absolute;
     left: 0;
-    // background-image: url(../../img/logo.svg);
+    background-image: url(../img/logo.svg);
+
+    @include phone {
+      background-size: 2rem;
+      width: 2rem;
+      height: 2.2rem;
+    }
   }
 }
 
 h1 {
   position: relative;
+  z-index: 3;
   line-height: 3.2rem;
   margin: 0;
   padding: 0 0 0 4rem;
+
+  @include phone {
+    padding-left: 2.4rem;
+    line-height: 2rem;
+  }
 }
 
 .auth {
-  border: solid 1px red;
   display: flex;
   justify-content: flex-end;
   position: relative;
@@ -65,6 +80,15 @@ h1 {
     background: $primary-light;
     border-radius: 2rem;
     transform: rotate(-11deg);
+
+    @include tablet {
+      right: -11rem;
+    }
+
+    @include tablet-phone {
+      right: -13rem;
+      top: -12rem;
+    }
   }
 
   &__btn {

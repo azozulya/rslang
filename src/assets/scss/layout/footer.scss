@@ -30,13 +30,18 @@ footer {
     }
   }
   &__container {
-    padding-bottom: 3rem;
+    padding-bottom: 4rem;
     display: flex;
     justify-content: flex-start;
     align-items: flex-start;
     gap: 10%;
     z-index: 2;
     position: relative;
+
+    @include phone {
+      padding-bottom: 1rem;
+      flex-direction: column;
+    }
   }
 
   &__leaves {
@@ -45,6 +50,10 @@ footer {
     position: absolute;
     bottom: 0;
     left: 0;
+
+    @include phone {
+      display: none;
+    }
   }
 
   &__plant {
@@ -59,12 +68,20 @@ footer {
     display: flex;
     flex-direction: column;
 
+    @include phone {
+      flex-direction: row;
+    }
+
     &--link {
       font-size: 0.8rem;
       line-height: 1.3rem;
       color: $text-secondary;
       text-decoration: none;
       margin-bottom: 1rem;
+
+      @include phone {
+        margin-right: 1rem;
+      }
 
       &:hover {
         color: $text-primary;
