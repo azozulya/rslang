@@ -93,10 +93,7 @@ export class Api {
       },
     });
     const result = (await response.json()) as IAuth;
-    const { userId, token, refreshToken } = result;
-    localStorage.setItem('token', token);
-    localStorage.setItem('refreshToken', refreshToken);
-    localStorage.setItem('RSLang_Auth', JSON.stringify({ userId, token, refreshToken }));
+    localStorage.setItem('RSLang_Auth', JSON.stringify(result));
     return result;
   }
 
@@ -109,11 +106,7 @@ export class Api {
     }).catch();
     if (response.status === 200) {
       result = await response.json();
-      const { userId, token, refreshToken } = result;
-      localStorage.setItem('userId', userId);
-      localStorage.setItem('token', token);
-      localStorage.setItem('refreshToken', refreshToken);
-      localStorage.setItem('RSLang_Auth', JSON.stringify({ userId, token, refreshToken }));
+      localStorage.setItem('RSLang_Auth', JSON.stringify(result));
     }
     return response.status;
   }
