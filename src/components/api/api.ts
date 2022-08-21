@@ -107,6 +107,7 @@ export class Api {
     if (response.status === 200) {
       result = await response.json();
       localStorage.setItem('RSLang_Auth', JSON.stringify(result));
+      localStorage.setItem('Authenticated', JSON.stringify(true));
     }
     return response.status;
   }
