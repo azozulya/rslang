@@ -4,8 +4,8 @@ import { IWord, IWordApp } from '../interfaces';
 import Word from '../word/word';
 import create from '../utils/createElement';
 import './dictionary.scss';
-import './pagination.scss';
 import { getLocalStorage, setLocalStorage } from '../utils/LocalStorage';
+import Pagination from './pagination';
 
 class DictionaryView {
   api: Api;
@@ -18,6 +18,18 @@ class DictionaryView {
 
   group: number;
 
+  private pagination: Pagination | undefined;
+
+  private paginationContainer: HTMLElement | undefined;
+
+  private WORDS_PER_PAGE = 20;
+
+  private TOTAL_WORDS = 600;
+
+  private getWordsHandler:
+  | ((group: number, page: number) => Promise<IWord[]>)
+  | undefined;
+
   constructor() {
     this.api = Api.getInstance();
     this.words = [];
@@ -27,12 +39,48 @@ class DictionaryView {
   }
 
   async init(callback: (group: number, page: number) => Promise<IWord[]>) {
-    const words = await this.requestWords(callback);
-    this.draw();
+    this.getWordsHandler = callback;
+
+    const words = await this.requestWords();
+
+    // this.draw();
     this.activeGroupBtn();
     this.addHandlers(callback);
-    await this.makeWords(words);
+
+    if (words) await this.makeWords(words);
+
     this.drawWords();
+    this.drawPagination();
+  }
+
+  private drawPagination() {
+    this.pagination = new Pagination(
+      this.TOTAL_WORDS,
+      this.WORDS_PER_PAGE,
+      this.page + 1,
+      this.goToPage,
+    );
+
+    if (this.paginationContainer) {
+      this.paginationContainer.innerText = '';
+      this.paginationContainer?.append(this.pagination.draw());
+    }
+  }
+
+  goToPage = async (page: number) => {
+    this.page = page - 1;
+    console.log('page click: ', page);
+    await this.updateWordsList();
+  };
+
+  private async updateWordsList() {
+    const words = await this.requestWords();
+
+    if (!words) return;
+
+    this.makeWords(words);
+    this.drawWords();
+    this.drawPagination();
   }
 
   async updateWords(
@@ -41,9 +89,8 @@ class DictionaryView {
   ) {
     this.changeWordsGroup(event);
     this.activeGroupBtn();
-    const words = await this.requestWords(callback);
-    await this.makeWords(words);
-    this.drawWords();
+
+    this.updateWordsList();
   }
 
   addHandlers(callback: (group: number, page: number) => Promise<IWord[]>) {
@@ -92,20 +139,14 @@ class DictionaryView {
     setLocalStorage('wordsGroupAndPage', groupAngPage);
   }
 
-  async requestWords(
-    callback: (group: number, page: number) => Promise<IWord[]>,
-  ) {
-    let page: number;
-    let group: number;
+  async requestWords() {
     const groupAndPage: { page: number; group: number } = getLocalStorage('wordsGroupAndPage');
-    if (groupAndPage) {
-      page = groupAndPage.page;
-      group = groupAndPage.group;
-    } else {
-      page = this.page;
-      group = this.group;
-    }
-    const words = await callback(group, page);
+
+    const page = groupAndPage.page || this.page;
+    const group = groupAndPage.group || this.group;
+
+    const words = await this.getWordsHandler?.(group, page);
+
     return words;
   }
 
@@ -153,28 +194,33 @@ class DictionaryView {
       tagname: 'div',
       class: 'container',
     });
+
     const dictionary = create({
       tagname: 'div',
       class: 'dictionary',
       parent: container,
     });
+
     create({
       tagname: 'h2',
       class: 'dictionary__title',
       parent: dictionary,
       text: 'Изучай новые слова',
     });
+
     const dictionaryGroups = create({
       tagname: 'div',
       class: 'dictionary__groups',
       parent: dictionary,
     });
+
     const dictionaryGroupsList = create({
       tagname: 'ul',
       class: 'dictionary__groups_list',
       id: 'dictionaryGroups',
       parent: dictionaryGroups,
     });
+
     for (let i = 0; i <= this.COUNT_OF_LEVELS; i += 1) {
       create({
         tagname: 'li',
@@ -215,36 +261,42 @@ class DictionaryView {
       parent: dictionaryGames,
       text: 'Аудиовызов',
     });
+
     create({
       tagname: 'div',
       class: 'dictionary__words',
       id: 'dictionaryWords',
       parent: dictionary,
     });
-    const dictionaryPagination = create({
+
+    this.paginationContainer = create({
       tagname: 'div',
       class: 'dictionary__pagination',
       parent: dictionary,
     });
-    create({
-      tagname: 'div',
-      class: 'dictionary__pagination_prev',
-      parent: dictionaryPagination,
-    });
-    create({
-      tagname: 'div',
-      class: 'dictionary__pagination_cur',
-      id: 'dictionaryPage',
-      parent: dictionaryPagination,
-      text: '1',
-    });
-    create({
-      tagname: 'div',
-      class: 'dictionary__pagination_next',
-      parent: dictionaryPagination,
-    });
+
+    // create({
+    //   tagname: 'div',
+    //   class: 'dictionary__pagination_prev',
+    //   parent: dictionaryPagination,
+    // });
+
+    // create({
+    //   tagname: 'div',
+    //   class: 'dictionary__pagination_cur',
+    //   id: 'dictionaryPage',
+    //   parent: dictionaryPagination,
+    //   text: '1',
+    // });
+
+    // create({
+    //   tagname: 'div',
+    //   class: 'dictionary__pagination_next',
+    //   parent: dictionaryPagination,
+    // });
 
     this.drawWords();
+
     return container;
   }
 }

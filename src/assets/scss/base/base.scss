@@ -13,15 +13,16 @@ html {
 body {
   line-height: $line-height;
   color: $text-primary;
-  background-color: $bg-page-color;
+  background-color: $light-color;
   height: 100%;
+  min-width: $min-width;
 }
 
 h2 {
   font-style: normal;
   font-weight: 700;
-  font-size: 48px;
-  line-height: 56px;
+  font-size: 2.7rem;
+  line-height: 3.1rem;
   color: $text-primary;
   margin-top: 0;
   position: relative;
@@ -31,6 +32,11 @@ h2 {
   background-position: 0 100%;
   background-size: 40% 20px;
   background-repeat: no-repeat;
+
+  @include media(610px) {
+    font-size: 2.3rem;
+    line-height: 2.5rem;
+  }
 }
 
 h3 {
@@ -49,8 +55,12 @@ h3 {
 h4 {
   font-weight: 700;
   text-transform: uppercase;
-  color: $h4-color;
+  color: $primary-dark;
   margin-top: 0;
+
+  @include phone {
+    margin-bottom: 0.2rem;
+  }
 }
 
 .inner-page {
@@ -61,12 +71,16 @@ h4 {
   max-width: 1215px;
   width: 100%;
   margin: 0 auto;
+  padding: 0 2em;
 
   @include desktop {
     padding: 0 2em;
   }
   @include tablet {
     padding: 0 2em;
+  }
+  @include phone {
+    padding: 0 1rem;
   }
 }
 
@@ -93,17 +107,24 @@ h4 {
   padding: 0.5rem 1.2rem 0.3rem;
 
   &--orange {
-    @include button($auth-btn-color, $auth-btn-second-color);
+    @include button($secondary-main, $light-color);
   }
 
   &--blue {
-    @include button(#00bcd4, $auth-btn-second-color);
-    font-size: 1.5rem;
-    padding: 1.2rem 1.5rem;
+    @include button(#00bcd4, $light-color);
+
+    @include media($min-width: 611px) {
+      font-size: 1.5rem;
+      padding: 1.2rem 1.5rem;
+    }
+
+    @include media(610px) {
+      font-size: 1.2rem;
+      padding: 1rem 1.2rem;
+    }
   }
 }
 
 .noscroll {
   overflow: hidden;
-  padding-right: 0.91rem;
 }

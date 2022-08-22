@@ -1,5 +1,7 @@
 .team {
-  margin-bottom: 2rem;
+  @include media($min-width: 621px) {
+    margin-bottom: 2rem;
+  }
 
   &__container {
     display: flex;
@@ -11,11 +13,24 @@
     padding: 0;
     margin: 0;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    max-width: 40rem;
+    width: 100%;
+
+    @include media(620px) {
+      justify-content: center;
+    }
   }
   &__item {
-    margin: 0 3rem;
+    @include media($min-width: 621px) {
+      margin: 0 1rem;
+    }
+
+    @include media(620px) {
+      margin: 0 2rem 3rem;
+    }
 
     &--photo {
       border-bottom-left-radius: 0.5rem;

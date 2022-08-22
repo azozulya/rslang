@@ -9,16 +9,17 @@ class Main {
     <section class="hero">
       <div class="container hero__container">
         <div class="hero__content">
-          <h2>Aнглийский <br>с RS Lang</h2>
+          <h2>Aнглийский с&nbsp;RS&nbsp;Lang</h2>
           <div class="hero__text">Игровое приложение для&nbsp;эффективного изучения иностранных&nbsp;слов</div>
-          <button class="btn btn--blue">Начать</button>
+          <button class="btn btn--blue" data-page="dictionary">Начать</button>
         </div>
-        <div class="hero__img">
+        <picture class="hero__img">
+          <source srcset="./assets/img/hero_tablet.png" media="(max-width: 900px)">
           <img src="./assets/img/hero.png" alt="" class="hero__img--img">
+        </picture>
         </div>
-      </div>
-    </section>
-  `;
+        </section>
+        `;
 
   addFeatureSection = () => `<section class="feature">
       <div class="container feature__container">

@@ -1,4 +1,3 @@
-class DictionaryModel {
-}
+class DictionaryModel {}
 
 export default DictionaryModel;
