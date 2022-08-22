@@ -29,7 +29,7 @@ class Api {
 
   async getWords(group: number, page: number): Promise<IWord[]> {
     const response = await fetch(`${this.words}?group=${group}&page=${page}`);
-    const words: IWord [] = await response.json();
+    const words: IWord[] = await response.json();
     return words;
   }
 
@@ -121,9 +121,10 @@ class Api {
     return response.status;
   }
 
-  async getUserWords(id: string): Promise<IUserWord[]> {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${this.users}/${id}/words`, {
+  async getUserWords(): Promise<IUserWord[]> {
+    const userId = this.getUserId();
+    const token = this.getToken();
+    const response = await fetch(`${this.users}/${userId}/words`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -136,11 +137,11 @@ class Api {
   }
 
   async createUserWord(
-    token: string,
-    userId: string,
     wordId: string,
     word?: IUserWord,
   ): Promise<IUserWord> {
+    const userId = this.getUserId();
+    const token = this.getToken();
     const response = await fetch(`${this.users}/${userId}/words/${wordId}`, {
       method: 'POST',
       headers: {
@@ -195,13 +196,13 @@ class Api {
   }
 
   async getUserAggregatedWords(
-    token: string,
-    userId: string,
     group: string,
     page: string,
     wordsPerPage: string,
     filter: string,
   ): Promise<IWord[]> {
+    const userId = this.getUserId();
+    const token = this.getToken();
     const response = await fetch(`${this.users}/${userId}/AggregatedWords?group=${group}&page=${page}&wordsPerPage=${wordsPerPage}&filter=${filter}`, {
       method: 'GET',
       headers: {
@@ -281,6 +282,18 @@ class Api {
       body: JSON.stringify(body),
     });
     return (await response.json()) as IUserSettings;
+  }
+
+  getUserId() {
+    return JSON.parse(<string>localStorage.getItem('RSLang_Auth')).userId;
+  }
+
+  getToken() {
+    return JSON.parse(<string>localStorage.getItem('RSLang_Auth')).token;
+  }
+
+  getRefreshToken() {
+    return JSON.parse(<string>localStorage.getItem('RSLang_Auth')).refreshToken;
   }
 }
 export default Api;
