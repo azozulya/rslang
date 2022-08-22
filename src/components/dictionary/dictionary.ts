@@ -1,3 +1,5 @@
+/* eslint-disable max-lines-per-function */
+import Api from '../api/api';
 import { IWord, IWordApp } from '../interfaces';
 import Word from '../word/word';
 import create from '../utils/createElement';
@@ -6,6 +8,8 @@ import { getLocalStorage, setLocalStorage } from '../utils/LocalStorage';
 import Pagination from './pagination';
 
 class DictionaryView {
+  api: Api;
+
   words: Array<IWordApp>;
 
   COUNT_OF_LEVELS: number;
@@ -23,14 +27,15 @@ class DictionaryView {
   private TOTAL_WORDS = 600;
 
   private getWordsHandler:
-    | ((group: number, page: number) => Promise<IWord[]>)
-    | undefined;
+  | ((group: number, page: number) => Promise<IWord[]>)
+  | undefined;
 
   constructor() {
+    this.api = Api.getInstance();
     this.words = [];
     this.COUNT_OF_LEVELS = 5;
-    this.page = 0;
-    this.group = 0;
+    this.page = 1;
+    this.group = 1;
   }
 
   async init(callback: (group: number, page: number) => Promise<IWord[]>) {
@@ -53,7 +58,7 @@ class DictionaryView {
       this.TOTAL_WORDS,
       this.WORDS_PER_PAGE,
       this.page + 1,
-      this.goToPage
+      this.goToPage,
     );
 
     if (this.paginationContainer) {
@@ -80,7 +85,7 @@ class DictionaryView {
 
   async updateWords(
     event: Event,
-    callback: (group: number, page: number) => Promise<IWord[]>
+    callback: (group: number, page: number) => Promise<IWord[]>,
   ) {
     this.changeWordsGroup(event);
     this.activeGroupBtn();
@@ -92,9 +97,33 @@ class DictionaryView {
     const dictionaryGroups = <HTMLElement>(
       document.getElementById('dictionaryGroups')
     );
-    dictionaryGroups.addEventListener('click', (e: Event) =>
-      this.updateWords(e, callback)
+    dictionaryGroups.addEventListener('click', (e: Event) => this.updateWords(e, callback));
+
+    const dictionaryHardWords = <HTMLElement>(
+      document.getElementById('dictionaryHardWords')
     );
+    dictionaryHardWords.addEventListener('click', this.showHardWords.bind(this));
+  }
+
+  async showHardWords() {
+    const words = await this.getHardWords();
+    this.makeWords(words);
+    this.drawWords();
+  }
+
+  async getHardWords() {
+    const words: Promise<IWord>[] = [];
+    const { userId } : { userId: string } = getLocalStorage('RSLang_Auth'); // TODO error no auth
+    const hardWords = await this.api.getUserWords(userId);
+    // eslint-disable-next-line no-restricted-syntax
+    for (const userHardWord of hardWords) {
+      const { wordId } = userHardWord;
+      if (wordId) {
+        const wordInDictionary = this.api.getWord(wordId);
+        words.push(wordInDictionary);
+      }
+    }
+    return Promise.all(words);
   }
 
   changeWordsGroup(event: Event) {
@@ -111,12 +140,16 @@ class DictionaryView {
   }
 
   async requestWords() {
-    const groupAndPage: { page: number; group: number } =
-      getLocalStorage('wordsGroupAndPage');
-
-    const page = groupAndPage.page || this.page;
-    const group = groupAndPage.group || this.group;
-
+    const groupAndPage: { page: number; group: number } = getLocalStorage('wordsGroupAndPage');
+    let page:number;
+    let group:number;
+    if (groupAndPage) {
+      page = groupAndPage.page || this.page;
+      group = groupAndPage.group || this.group;
+    } else {
+      page = this.page;
+      group = this.group;
+    }
     const words = await this.getWordsHandler?.(group, page);
 
     return words;
@@ -124,21 +157,24 @@ class DictionaryView {
 
   makeWords(words: Array<IWord>) {
     this.words = [];
+    console.log('3makeWords', words);
     words.forEach((word) => {
+      console.log('3.2word forEach', word);
       const wordInDictionary = new Word(word);
+      console.log('3.5wordInDictionary', wordInDictionary);
       this.words.push(wordInDictionary);
     });
+    console.log('4 makingwords', this.words);
   }
 
   drawWords() {
+    console.log('5draw', this.words);
     const dictionary = <HTMLElement>document.getElementById('dictionaryWords');
     if (dictionary) {
       while (dictionary.firstChild) {
         dictionary.removeChild(dictionary.firstChild);
       }
     }
-
-    console.log(this.words);
     this.words.forEach((wordInDictionary) => {
       wordInDictionary.draw();
     });
@@ -180,13 +216,13 @@ class DictionaryView {
     const dictionaryGroups = create({
       tagname: 'div',
       class: 'dictionary__groups',
-      id: 'dictionaryGroups',
       parent: dictionary,
     });
 
     const dictionaryGroupsList = create({
       tagname: 'ul',
       class: 'dictionary__groups_list',
+      id: 'dictionaryGroups',
       parent: dictionaryGroups,
     });
 
@@ -199,12 +235,36 @@ class DictionaryView {
         text: `${i + 1} уровень`,
       });
     }
-
+    const dictionaryExtentions = create({
+      tagname: 'div',
+      class: 'dictionary__extentions',
+      parent: dictionaryGroups,
+    });
     create({
       tagname: 'div',
       class: 'dictionary__hardwords',
-      parent: dictionaryGroups,
-      text: 'Сложные слова',
+      id: 'dictionaryHardWords',
+      parent: dictionaryExtentions,
+      text: 'Мои слова',
+    });
+    const dictionaryGames = create({
+      tagname: 'div',
+      class: 'dictionary__games',
+      parent: dictionaryExtentions,
+    });
+    create({
+      tagname: 'div',
+      class: 'dictionary__sprint',
+      id: 'dictionarySprint',
+      parent: dictionaryGames,
+      text: 'Спринт',
+    });
+    create({
+      tagname: 'div',
+      class: 'dictionary__audio',
+      id: 'dictionaryAudio',
+      parent: dictionaryGames,
+      text: 'Аудиовызов',
     });
 
     create({

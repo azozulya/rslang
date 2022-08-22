@@ -17,7 +17,7 @@ class Pagination {
     total: number,
     perPage: number,
     currentPage: number,
-    onClickHandler: (page: number) => Promise<void>
+    onClickHandler: (page: number) => Promise<void>,
   ) {
     this.total = total;
     this.perPage = perPage;
@@ -71,7 +71,7 @@ class Pagination {
       `<svg class="pagination__icon">
         <use xlink:href="../../assets/img/arrow-back.svg#arrow-back"></use>
       </svg>`,
-      currentPage === 1
+      currentPage === 1,
     );
   }
 
@@ -81,7 +81,7 @@ class Pagination {
       `<svg class="pagination__icon">
         <use xlink:href="../../assets/img/arrow-forward.svg#arrow-forward"></use>
       </svg>`,
-      currentPage === totalPages
+      currentPage === totalPages,
     );
   }
 
@@ -142,14 +142,14 @@ class Pagination {
           .forEach((_, idx) => this.drawPage(idx + 1));
         this.pagesContainer.insertAdjacentHTML(
           'beforeend',
-          '<span class="pagination__dots">...</span>'
+          '<span class="pagination__dots">...</span>',
         );
         this.drawPage(totalPages);
       } else if (this.currentPage > totalPages - 5) {
         this.drawPage(1);
         this.pagesContainer.insertAdjacentHTML(
           'beforeend',
-          '<span class="pagination__dots">...</span>'
+          '<span class="pagination__dots">...</span>',
         );
         new Array(5)
           .fill(0)

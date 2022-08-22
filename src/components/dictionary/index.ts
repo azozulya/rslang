@@ -1,14 +1,14 @@
 import DictionaryView from './dictionary';
-import LangAPI from '../api/api';
+import API from '../api/api';
 
 class Dictionary {
   private view: DictionaryView;
 
-  private api: LangAPI;
+  private api: API;
 
   constructor() {
     this.view = new DictionaryView();
-    this.api = new LangAPI();
+    this.api = API.getInstance();
   }
 
   async draw(rootContainer: HTMLElement) {

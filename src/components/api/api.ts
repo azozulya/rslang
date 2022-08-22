@@ -2,7 +2,9 @@ import {
   IWord, IUser, IAuth, IUserWord, IUserStatistics, IUserSettings,
 } from '../interfaces';
 
-export class Api {
+class Api {
+  private static instance: Api;
+
   private baseUrl: string;
 
   private words: string;
@@ -11,11 +13,18 @@ export class Api {
 
   private signin: string;
 
-  constructor() {
+  private constructor() {
     this.baseUrl = 'http://127.0.0.1:3000';
     this.words = `${this.baseUrl}/words`;
     this.users = `${this.baseUrl}/users`;
     this.signin = `${this.baseUrl}/signin`;
+  }
+
+  static getInstance() {
+    if (!Api.instance) {
+      Api.instance = new Api();
+    }
+    return Api.instance;
   }
 
   async getWords(group: number, page: number): Promise<IWord[]> {
@@ -112,7 +121,7 @@ export class Api {
     return response.status;
   }
 
-  async getUserWords(id: string): Promise<IUserWord[] | string> {
+  async getUserWords(id: string): Promise<IUserWord[]> {
     const token = localStorage.getItem('token');
     const response = await fetch(`${this.users}/${id}/words`, {
       method: 'GET',
@@ -122,7 +131,8 @@ export class Api {
         'Content-Type': 'application/json',
       },
     });
-    return (await response.json()) as IUserWord[] | string;
+    const userWords: IUserWord[] = await response.json();
+    return userWords;
   }
 
   async createUserWord(

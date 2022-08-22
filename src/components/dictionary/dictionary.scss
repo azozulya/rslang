@@ -1,3 +1,6 @@
+.dictionary {
+  width: 100%;
+}
 .dictionary__groups_list {
   display: flex;
   flex-wrap: wrap;
@@ -8,7 +11,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 8.5em;
+  width: 7.5em;
   height: 2em;
   text-transform: uppercase;
   color: #ffffff;
@@ -40,6 +43,41 @@
 }
 .dictionary__groups_item_active {
   opacity: 1;
+  transform: scale(1.2);
+}
+.dictionary__extentions {
+  display: flex;
+  justify-content: space-between;
+}
+.dictionary__hardwords,
+.dictionary__sprint,
+.dictionary__audio {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 12em;
+  height: 3em;
+  color: #000000;
+  background-image: url(../../assets/img/hard_words.svg);
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position-x: left;
+  cursor: pointer;
+  transition: 0.25s;
+}
+.dictionary__hardwords:hover,
+.dictionary__sprint:hover,
+.dictionary__audio:hover {
+  color: #ffa000;
+}
+.dictionary__sprint {
+  background-image: url(../../assets/img/game_sprint.svg);
+}
+.dictionary__audio {
+  background-image: url(../../assets/img/game_audio.svg);
+}
+.dictionary__games {
+  display: flex;
 }
 .dictionary__words {
   display: flex;

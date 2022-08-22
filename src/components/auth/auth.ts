@@ -11,7 +11,7 @@ export default class Auth {
   constructor(container__class: string) {
     this.container__class = container__class;
     this.content = '';
-    this.api = new API();
+    this.api = API.getInstance();
   }
 
   init() {
