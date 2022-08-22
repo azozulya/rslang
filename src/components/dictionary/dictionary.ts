@@ -34,8 +34,8 @@ class DictionaryView {
     this.api = Api.getInstance();
     this.words = [];
     this.COUNT_OF_LEVELS = 5;
-    this.page = 0;
-    this.group = 0;
+    this.page = 1;
+    this.group = 1;
   }
 
   async init(callback: (group: number, page: number) => Promise<IWord[]>) {
@@ -141,10 +141,15 @@ class DictionaryView {
 
   async requestWords() {
     const groupAndPage: { page: number; group: number } = getLocalStorage('wordsGroupAndPage');
-
-    const page = groupAndPage.page || this.page;
-    const group = groupAndPage.group || this.group;
-
+    let page:number;
+    let group:number;
+    if (groupAndPage) {
+      page = groupAndPage.page || this.page;
+      group = groupAndPage.group || this.group;
+    } else {
+      page = this.page;
+      group = this.group;
+    }
     const words = await this.getWordsHandler?.(group, page);
 
     return words;
