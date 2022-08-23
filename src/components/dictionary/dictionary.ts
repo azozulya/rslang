@@ -1,13 +1,14 @@
 /* eslint-disable max-lines-per-function */
 import Api from '../api/api';
-import { IWord, IWordApp } from '../interfaces';
-import Word from '../word/word';
+import { IWordApp } from '../interfaces';
 import create from '../utils/createElement';
 import './dictionary.scss';
 import { getLocalStorage, setLocalStorage } from '../utils/LocalStorage';
 import Pagination from './pagination';
 
 class DictionaryView {
+  onGetWords!: (group: number, page: number) => void;
+
   api: Api;
 
   words: Array<IWordApp>;
@@ -34,15 +35,19 @@ class DictionaryView {
     this.group = 0;
   }
 
-  async init() {
-    const words = await this.requestWords();
-    this.highlightGroupBtn();
-    this.addHandlers();
+  bindGetWords(callback: { (group:number, page:number): void; }) { // to index
+    const dictionaryGroups = <HTMLElement>(
+      document.getElementById('dictionaryGroups')
+    );
+    this.onGetWords = callback;
+    dictionaryGroups.addEventListener('click', (e: Event) => this.updateGroup(e));
+  }
 
-    if (words) await this.makeWords(words);
-
-    this.drawWords();
-    this.drawPagination();
+  bindGetHardWords(callback: { (): void; }) {
+    const dictionaryHardWords = <HTMLElement>(
+      document.getElementById('dictionaryHardWords')
+    );
+    dictionaryHardWords.addEventListener('click', callback);
   }
 
   private drawPagination() {
@@ -64,53 +69,33 @@ class DictionaryView {
     await this.updateWords();
   };
 
-  private async updateWords() {
-    const words = await this.requestWords();
-
-    if (!words) return;
-
-    this.makeWords(words);
-    this.drawWords();
-    this.drawPagination();
-  }
-
   async updateGroup(event: Event) {
     this.changeWordsGroup(event);
     this.highlightGroupBtn();
     this.updateWords();
   }
 
-  addHandlers() {
-    const dictionaryGroups = <HTMLElement>(
-      document.getElementById('dictionaryGroups')
-    );
-    dictionaryGroups.addEventListener('click', (e: Event) => this.updateGroup(e));
-
-    const dictionaryHardWords = <HTMLElement>(
-      document.getElementById('dictionaryHardWords')
-    );
-    dictionaryHardWords.addEventListener('click', this.showHardWords.bind(this));
-  }
-
-  async showHardWords() {
-    const words = await this.getHardWords();
-    this.makeWords(words);
-    this.drawWords();
-  }
-
-  async getHardWords() {
-    const words: Promise<IWord>[] = [];
-    const hardWords = await this.api.getUserWords();
-    console.log('hardwords', hardWords);
-    // eslint-disable-next-line no-restricted-syntax
-    for (const userHardWord of hardWords) {
-      const { wordId } = userHardWord;
-      if (wordId) {
-        const wordInDictionary = this.api.getWord(wordId);
-        words.push(wordInDictionary);
-      }
+  async updateWords() {
+    const groupAndPage: { page: number; group: number } = getLocalStorage('wordsGroupAndPage');
+    if (groupAndPage) {
+      this.page = groupAndPage.page;
+      this.group = groupAndPage.group;
     }
-    return Promise.all(words);
+    this.onGetWords(this.group, this.page);
+  }
+
+  highlightGroupBtn() {
+    const groupBtns = document.querySelectorAll('.dictionary__groups_item');
+    const { group } = getLocalStorage('wordsGroupAndPage');
+    this.group = group;
+    groupBtns.forEach((button) => {
+      if (button.classList.contains('dictionary__groups_item_active')) {
+        button.classList.remove('dictionary__groups_item_active');
+      }
+      if (this.group === Number(button.id[0])) {
+        button.classList.add('dictionary__groups_item_active');
+      }
+    });
   }
 
   changeWordsGroup(event: Event) {
@@ -126,48 +111,15 @@ class DictionaryView {
     setLocalStorage('wordsGroupAndPage', groupAngPage);
   }
 
-  async requestWords() {
-    const groupAndPage: { page: number; group: number } = getLocalStorage('wordsGroupAndPage');
-    if (groupAndPage) {
-      this.page = groupAndPage.page;
-      this.group = groupAndPage.group;
-    }
-    const words = await this.api.getWords(this.group, this.page);
-
-    return words;
-  }
-
-  makeWords(words: Array<IWord>) {
-    this.words = [];
-    words.forEach((word) => {
-      const wordInDictionary = new Word(word);
-      this.words.push(wordInDictionary);
-    });
-  }
-
-  drawWords() {
+  drawWords(words:IWordApp[]) {
     const dictionary = <HTMLElement>document.getElementById('dictionaryWords');
     if (dictionary) {
       while (dictionary.firstChild) {
         dictionary.removeChild(dictionary.firstChild);
       }
     }
-    this.words.forEach((wordInDictionary) => {
+    words.forEach((wordInDictionary) => {
       wordInDictionary.draw();
-    });
-  }
-
-  highlightGroupBtn() {
-    const groupBtns = document.querySelectorAll('.dictionary__groups_item');
-    const { group } = getLocalStorage('wordsGroupAndPage');
-    this.group = group;
-    groupBtns.forEach((button) => {
-      if (button.classList.contains('dictionary__groups_item_active')) {
-        button.classList.remove('dictionary__groups_item_active');
-      }
-      if (this.group === Number(button.id[0])) {
-        button.classList.add('dictionary__groups_item_active');
-      }
     });
   }
 
@@ -257,8 +209,6 @@ class DictionaryView {
       class: 'dictionary__pagination',
       parent: dictionary,
     });
-
-    this.drawWords();
 
     return container;
   }
