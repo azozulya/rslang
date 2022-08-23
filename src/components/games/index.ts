@@ -9,7 +9,13 @@ class Games {
   constructor() {
     this.view = new GamesView();
     this.model = new GamesModel();
+
+    this.model.bindGetWords(this.onGetWords);
   }
+
+  onGetWords = () => {
+    this.view.draw();
+  };
 
   draw(rootContainer: HTMLElement) {
     const container = rootContainer;

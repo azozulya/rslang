@@ -24,13 +24,13 @@ class App {
   }
 
   private onLinkClickHandler = (event: Event) => {
-    event.preventDefault();
-
     const linkItem = <HTMLElement>(
       (<HTMLLinkElement>event.target)?.closest('[data-page]')
     );
 
     if (!linkItem) return;
+
+    event.preventDefault();
 
     const pageName = linkItem?.dataset.page;
 

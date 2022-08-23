@@ -33,11 +33,69 @@
       </div>
     </div>
   </header>
-  <!-- <picture>
-    <source srcset="./assets/img/hero_tablet.png" media="(max-width: 768px)">
-    <img src="./assets/img/hero.png" alt="">
-  </picture> -->
+
   <main id="main"></main>
+
+  <section class="game">
+    <div id="step1" class="game__start">
+      <h3>Спринт</h3>
+      <p class="game__description">
+        Спринт - тренировка на скорость.<br> Попробуй угадать как можно больше слов за 30 секунд.
+      </p>
+      <h4>Выбери уровень:</h4>
+      <div class="game__levels">
+        <label class="game__level">
+          A1
+          <input type="radio" name="level" class="game__level--inp" value="0">
+        </label>
+        <label class="game__level">
+          A2
+          <input type="radio" name="level" class="game__level--inp" value="1">
+        </label>
+        <label class="game__level">
+          B1
+          <input type="radio" name="level" class="game__level--inp" value="2">
+        </label>
+        <label class="game__level">
+          B2
+          <input type="radio" name="level" class="game__level--inp" value="3">
+        </label>
+        <label class="game__level">
+          C1
+          <input type="radio" name="level" class="game__level--inp" value="4">
+        </label>
+        <label class="game__level">
+          C2
+          <input type="radio" name="level" class="game__level--inp" value="5">
+        </label>
+      </div>
+      <button id="startBtn" class="btn btn--blue">Начать</button>
+    </div>
+    <!-- <div id="step2" class="game__step2" style="display: none;">
+
+
+      enroll
+
+      зачислить
+
+      <button class="btn">Верно</button>
+      <button class="btn">Неверно</button>
+
+    </div> -->
+  </section>
+
+  <script>
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+    const startBtn = document.getElementById('startBtn');
+
+    startBtn.addEventListener('click', () => {
+      step1.style.display = 'none';
+      step2.style.display = 'block';
+    })
+
+
+  </script>
 
   <footer>
     <div class="footer__bg">

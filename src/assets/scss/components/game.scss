@@ -1,0 +1,55 @@
+.game {
+  box-sizing: border-box;
+  background-color: $secondary-light;
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 2rem;
+  border-radius: 2rem;
+
+  &__start {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__description {
+    text-align: center;
+    margin: 0 0 3rem;
+  }
+
+  &__levels {
+    display: flex;
+    margin-bottom: 4rem;
+  }
+  &__level {
+    border: solid 1px $secondary-dark;
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0.5rem;
+
+    &:hover,
+    &:checked {
+      background-color: $secondary-dark;
+      cursor: pointer;
+      box-shadow: 0 0 1rem $secondary-main;
+      color: $light-color;
+      transform: scale(1.1);
+    }
+
+    &:checked {
+    }
+
+    &--inp {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+    }
+  }
+}
