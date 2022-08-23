@@ -16,15 +16,14 @@ class Dictionary {
 
     container.append(this.view.draw());
 
-    this.view.init(this.api.getWords.bind(this.api));
+    this.view.init();
 
     const login = await this.api.loginUser({
       email: 'a@a.com',
       password: '11111111',
     });
 
-    // eslint-disable-next-line no-console
-    console.log(login);
+    console.log('login', login);
   }
 }
 

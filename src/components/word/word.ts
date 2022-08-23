@@ -30,13 +30,9 @@ class Word implements IWordApp {
 
   async addToHardWord() {
     const api = Api.getInstance();
-    const token = localStorage.getItem('token');
-    const { userId } : { userId: string } = getLocalStorage('RSLang_Auth'); // TODO error no auth
     // const optional: { wordID: string } = { wordID: this.word.id };
     const word: IUserWord = { difficulty: 'hard' };
-    if (token) {
-      api.createUserWord(token, userId, this.word.id, word);
-    }
+    api.createUserWord(this.word.id, word);
   }
 
   checkWord() {

@@ -12,7 +12,7 @@ class DictionaryView {
 
   words: Array<IWordApp>;
 
-  COUNT_OF_LEVELS: number;
+  COUNT_OF_GROUPS: number;
 
   page: number;
 
@@ -26,26 +26,18 @@ class DictionaryView {
 
   private TOTAL_WORDS = 600;
 
-  private getWordsHandler:
-  | ((group: number, page: number) => Promise<IWord[]>)
-  | undefined;
-
   constructor() {
     this.api = Api.getInstance();
     this.words = [];
-    this.COUNT_OF_LEVELS = 5;
-    this.page = 1;
-    this.group = 1;
+    this.COUNT_OF_GROUPS = 5;
+    this.page = 0;
+    this.group = 0;
   }
 
-  async init(callback: (group: number, page: number) => Promise<IWord[]>) {
-    this.getWordsHandler = callback;
-
+  async init() {
     const words = await this.requestWords();
-
-    // this.draw();
-    this.activeGroupBtn();
-    this.addHandlers(callback);
+    this.highlightGroupBtn();
+    this.addHandlers();
 
     if (words) await this.makeWords(words);
 
@@ -69,11 +61,10 @@ class DictionaryView {
 
   goToPage = async (page: number) => {
     this.page = page - 1;
-    console.log('page click: ', page);
-    await this.updateWordsList();
+    await this.updateWords();
   };
 
-  private async updateWordsList() {
+  private async updateWords() {
     const words = await this.requestWords();
 
     if (!words) return;
@@ -83,21 +74,17 @@ class DictionaryView {
     this.drawPagination();
   }
 
-  async updateWords(
-    event: Event,
-    callback: (group: number, page: number) => Promise<IWord[]>,
-  ) {
+  async updateGroup(event: Event) {
     this.changeWordsGroup(event);
-    this.activeGroupBtn();
-
-    this.updateWordsList();
+    this.highlightGroupBtn();
+    this.updateWords();
   }
 
-  addHandlers(callback: (group: number, page: number) => Promise<IWord[]>) {
+  addHandlers() {
     const dictionaryGroups = <HTMLElement>(
       document.getElementById('dictionaryGroups')
     );
-    dictionaryGroups.addEventListener('click', (e: Event) => this.updateWords(e, callback));
+    dictionaryGroups.addEventListener('click', (e: Event) => this.updateGroup(e));
 
     const dictionaryHardWords = <HTMLElement>(
       document.getElementById('dictionaryHardWords')
@@ -113,8 +100,8 @@ class DictionaryView {
 
   async getHardWords() {
     const words: Promise<IWord>[] = [];
-    const { userId } : { userId: string } = getLocalStorage('RSLang_Auth'); // TODO error no auth
-    const hardWords = await this.api.getUserWords(userId);
+    const hardWords = await this.api.getUserWords();
+    console.log('hardwords', hardWords);
     // eslint-disable-next-line no-restricted-syntax
     for (const userHardWord of hardWords) {
       const { wordId } = userHardWord;
@@ -141,34 +128,24 @@ class DictionaryView {
 
   async requestWords() {
     const groupAndPage: { page: number; group: number } = getLocalStorage('wordsGroupAndPage');
-    let page:number;
-    let group:number;
     if (groupAndPage) {
-      page = groupAndPage.page || this.page;
-      group = groupAndPage.group || this.group;
-    } else {
-      page = this.page;
-      group = this.group;
+      this.page = groupAndPage.page;
+      this.group = groupAndPage.group;
     }
-    const words = await this.getWordsHandler?.(group, page);
+    const words = await this.api.getWords(this.group, this.page);
 
     return words;
   }
 
   makeWords(words: Array<IWord>) {
     this.words = [];
-    console.log('3makeWords', words);
     words.forEach((word) => {
-      console.log('3.2word forEach', word);
       const wordInDictionary = new Word(word);
-      console.log('3.5wordInDictionary', wordInDictionary);
       this.words.push(wordInDictionary);
     });
-    console.log('4 makingwords', this.words);
   }
 
   drawWords() {
-    console.log('5draw', this.words);
     const dictionary = <HTMLElement>document.getElementById('dictionaryWords');
     if (dictionary) {
       while (dictionary.firstChild) {
@@ -180,8 +157,10 @@ class DictionaryView {
     });
   }
 
-  activeGroupBtn() {
+  highlightGroupBtn() {
     const groupBtns = document.querySelectorAll('.dictionary__groups_item');
+    const { group } = getLocalStorage('wordsGroupAndPage');
+    this.group = group;
     groupBtns.forEach((button) => {
       if (button.classList.contains('dictionary__groups_item_active')) {
         button.classList.remove('dictionary__groups_item_active');
@@ -190,7 +169,6 @@ class DictionaryView {
         button.classList.add('dictionary__groups_item_active');
       }
     });
-    console.log(groupBtns);
   }
 
   // eslint-disable-next-line max-lines-per-function
@@ -226,7 +204,7 @@ class DictionaryView {
       parent: dictionaryGroups,
     });
 
-    for (let i = 0; i <= this.COUNT_OF_LEVELS; i += 1) {
+    for (let i = 0; i <= this.COUNT_OF_GROUPS; i += 1) {
       create({
         tagname: 'li',
         class: 'dictionary__groups_item',
@@ -279,26 +257,6 @@ class DictionaryView {
       class: 'dictionary__pagination',
       parent: dictionary,
     });
-
-    // create({
-    //   tagname: 'div',
-    //   class: 'dictionary__pagination_prev',
-    //   parent: dictionaryPagination,
-    // });
-
-    // create({
-    //   tagname: 'div',
-    //   class: 'dictionary__pagination_cur',
-    //   id: 'dictionaryPage',
-    //   parent: dictionaryPagination,
-    //   text: '1',
-    // });
-
-    // create({
-    //   tagname: 'div',
-    //   class: 'dictionary__pagination_next',
-    //   parent: dictionaryPagination,
-    // });
 
     this.drawWords();
 
