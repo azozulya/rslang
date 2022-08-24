@@ -93,6 +93,8 @@ class Api {
   }
 
   async getUserToken(id: string, rToken: string): Promise<IToken> {
+    console.log(id);
+    console.log(rToken);
     const response = await fetch(`${this.users}/${id}/tokens`, {
       method: 'GET',
       headers: {

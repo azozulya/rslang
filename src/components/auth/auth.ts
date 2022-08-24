@@ -1,10 +1,13 @@
 import JWT from 'jwt-decode';
 import './auth.scss';
 import User from '../user/user';
-import { IAuth } from '../interfaces';
+import Api from '../api/api';
+import { IAuth, IJwt } from '../interfaces';
 
 export default class Auth {
   private static instance: Auth;
+
+  private api: Api;
 
   private content: string;
 
@@ -13,9 +16,10 @@ export default class Auth {
   private user: User;
 
   constructor() {
-    this.container__class = 'container';
+    this.container__class = 'login-form';
     this.content = '';
     this.user = User.getInstance();
+    this.api = Api.getInstance();
   }
 
   static getInstance() {
@@ -25,18 +29,33 @@ export default class Auth {
     return Auth.instance;
   }
 
-  isLogin(): boolean {
+  async isLogin(): Promise<boolean> {
     const getValue = <string | null> this.user.getStorage('RSLang_Auth');
     if (getValue !== null) {
-      const auth = <IAuth>JSON.parse(<string>getValue);
-      console.log(auth.refreshToken);
-      if (auth.refreshToken === '') return false;
-      console.log(JWT(auth.refreshToken));
-      const currentDate = new Date();
+      const storage = <IAuth>JSON.parse(<string>getValue);
+      // console.log(storage.refreshToken);
+      if (storage.refreshToken === '') return false;
+      const refreshTokenDate = (<IJwt>JWT(storage.refreshToken)).exp;
+      const currentDate = Date.now() / 1000;
+      // console.log(refreshTokenDate);
+      // console.log(`${refreshTokenDate - currentDate / 1000}`);
+      if (refreshTokenDate - currentDate <= 3600) await this.user.getUserToken();
+      // if (refreshTokenDate - currentDate <= 3600) await this.api.getUserToken(storage.userId, storage.refreshToken);
       return true;
     }
     console.log('RSLang_Auth: NULL');
     return false;
+  }
+
+  async drawButton() {
+    const button = <HTMLElement>document.getElementById('auth');
+    if (await this.isLogin()) {
+      button.innerHTML = '<button id="main_logout" class="btn btn--orange auth__btn">Выход</button>';
+      button.addEventListener('click', (e: Event) => this.request(e));
+    } else {
+      button.innerHTML = '<button id="main_login" class="btn btn--orange auth__btn">Вход</button>';
+      button.addEventListener('click', (e: Event) => this.request(e));
+    }
   }
 
   draw() {
@@ -74,12 +93,29 @@ export default class Auth {
       <div id="error-password" class="error">error</div>
     </div>
     <div class="button">
-      <button id="login">ОТМЕНА</button><button id="register">Регистрация</button>
+      <button id="close">ОТМЕНА</button><button id="register">РЕГИСТРАЦИЯ</button>
     </div>
   `;
     container.innerHTML = this.content;
+    const inputEmail = <HTMLInputElement>document.getElementById('email');
+    const errorEmail = <HTMLElement>document.getElementById('error-email');
+    // inputEmail.addEventListener('input', this.onInputEmail(inputEmail.value));
+    inputEmail.addEventListener('input', () => {
+      if (this.validateEmail(inputEmail.value)) errorEmail.innerText = 'Неверный формат Email-адреса';
+      else errorEmail.innerText = '';
+    });
+
     this.addHandlers();
   }
+
+  // private onInputEmail(value) {
+  //   const errorEmail = <HTMLElement>document.getElementById('error-email');
+  //   if (this.validateEmail(value)) {
+  //     errorEmail.innerText = 'green';
+  //   } else {
+  //     errorEmail.innerText = 'red';
+  //   }
+  // }
 
   drawLoginUser() {
     const container = <HTMLElement>document.getElementById('modal');
@@ -100,7 +136,7 @@ export default class Auth {
       <div id="error-password" class="error">error</div>
     </div>
       <div class="button">
-        <button id="registerLink">Регистрация</button><button id="login">ОТМЕНА</button><button id="login">ВХОД</button>
+        <button id="registerLink">Регистрация</button><button id="close">ОТМЕНА</button><button id="login">ВХОД</button>
       </div>
   `;
     container.innerHTML = this.content;
@@ -114,9 +150,16 @@ export default class Auth {
 
   private request(event: Event) {
     const target = <HTMLElement>event.target;
+    if (target.id === 'main_login') this.draw();
     if (target.id === 'registerLink') this.drawCreateUser();
     if (target.id === 'login') this.sendLoginData();
     if (target.id === 'register') this.sendRegisterData();
+    if (target.id === 'close') this.closeModal();
+  }
+
+  private closeModal() {
+    const loginForm = <HTMLElement>document.getElementById('login-form');
+    loginForm.remove();
   }
 
   private async sendLoginData() {
@@ -124,7 +167,7 @@ export default class Auth {
     const password = (<HTMLInputElement>document.getElementById('password')).value;
     const res = await this.user.loginUser({ email, password });
     console.log(`sendLoginData: ${res}`);
-    if (res === 200) (<HTMLElement>document.getElementById(this.container__class)).innerHTML = '';
+    if (res === 200) (<HTMLElement>document.getElementById(this.container__class)).remove();
   }
 
   private async sendRegisterData() {
@@ -136,7 +179,7 @@ export default class Auth {
     if (statusCreate === 200) {
       console.log('REGISTER: OK');
       const statusLogin = await this.user.loginUser({ email, password });
-      (<HTMLElement>document.getElementById(this.container__class)).innerHTML = '';
+      (<HTMLElement>document.getElementById(this.container__class)).remove();
       if (statusLogin === 200) console.log('LOGIN: OK');
     }
     if (statusCreate === 417) {
@@ -147,7 +190,9 @@ export default class Auth {
     }
   }
 
-  // private validateEmail(value:string): boolean {
-  //   return value.match(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
-  // }
+  private validateEmail(value: string): boolean {
+    // const EMAIL_REGEXP = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu;
+    const EMAIL_REGEXP = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return EMAIL_REGEXP.test(value);
+  }
 }

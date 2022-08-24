@@ -27,7 +27,7 @@ class App {
 
     this.menu.init();
 
-    this.auth.isLogin();
+    this.auth.drawButton();
   }
 
   private onLinkClickHandler = (event: Event) => {

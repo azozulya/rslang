@@ -8,6 +8,7 @@
   align-items: center;
   justify-content: center;
   background: #0000002c;
+  z-index: 100;
 
   #modal {
     display: grid;
@@ -19,7 +20,6 @@
     align-items: center;
     justify-content: center;
     font-size: 11px;
-    font-family: Arial;
     border: 1px solid #00bcd4;
     border-radius: 20px;
     padding: 70px;
@@ -58,14 +58,20 @@
       border-radius: 8px;
       padding: 0 8px 0 8px;
       align-items: center;
+      font-size: 11px;
+
       .label {
         display: flex;
         width: 100%;
         color: #ffa000;
+        font-size: 11px;
+
       }
       .input {
         display: flex;
         width: 100%;
+        font-size: 16px;
+
       }
     }
     .name[data-validate="false"],
@@ -76,7 +82,8 @@
     }
     .error {
       padding: 0 8px;
-      color: #ff0000
+      color: #ff0000;
+      font-size: 11px;
     }
 
     #registerLink {
@@ -85,7 +92,8 @@
       color: #00bcd4;
     }
     #login,
-    #register {
+    #register,
+    #close {
       height: 40px;
       width: 160px;
       border: none;
@@ -98,7 +106,8 @@
       box-shadow: 0px 0px 6px 2px rgba(0, 0, 0, 0.16);
     }
     #login:hover,
-    #register:hover {
+    #register:hover,
+    #close:hover {
       background: #ffffff;
       color: #00bcd4;
     }

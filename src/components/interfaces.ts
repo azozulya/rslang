@@ -68,3 +68,10 @@ export interface IToken {
   token: string;
   refreshToken: string;
 }
+
+export interface IJwt {
+  id: string;
+  tokenId: string;
+  iat: number;
+  exp: number;
+}
