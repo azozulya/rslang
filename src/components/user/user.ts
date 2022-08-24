@@ -5,17 +5,20 @@ import {
 import Api from '../api/api';
 
 class User {
-  api: Api;
+  private static instance: User;
 
-  userId: string;
+  private api: Api;
 
-  token: string;
+  private userId: string;
 
-  refreshToken: string;
+  private token: string;
 
-  message: string;
+  private refreshToken: string;
 
-  name: string;
+  private message: string;
+
+  private name: string;
+  static User: User;
 
   constructor() {
     this.api = Api.getInstance();
@@ -24,6 +27,13 @@ class User {
     this.refreshToken = JSON.parse(<string>localStorage.getItem('RSLang_Auth')).refreshToken;
     this.message = JSON.parse(<string>localStorage.getItem('RSLang_Auth')).message;
     this.name = JSON.parse(<string>localStorage.getItem('RSLang_Auth')).name;
+  }
+
+  static getInstance() {
+    if (!User.instance) {
+      User.instance = new User();
+    }
+    return User.instance;
   }
 
   getStorage(key: string) {
