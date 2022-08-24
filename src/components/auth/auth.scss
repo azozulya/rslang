@@ -57,7 +57,7 @@
       border: 1px solid #ffa000;
       border-radius: 8px;
       padding: 0 8px 0 8px;
-      align-items: center;
+      // align-items: center;
       font-size: 11px;
 
       .label {
@@ -73,6 +73,11 @@
         font-size: 16px;
 
       }
+    }
+    .name:hover,
+    .email:hover,
+    .password:hover {
+      cursor: pointer;
     }
     .name[data-validate="false"],
     .email[data-validate="false"],
@@ -95,7 +100,8 @@
     #register,
     #close {
       height: 40px;
-      width: 160px;
+      // width: 160px;
+      min-width: 120px;
       border: none;
       background: #00bcd4;
       border: 1px solid #00bcd4;
