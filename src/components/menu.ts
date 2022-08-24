@@ -1,13 +1,16 @@
-import { DEFAULT_PAGE } from './constants';
+import { DEFAULT_PAGE } from '../utils/constants';
 
 class Menu {
-  static currentPageName = DEFAULT_PAGE;
-
   private burgerMenuBtn?: HTMLElement | null;
 
   private menu?: HTMLElement | null;
 
   private currentMenuItemClass = 'menu__link--active';
+
+  constructor(current: string) {
+    this.init();
+    this.setActive(current);
+  }
 
   init() {
     this.menu = document.getElementById('menu');
@@ -24,8 +27,6 @@ class Menu {
     this.menu
       ?.querySelector(`[data-page=${pageName}]`)
       ?.classList.add(this.currentMenuItemClass);
-
-    Menu.currentPageName = pageName;
   };
 
   hide = () => {

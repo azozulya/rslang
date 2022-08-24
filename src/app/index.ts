@@ -1,28 +1,32 @@
 import Router from '../components/router';
 import { DEFAULT_PAGE, PAGE_KEY } from '../utils/constants';
 import { getLocalStorage, setLocalStorage } from '../utils/localStorage';
-import Menu from '../utils/menu';
+import Menu from '../components/menu';
+
+type TPageObj = {
+  prevPage: string;
+  currentPage: string;
+};
 
 class App {
   private router: Router;
 
-  private currentPage = getLocalStorage<string>(PAGE_KEY) || DEFAULT_PAGE;
-
   private menu: Menu;
+
+  private currentPage: string;
 
   constructor() {
     const rootContainer = document.getElementById('main') || document.body;
-    console.log(getLocalStorage<string>(PAGE_KEY));
+    const storageObj = getLocalStorage<TPageObj>(PAGE_KEY);
+    this.currentPage = storageObj ? storageObj.currentPage : DEFAULT_PAGE;
     this.router = new Router(rootContainer);
-    this.menu = new Menu();
+    this.menu = new Menu(this.currentPage);
   }
 
   start() {
     document?.addEventListener('click', this.onLinkClickHandler);
 
     window.addEventListener('load', this.onPageLoadHandler);
-
-    this.menu.init();
   }
 
   private onLinkClickHandler = (event: Event) => {
@@ -35,18 +39,18 @@ class App {
     event.preventDefault();
 
     const pageName = linkItem?.dataset.page;
+    const isMenuLink = Boolean(linkItem.closest('.menu'));
+    console.log(isMenuLink);
 
     if (pageName) {
       if (pageName === this.currentPage) return;
 
-      this.router.openPage(pageName);
+      this.router.openPage(pageName, isMenuLink);
       this.menu.setActive(pageName);
       this.menu.hide();
 
-      setLocalStorage(PAGE_KEY, {
-        prevPage: this.currentPage,
-        currentPage: pageName,
-      });
+      this.updateLocalStorage(this.currentPage, pageName);
+
       this.currentPage = pageName;
     }
   };
@@ -54,14 +58,22 @@ class App {
   private onPageLoadHandler = () => {
     this.router.openPage(this.currentPage);
     this.menu.hide();
+    this.updateLocalStorage(this.currentPage, this.currentPage);
+  };
 
-    const storageValue = getLocalStorage<string>(PAGE_KEY);
+  private updateLocalStorage(prevPage: string, currentPage: string) {
+    const storageValue = getLocalStorage<{
+      prevPage: string;
+      currentPage: string;
+    }>(PAGE_KEY);
+
     console.log('storageValue: ', storageValue);
 
     setLocalStorage(PAGE_KEY, {
-      prevPage: this.currentPage,
-      currentPage: this.currentPage,
+      ...storageValue,
+      prevPage,
+      currentPage,
     });
-  };
+  }
 }
 export default App;

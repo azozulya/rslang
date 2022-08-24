@@ -29,12 +29,14 @@ class Router {
 
   constructor(private rootContainer: HTMLElement) {}
 
-  openPage = (pageName: string) => {
+  openPage = (pageName: string, isMenuLink = false) => {
     const currentRouter = this.routers.find(
-      (router) => router.page === pageName,
+      (router) => router.page === pageName
     );
 
     if (currentRouter) {
+      this.rootContainer.dataset.arrival = isMenuLink ? 'menu' : '';
+
       this.rootContainer.removeAttribute('class');
       this.rootContainer.classList.add(currentRouter.class);
       this.rootContainer.innerText = '';
