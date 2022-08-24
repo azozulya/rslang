@@ -1,7 +1,11 @@
-class Menu {
-  private burgerMenuBtn: HTMLElement | undefined | null;
+import { DEFAULT_PAGE } from './constants';
 
-  private menu: HTMLElement | null | undefined;
+class Menu {
+  static currentPageName = DEFAULT_PAGE;
+
+  private burgerMenuBtn?: HTMLElement | null;
+
+  private menu?: HTMLElement | null;
 
   private currentMenuItemClass = 'menu__link--active';
 
@@ -20,6 +24,8 @@ class Menu {
     this.menu
       ?.querySelector(`[data-page=${pageName}]`)
       ?.classList.add(this.currentMenuItemClass);
+
+    Menu.currentPageName = pageName;
   };
 
   hide = () => {

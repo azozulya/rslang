@@ -1,8 +1,8 @@
 /* eslint-disable max-lines-per-function */
-import Api from '../api/api';
-import { IWord, IWordApp, IUserWord } from '../interfaces';
-import create from '../utils/createElement';
-import { getLocalStorage } from '../utils/LocalStorage';
+import Api from '../../api/api';
+import { IWord, IWordApp, IUserWord } from '../../types/interfaces';
+import create from '../../utils/createElement';
+import { getLocalStorage } from '../../utils/localStorage';
 import './word.scss';
 
 class Word implements IWordApp {
@@ -16,7 +16,7 @@ class Word implements IWordApp {
     word.addEventListener('click', (e) => this.defineTarget(e));
   }
 
-  defineTarget(event:Event) {
+  defineTarget(event: Event) {
     const element = <HTMLElement>event.target;
     if (element.classList.contains('word__audio')) this.listenWord();
     if (element.classList.contains('word__hard')) this.addToHardWord();
@@ -31,17 +31,15 @@ class Word implements IWordApp {
   async addToHardWord() {
     const api = Api.getInstance();
     const token = localStorage.getItem('token');
-    const { userId } : { userId: string } = getLocalStorage('RSLang_Auth'); // TODO error no auth
+    const { userId }: { userId: string } = getLocalStorage('RSLang_Auth'); // TODO error no auth
     // const optional: { wordID: string } = { wordID: this.word.id };
     const word: IUserWord = { difficulty: 'hard' };
     if (token) {
-      api.createUserWord(token, userId, this.word.id, word);
+      api.createUserWord(this.word.id, word);
     }
   }
 
-  checkWord() {
-
-  }
+  checkWord() {}
 
   draw() {
     const dictionary = <HTMLElement>document.getElementById('dictionaryWords');
@@ -140,18 +138,34 @@ class Word implements IWordApp {
       text: `${this.word.textExampleTranslate}`,
     });
     // TODO Check user login (need separate method)
-    const wordProgress = create({ tagname: 'div', class: 'word__progress', parent: wordDescription });
+    const wordProgress = create({
+      tagname: 'div',
+      class: 'word__progress',
+      parent: wordDescription,
+    });
     const wordSprint = create({
-      tagname: 'div', class: 'word__sprint', parent: wordProgress, text: 'Спринт',
+      tagname: 'div',
+      class: 'word__sprint',
+      parent: wordProgress,
+      text: 'Спринт',
     });
     create({
-      tagname: 'div', class: 'word__sprint_score', parent: wordSprint, text: '3/10',
+      tagname: 'div',
+      class: 'word__sprint_score',
+      parent: wordSprint,
+      text: '3/10',
     });
     const wordAudio = create({
-      tagname: 'div', class: 'word__sprint', parent: wordProgress, text: 'Аудиовызов',
+      tagname: 'div',
+      class: 'word__sprint',
+      parent: wordProgress,
+      text: 'Аудиовызов',
     });
     create({
-      tagname: 'div', class: 'word__sprint_score', parent: wordAudio, text: '17/40',
+      tagname: 'div',
+      class: 'word__sprint_score',
+      parent: wordAudio,
+      text: '17/40',
     });
     this.addHandlers(wordInDictionary);
   }

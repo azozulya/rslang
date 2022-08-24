@@ -1,5 +1,5 @@
 import './auth.scss';
-import API from '../api/api';
+import API from '../../api/api';
 
 export default class Auth {
   private content: string;
@@ -82,7 +82,8 @@ export default class Auth {
 
   private async sendLoginData() {
     const email = (<HTMLInputElement>document.getElementById('email')).value;
-    const password = (<HTMLInputElement>document.getElementById('password')).value;
+    const password = (<HTMLInputElement>document.getElementById('password'))
+      .value;
     const res = await this.api.loginUser({ email, password });
     console.log(`sendLoginData: ${res}`);
     if (res === 200) (<HTMLElement>document.getElementById(this.container__class)).innerHTML = '';
@@ -91,7 +92,8 @@ export default class Auth {
   private async sendRegisterData() {
     const name = (<HTMLInputElement>document.getElementById('name')).value;
     const email = (<HTMLInputElement>document.getElementById('email')).value;
-    const password = (<HTMLInputElement>document.getElementById('password')).value;
+    const password = (<HTMLInputElement>document.getElementById('password'))
+      .value;
     const statusCreate = await this.api.createUser({ name, email, password });
     console.log(statusCreate);
     if (statusCreate === 200) {

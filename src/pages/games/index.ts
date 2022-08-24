@@ -1,3 +1,4 @@
+import Menu from '../../utils/menu';
 import GamesModel from './model';
 import GamesView from './view';
 
@@ -14,6 +15,7 @@ class Games {
   draw(rootContainer: HTMLElement) {
     const container = rootContainer;
     container.innerHTML = '<br><br><br><br><br><br>Games page';
+    container.append(Menu.currentPageName);
   }
 }
 

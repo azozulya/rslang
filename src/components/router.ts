@@ -1,7 +1,7 @@
-import Games from './games';
-import Main from './main';
-import Dictionary from './dictionary';
-import Statistic from './statistic';
+import Games from '../pages/games';
+import Main from '../pages/main';
+import Dictionary from '../pages/dictionary';
+import Statistic from '../pages/statistic';
 
 class Router {
   private routers = [
@@ -27,11 +27,7 @@ class Router {
     },
   ];
 
-  private rootContainer: HTMLElement;
-
-  constructor(rootContainer: HTMLElement) {
-    this.rootContainer = rootContainer;
-  }
+  constructor(private rootContainer: HTMLElement) {}
 
   openPage = (pageName: string) => {
     const currentRouter = this.routers.find(

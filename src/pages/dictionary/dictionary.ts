@@ -1,10 +1,10 @@
 /* eslint-disable max-lines-per-function */
-import Api from '../api/api';
-import { IWord, IWordApp } from '../interfaces';
-import Word from '../word/word';
-import create from '../utils/createElement';
+import Api from '../../api/api';
+import { IWord, IWordApp } from '../../types/interfaces';
+import Word from '../../components/word/word';
+import create from '../../utils/createElement';
 import './dictionary.scss';
-import { getLocalStorage, setLocalStorage } from '../utils/LocalStorage';
+import { getLocalStorage, setLocalStorage } from '../../utils/localStorage';
 import Pagination from './pagination';
 
 class DictionaryView {
@@ -102,7 +102,10 @@ class DictionaryView {
     const dictionaryHardWords = <HTMLElement>(
       document.getElementById('dictionaryHardWords')
     );
-    dictionaryHardWords.addEventListener('click', this.showHardWords.bind(this));
+    dictionaryHardWords.addEventListener(
+      'click',
+      this.showHardWords.bind(this),
+    );
   }
 
   async showHardWords() {
@@ -113,8 +116,7 @@ class DictionaryView {
 
   async getHardWords() {
     const words: Promise<IWord>[] = [];
-    const { userId } : { userId: string } = getLocalStorage('RSLang_Auth'); // TODO error no auth
-    const hardWords = await this.api.getUserWords(userId);
+    const hardWords = await this.api.getUserWords();
     // eslint-disable-next-line no-restricted-syntax
     for (const userHardWord of hardWords) {
       const { wordId } = userHardWord;
@@ -141,8 +143,8 @@ class DictionaryView {
 
   async requestWords() {
     const groupAndPage: { page: number; group: number } = getLocalStorage('wordsGroupAndPage');
-    let page:number;
-    let group:number;
+    let page: number;
+    let group: number;
     if (groupAndPage) {
       page = groupAndPage.page || this.page;
       group = groupAndPage.group || this.group;

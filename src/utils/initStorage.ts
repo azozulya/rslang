@@ -9,7 +9,7 @@ export default function initStorage() {
         token: '',
         refreshToken: '',
         name: '',
-      })
+      }),
     );
   }
 }

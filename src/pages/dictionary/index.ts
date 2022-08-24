@@ -1,5 +1,5 @@
 import DictionaryView from './dictionary';
-import API from '../api/api';
+import API from '../../api/api';
 
 class Dictionary {
   private view: DictionaryView;

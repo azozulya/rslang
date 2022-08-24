@@ -1,8 +1,14 @@
 import JWT from 'jwt-decode';
 import {
-  IWord, IUser, IAuth, IUserWord, IUserStatistics, IUserSettings, IToken,
-} from '../interfaces';
-import Api from '../api/api';
+  IWord,
+  IUser,
+  IAuth,
+  IUserWord,
+  IUserStatistics,
+  IUserSettings,
+  IToken,
+} from '../../types/interfaces';
+import Api from '../../api/api';
 
 class User {
   private static instance: User;
@@ -18,14 +24,21 @@ class User {
   private message: string;
 
   private name: string;
+
   static User: User;
 
   constructor() {
     this.api = Api.getInstance();
-    this.userId = JSON.parse(<string>localStorage.getItem('RSLang_Auth')).userId;
+    this.userId = JSON.parse(
+      <string>localStorage.getItem('RSLang_Auth'),
+    ).userId;
     this.token = JSON.parse(<string>localStorage.getItem('RSLang_Auth')).token;
-    this.refreshToken = JSON.parse(<string>localStorage.getItem('RSLang_Auth')).refreshToken;
-    this.message = JSON.parse(<string>localStorage.getItem('RSLang_Auth')).message;
+    this.refreshToken = JSON.parse(
+      <string>localStorage.getItem('RSLang_Auth'),
+    ).refreshToken;
+    this.message = JSON.parse(
+      <string>localStorage.getItem('RSLang_Auth'),
+    ).message;
     this.name = JSON.parse(<string>localStorage.getItem('RSLang_Auth')).name;
   }
 
@@ -91,7 +104,10 @@ class User {
     return result;
   }
 
-  loginUser(body: { email: string; password: string }): Promise<IAuth | number> {
+  loginUser(body: {
+    email: string;
+    password: string;
+  }): Promise<IAuth | number> {
     return this.api.loginUser(body);
   }
 

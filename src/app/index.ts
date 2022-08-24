@@ -1,16 +1,18 @@
-import Router from '../router';
+import Router from '../components/router';
+import { DEFAULT_PAGE, PAGE_KEY } from '../utils/constants';
+import { getLocalStorage, setLocalStorage } from '../utils/localStorage';
 import Menu from '../utils/menu';
 
 class App {
   private router: Router;
 
-  private INDEX_PAGE = 'main';
+  private currentPage = getLocalStorage<string>(PAGE_KEY) || DEFAULT_PAGE;
 
   private menu: Menu;
 
   constructor() {
     const rootContainer = document.getElementById('main') || document.body;
-
+    console.log(getLocalStorage<string>(PAGE_KEY));
     this.router = new Router(rootContainer);
     this.menu = new Menu();
   }
@@ -24,26 +26,42 @@ class App {
   }
 
   private onLinkClickHandler = (event: Event) => {
-    event.preventDefault();
-
     const linkItem = <HTMLElement>(
       (<HTMLLinkElement>event.target)?.closest('[data-page]')
     );
 
     if (!linkItem) return;
 
+    event.preventDefault();
+
     const pageName = linkItem?.dataset.page;
 
     if (pageName) {
+      if (pageName === this.currentPage) return;
+
       this.router.openPage(pageName);
       this.menu.setActive(pageName);
       this.menu.hide();
+
+      setLocalStorage(PAGE_KEY, {
+        prevPage: this.currentPage,
+        currentPage: pageName,
+      });
+      this.currentPage = pageName;
     }
   };
 
   private onPageLoadHandler = () => {
-    this.router.openPage(this.INDEX_PAGE);
+    this.router.openPage(this.currentPage);
     this.menu.hide();
+
+    const storageValue = getLocalStorage<string>(PAGE_KEY);
+    console.log('storageValue: ', storageValue);
+
+    setLocalStorage(PAGE_KEY, {
+      prevPage: this.currentPage,
+      currentPage: this.currentPage,
+    });
   };
 }
 export default App;
