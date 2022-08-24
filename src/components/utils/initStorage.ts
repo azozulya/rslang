@@ -1,4 +1,4 @@
-export default function initStorage() {
+export default function createStorage() {
   const getValue = <string | null>localStorage.getItem('RSLang_Auth');
   if (getValue == null) {
     localStorage.setItem(
@@ -9,7 +9,7 @@ export default function initStorage() {
         token: '',
         refreshToken: '',
         name: '',
-      })
+      }),
     );
   }
 }

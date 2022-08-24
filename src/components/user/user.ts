@@ -1,4 +1,3 @@
-import JWT from 'jwt-decode';
 import {
   IWord, IUser, IAuth, IUserWord, IUserStatistics, IUserSettings, IToken,
 } from '../interfaces';
@@ -18,7 +17,6 @@ class User {
   private message: string;
 
   private name: string;
-  static User: User;
 
   constructor() {
     this.api = Api.getInstance();
@@ -82,9 +80,6 @@ class User {
     result.refreshToken = (await response).refreshToken;
     result.userId = this.userId;
     result.name = this.name;
-
-    // const decode = <{ id: string, iat: number, exp: number }>JWT(result.token);
-    // console.log(decode.exp);
 
     this.setStorage('RSLang_Auth', JSON.stringify(result));
 

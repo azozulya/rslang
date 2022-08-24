@@ -114,7 +114,7 @@ class DictionaryView {
   async getHardWords() {
     const words: Promise<IWord>[] = [];
     const { userId } : { userId: string } = getLocalStorage('RSLang_Auth'); // TODO error no auth
-    const hardWords = await this.api.getUserWords(userId);
+    const hardWords = await this.api.getUserWords();
     // eslint-disable-next-line no-restricted-syntax
     for (const userHardWord of hardWords) {
       const { wordId } = userHardWord;

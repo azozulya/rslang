@@ -35,7 +35,7 @@ class Word implements IWordApp {
     // const optional: { wordID: string } = { wordID: this.word.id };
     const word: IUserWord = { difficulty: 'hard' };
     if (token) {
-      api.createUserWord(token, userId, this.word.id, word);
+      api.createUserWord(this.word.id, word);
     }
   }
 
