@@ -10,16 +10,11 @@ class Games {
     this.view = new GamesView();
     this.model = new GamesModel();
 
-    this.model.bindGetWords(this.onGetWords);
+    this.view.bindGetWords(this.model.getWordsForGame);
   }
 
-  onGetWords = () => {
-    this.view.draw();
-  };
-
   draw(rootContainer: HTMLElement) {
-    const container = rootContainer;
-    container.innerHTML = '<br><br><br><br><br><br>Games page';
+    rootContainer.append(this.view.draw());
   }
 }
 

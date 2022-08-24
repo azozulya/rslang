@@ -49,7 +49,7 @@ export interface IAuth {
 export interface IUserWord {
   difficulty: string;
   optional?: {
-    wordID: string
+    wordID: string;
   };
   wordId?: string;
 }
@@ -62,4 +62,10 @@ export interface IUserStatistics {
 export interface IUserSettings {
   wordsPerDay: number;
   optional?: Record<string, unknown>;
+}
+
+export interface IGameWord {
+  word: string;
+  wordTranslate: string;
+  pseudoTranslate: string;
 }

@@ -22,6 +22,7 @@
     margin-bottom: 4rem;
   }
   &__level {
+    position: relative;
     border: solid 1px $secondary-dark;
     border-radius: 50%;
     width: 2rem;
@@ -30,6 +31,11 @@
     align-items: center;
     justify-content: center;
     margin: 0 0.5rem;
+
+    &--active {
+      background-color: $accent-dark;
+      color: $light-color;
+    }
 
     &:hover,
     &:checked {
@@ -50,6 +56,40 @@
       width: 1px;
       height: 1px;
       opacity: 0;
+    }
+  }
+
+  &__game {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  &__frame {
+    box-sizing: border-box;
+    width: 200px;
+    height: 150px;
+    background-color: $light-color;
+
+    overflow: hidden;
+  }
+
+  &__words {
+    display: flex;
+    justify-content: flex-start;
+    width: calc(200px * 20);
+  }
+  &__word {
+    width: 200px;
+    height: 150px;
+    background-color: $accent-light;
+
+    border-right: solid 1px red;
+
+    &--active {
+      transition: 100ms;
+      /*width: 150px;
+      height: 100px;*/
+      // transform: translateX(0);
     }
   }
 }

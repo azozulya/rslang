@@ -123,6 +123,13 @@ h4 {
       padding: 1rem 1.2rem;
     }
   }
+
+  &:disabled {
+    color: $text-disabled;
+    background-color: $light-color;
+    border-color: $text-disabled;
+    cursor: default;
+  }
 }
 
 .noscroll {

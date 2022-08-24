@@ -1,30 +1,28 @@
 import DictionaryView from './dictionary';
 import API from '../api/api';
+import DictionaryModel from './model';
+import { IWord } from '../interfaces';
 
 class Dictionary {
   private view: DictionaryView;
+
+  private model: DictionaryModel;
 
   private api: API;
 
   constructor() {
     this.view = new DictionaryView();
+    this.model = new DictionaryModel();
+
     this.api = API.getInstance();
   }
 
-  async draw(rootContainer: HTMLElement) {
-    const container = rootContainer;
+  // onReadyWords = (words: IWord[]) => {
+  // this.view.init(words);
+  // };
 
-    container.append(this.view.draw());
-
-    this.view.init(this.api.getWords.bind(this.api));
-
-    const login = await this.api.loginUser({
-      email: 'a@a.com',
-      password: '11111111',
-    });
-
-    // eslint-disable-next-line no-console
-    console.log(login);
+  draw(rootContainer: HTMLElement) {
+    rootContainer.append(this.view.draw());
   }
 }
 

@@ -27,11 +27,7 @@ class Router {
     },
   ];
 
-  private rootContainer: HTMLElement;
-
-  constructor(rootContainer: HTMLElement) {
-    this.rootContainer = rootContainer;
-  }
+  constructor(private rootContainer: HTMLElement) {}
 
   openPage = (pageName: string) => {
     const currentRouter = this.routers.find(

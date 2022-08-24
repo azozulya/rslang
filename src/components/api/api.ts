@@ -1,5 +1,10 @@
 import {
-  IWord, IUser, IAuth, IUserWord, IUserStatistics, IUserSettings,
+  IWord,
+  IUser,
+  IAuth,
+  IUserWord,
+  IUserStatistics,
+  IUserSettings,
 } from '../interfaces';
 
 class Api {
@@ -29,7 +34,9 @@ class Api {
 
   async getWords(group: number, page: number): Promise<IWord[]> {
     const response = await fetch(`${this.words}?group=${group}&page=${page}`);
-    const words: IWord [] = await response.json();
+    console.log(response);
+    const words: IWord[] = await response.json();
+    console.log(words);
     return words;
   }
 
@@ -106,12 +113,18 @@ class Api {
     return result;
   }
 
-  async loginUser(body: { email: string; password: string }): Promise<IAuth | number> {
+  async loginUser(body: {
+    email: string;
+    password: string;
+  }): Promise<IAuth | number> {
     let result: IAuth;
     const response = await fetch(this.signin, {
       method: 'POST',
       body: JSON.stringify(body),
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
     }).catch();
     if (response.status === 200) {
       result = await response.json();
@@ -153,7 +166,11 @@ class Api {
     return (await response.json()) as IUserWord;
   }
 
-  async getUserWord(token: string, userId: string, wordId: string): Promise<IUserWord> {
+  async getUserWord(
+    token: string,
+    userId: string,
+    wordId: string,
+  ): Promise<IUserWord> {
     const response = await fetch(`${this.users}/${userId}/words/${wordId}`, {
       method: 'GET',
       headers: {
@@ -182,7 +199,11 @@ class Api {
     return (await response.json()) as IUserWord;
   }
 
-  async deleteUserWord(token: string, userId: string, wordId: string): Promise<string> {
+  async deleteUserWord(
+    token: string,
+    userId: string,
+    wordId: string,
+  ): Promise<string> {
     const response = await fetch(`${this.users}/${userId}/words/${wordId}`, {
       method: 'DELETE',
       headers: {
@@ -202,30 +223,43 @@ class Api {
     wordsPerPage: string,
     filter: string,
   ): Promise<IWord[]> {
-    const response = await fetch(`${this.users}/${userId}/AggregatedWords?group=${group}&page=${page}&wordsPerPage=${wordsPerPage}&filter=${filter}`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+    const response = await fetch(
+      `${this.users}/${userId}/AggregatedWords?group=${group}&page=${page}&wordsPerPage=${wordsPerPage}&filter=${filter}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
       },
-    });
+    );
     return (await response.json()) as IWord[];
   }
 
-  async getUserAggregatedWord(token: string, userId: string, wordId: string): Promise<IWord> {
-    const response = await fetch(`${this.users}/${userId}/AggregatedWords/${wordId}`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+  async getUserAggregatedWord(
+    token: string,
+    userId: string,
+    wordId: string,
+  ): Promise<IWord> {
+    const response = await fetch(
+      `${this.users}/${userId}/AggregatedWords/${wordId}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
       },
-    });
+    );
     return (await response.json()) as IWord;
   }
 
-  async getUserStatistics(token: string, userId: string): Promise<IUserStatistics> {
+  async getUserStatistics(
+    token: string,
+    userId: string,
+  ): Promise<IUserStatistics> {
     const response = await fetch(`${this.users}/${userId}/statistics`, {
       method: 'GET',
       headers: {
