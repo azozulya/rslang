@@ -63,3 +63,8 @@ export interface IUserSettings {
   wordsPerDay: number;
   optional?: Record<string, unknown>;
 }
+
+export interface IToken {
+  token: string;
+  refreshToken: string;
+}
