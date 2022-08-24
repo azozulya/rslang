@@ -1,15 +1,40 @@
+import { IUserWord, IWord } from '../interfaces';
 import WordModel from './model';
-// import WordView from './view';
+import WordView from './word';
 
 class Word {
-  // private view: WordView;
+  words: WordView [];
 
   private model: WordModel;
 
-  constructor() {
-    // this.view = new WordView();
+  constructor(words:IWord[]) {
     this.model = new WordModel();
+    this.words = [];
+    words.forEach((word) => {
+      const wordView = new WordView(word);
+      this.words.push(wordView);
+    });
+    this.draw();
   }
-}
 
-export default Word;
+  draw() {
+    this.words.forEach((word) => word.draw);
+  }
+
+  /* makeWords(words: Array<IWord>) {
+    this.words = [];
+    words.forEach((word) => {
+      const wordInDictionary = new Word(word);
+      this.words.push(wordInDictionary);
+    });
+    this.onUpdateWords(this.words);
+  } */
+
+  /* addHandler() {
+    this.view.bindAddToHardWord(this.handleAddToHardWord);
+  }
+
+  handleAddToHardWord = (wordId: string, word: IUserWord) => {
+    this.model.addToHardWord(wordId, word);
+  }; */
+}

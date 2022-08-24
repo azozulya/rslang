@@ -76,12 +76,17 @@ class DictionaryView {
   }
 
   async updateWords() {
+    const { group, page } = this.getGroupAndPage();
+    this.onGetWords(group, page);
+  }
+
+  getGroupAndPage() {
     const groupAndPage: { page: number; group: number } = getLocalStorage('wordsGroupAndPage');
     if (groupAndPage) {
       this.page = groupAndPage.page;
       this.group = groupAndPage.group;
     }
-    this.onGetWords(this.group, this.page);
+    return { group: this.group, page: this.page };
   }
 
   highlightGroupBtn() {
@@ -121,6 +126,7 @@ class DictionaryView {
     words.forEach((wordInDictionary) => {
       wordInDictionary.draw();
     });
+    this.highlightGroupBtn();
   }
 
   // eslint-disable-next-line max-lines-per-function

@@ -7,6 +7,8 @@ class DictionaryModel {
 
   api: Api;
 
+  onUpdateWords?: ((words: IWordApp[]) => void);
+
   constructor() {
     this.words = [];
     this.api = Api.getInstance();
@@ -42,7 +44,7 @@ class DictionaryModel {
       const wordInDictionary = new Word(word);
       this.words.push(wordInDictionary);
     });
-    this.onUpdateWords(this.words);
+    if (this.onUpdateWords) this.onUpdateWords(this.words);
   }
 }
 

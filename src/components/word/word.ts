@@ -24,15 +24,20 @@ class Word implements IWordApp {
     // }
   }
 
+  /* bindAddToHardWord(callback) {
+    const wordHard = document.getElementById('wordHard');
+    wordHard?.addEventListener('click', callback);
+  }
+ */
+
   listenWord() {
     console.log(this.word.id);
   }
 
   async addToHardWord() {
-    const api = Api.getInstance();
-    // const optional: { wordID: string } = { wordID: this.word.id };
+    // const api = Api.getInstance();
     const word: IUserWord = { difficulty: 'hard' };
-    api.createUserWord(this.word.id, word);
+    Api.getInstance().createUserWord(this.word.id, word);
   }
 
   checkWord() {

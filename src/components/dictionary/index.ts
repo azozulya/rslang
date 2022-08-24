@@ -19,7 +19,9 @@ class Dictionary {
   async draw(rootContainer: HTMLElement) {
     const container = rootContainer;
     container.append(this.view.draw());
-    this.handleGetWords(0, 0);
+
+    const { group, page } = this.view.getGroupAndPage();
+    this.handleGetWords(group, page);
     this.addHandlers();
 
     const login = await this.api.loginUser({ // remove after class Auth is ready
@@ -36,7 +38,7 @@ class Dictionary {
     this.model.bindUpdateWords(this.onUpdateWords);
   }
 
-  onUpdateWords = (words:IWordApp) => {
+  onUpdateWords = (words:IWordApp[]) => {
     this.view.drawWords(words);
   };
 
