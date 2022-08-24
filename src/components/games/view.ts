@@ -1,5 +1,6 @@
 import { IGameWord } from '../interfaces';
 import create from '../utils/createElement';
+import { timer } from '../utils/utils';
 
 class GamesView {
   private gameContainer: HTMLElement;
@@ -10,7 +11,7 @@ class GamesView {
 
   private gameSteps?: HTMLElement;
 
-  private gameStat = {
+  private gameState = {
     score: 0,
     learnedWords: 0,
     rightAnswer: 0,
@@ -103,8 +104,11 @@ class GamesView {
     yesBtn.addEventListener('click', this.onYesBtnClickHandler);
 
     this.gameSteps = create({ tagname: 'div' });
+    const gameTimer = create({ tagname: 'div' });
 
-    this.gameScreen?.append(this.gameSteps, noBtn, yesBtn);
+    timer(30, gameTimer);
+
+    this.gameScreen?.append(gameTimer, this.gameSteps, noBtn, yesBtn);
   }
 
   private saveResult = () => {
@@ -124,15 +128,15 @@ class GamesView {
   private onNoBtnClickHandler = () => {
     if (this.checkAnswer('false')) {
       console.log('no btn click, right answer');
-      this.gameStat.rightAnswer += 1;
-      this.gameStat.seriesOfRightAnswer += 1;
-      this.gameStat.score += 10;
+      this.gameState.rightAnswer += 1;
+      this.gameState.seriesOfRightAnswer += 1;
+      this.gameState.score += 10;
     } else {
-      this.gameStat.wrongAnswer += 1;
-      const { maxSeriesOfRightAnswer, seriesOfRightAnswer } = this.gameStat;
+      this.gameState.wrongAnswer += 1;
+      const { maxSeriesOfRightAnswer, seriesOfRightAnswer } = this.gameState;
       if (seriesOfRightAnswer > maxSeriesOfRightAnswer) {
-        this.gameStat.maxSeriesOfRightAnswer = seriesOfRightAnswer;
-        this.gameStat.seriesOfRightAnswer = 0;
+        this.gameState.maxSeriesOfRightAnswer = seriesOfRightAnswer;
+        this.gameState.seriesOfRightAnswer = 0;
       }
       console.log('no btn click, wrong answer');
     }
@@ -142,29 +146,31 @@ class GamesView {
 
   private onYesBtnClickHandler = () => {
     if (this.checkAnswer('true')) {
-      this.gameStat.rightAnswer += 1;
-      this.gameStat.seriesOfRightAnswer += 1;
-      this.gameStat.score += 10;
+      this.gameState.rightAnswer += 1;
+      this.gameState.seriesOfRightAnswer += 1;
+      this.gameState.score += 10;
       console.log('yes btn click, right answer');
     } else {
-      this.gameStat.wrongAnswer += 1;
-      const { maxSeriesOfRightAnswer, seriesOfRightAnswer } = this.gameStat;
+      this.gameState.wrongAnswer += 1;
+      const { maxSeriesOfRightAnswer, seriesOfRightAnswer } = this.gameState;
       if (seriesOfRightAnswer > maxSeriesOfRightAnswer) {
-        this.gameStat.maxSeriesOfRightAnswer = seriesOfRightAnswer;
-        this.gameStat.seriesOfRightAnswer = 0;
+        this.gameState.maxSeriesOfRightAnswer = seriesOfRightAnswer;
+        this.gameState.seriesOfRightAnswer = 0;
       }
       console.log('yes btn click, wrong answer');
     }
 
     if (this.gameSteps) {
-      this.gameSteps.innerHTML = JSON.stringify(this.gameStat);
+      this.gameSteps.innerHTML = JSON.stringify(this.gameState);
     }
 
     this.nextWord();
   };
 
   private getCurrentWord() {
-    return this.wordsElements?.find((word) => word.classList.contains('game__word--active'));
+    return this.wordsElements?.find((word) =>
+      word.classList.contains('game__word--active')
+    );
   }
 
   private checkAnswer = (userAnswer: string) => {
@@ -198,7 +204,7 @@ class GamesView {
     this.gameContainer.innerText = '';
     if (this.resultScreen) {
       this.gameContainer.append(this.resultScreen);
-      this.resultScreen.append(JSON.stringify(this.gameStat));
+      this.resultScreen.append(JSON.stringify(this.gameState));
 
       this.resultScreen.insertAdjacentHTML(
         'beforeend',
@@ -208,7 +214,7 @@ class GamesView {
           <button class="btn">Перейти в учебник</button>
         </div>
 
-      `,
+      `
       );
     }
   }
@@ -247,11 +253,11 @@ class GamesView {
         });
         wordElement.setAttribute(
           'answer',
-          String(wordTranslate === pseudoTranslate),
+          String(wordTranslate === pseudoTranslate)
         );
         wordElement.dataset.index = idx.toString();
         return wordElement;
-      },
+      }
     );
 
     const wordFrame = create({ tagname: 'div', class: 'game__frame' });
