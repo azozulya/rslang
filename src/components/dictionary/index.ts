@@ -47,7 +47,7 @@ class Dictionary {
   };
 
   handleGetWords = (group:number, page:number) => {
-    this.model.getWords(group, page);
+    this.model.getWords(group, page, true);
   };
 }
 
