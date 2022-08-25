@@ -1,4 +1,4 @@
-import { TPageHistory } from '../../types/interfaces';
+import { TPageHistory } from '../../interfaces/interfaces';
 import { PAGE_KEY } from '../../utils/constants';
 import { getLocalStorage } from '../../utils/localStorage';
 import SprintModel from './model';

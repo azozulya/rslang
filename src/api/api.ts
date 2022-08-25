@@ -6,7 +6,7 @@ import {
   IUserStatistics,
   IUserSettings,
   IToken,
-} from '../types/interfaces';
+} from '../interfaces/interfaces';
 
 class Api {
   private static instance: Api;
@@ -366,12 +366,16 @@ class Api {
     return (await response.json()) as IUserSettings;
   }
 
-  getUserId() {
-    return JSON.parse(<string>localStorage.getItem('RSLang_Auth')).userId;
+  getUserId(): number | null {
+    const authInfo = localStorage.getItem('RSLang_Auth');
+    if (!authInfo) return null;
+    return JSON.parse(authInfo).userId;
   }
 
   getToken() {
-    return JSON.parse(<string>localStorage.getItem('RSLang_Auth')).token;
+    const authInfo = localStorage.getItem('RSLang_Auth');
+    if (!authInfo) return null;
+    return JSON.parse(authInfo).token;
   }
 
   getRefreshToken() {

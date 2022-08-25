@@ -1,7 +1,7 @@
 import DictionaryView from './dictionary';
-import API from '../api/api';
+import API from '../../api/api';
 import DictionaryModel from './model';
-import { IWordApp } from '../interfaces';
+import { IWordApp } from '../../interfaces/interfaces';
 
 class Dictionary {
   private view: DictionaryView;

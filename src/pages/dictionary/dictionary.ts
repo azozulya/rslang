@@ -1,6 +1,6 @@
 /* eslint-disable max-lines-per-function */
 import Api from '../../api/api';
-import { IWordApp } from '../../types/interfaces';
+import { IWordApp } from '../../interfaces/interfaces';
 import create from '../../utils/createElement';
 import { getLocalStorage, setLocalStorage } from '../../utils/localStorage';
 import Pagination from '../../components/pagination';
@@ -37,9 +37,7 @@ class DictionaryView {
       document.getElementById('dictionaryGroups')
     );
     this.onGetWords = callback;
-    dictionaryGroups.addEventListener('click', (e: Event) =>
-      this.updateGroup(e)
-    );
+    dictionaryGroups.addEventListener('click', (e: Event) => this.updateGroup(e));
   }
 
   bindGetHardWords(callback: { (): void }) {
@@ -54,7 +52,7 @@ class DictionaryView {
       TOTAL_WORDS,
       WORDS_PER_PAGE,
       this.page + 1,
-      this.goToPage
+      this.goToPage,
     );
 
     if (this.paginationContainer) {
@@ -80,8 +78,7 @@ class DictionaryView {
   }
 
   getGroupAndPage() {
-    const groupAndPage: { page: number; group: number } =
-      getLocalStorage('wordsGroupAndPage');
+    const groupAndPage: { page: number; group: number } = getLocalStorage('wordsGroupAndPage');
     if (groupAndPage) {
       this.page = groupAndPage.page;
       this.group = groupAndPage.group;
@@ -91,8 +88,9 @@ class DictionaryView {
 
   highlightGroupBtn() {
     const groupBtns = document.querySelectorAll('.dictionary__groups_item');
-    const { group } = getLocalStorage('wordsGroupAndPage');
-    this.group = group;
+
+    this.group = getLocalStorage('wordsGroupAndPage') || 0;
+
     groupBtns.forEach((button) => {
       if (button.classList.contains('dictionary__groups_item_active')) {
         button.classList.remove('dictionary__groups_item_active');

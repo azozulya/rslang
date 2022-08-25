@@ -1,8 +1,9 @@
 import Router from '../components/router';
 import Menu from '../components/menu';
+import Auth from '../components/auth/auth';
 import { DEFAULT_PAGE, PAGE_KEY } from '../utils/constants';
 import { getLocalStorage, setLocalStorage } from '../utils/localStorage';
-import { TPageHistory } from '../types/interfaces';
+import { TPageHistory } from '../interfaces/interfaces';
 
 class App {
   private router: Router;
@@ -11,6 +12,8 @@ class App {
 
   private currentPage: string;
 
+  private auth: Auth;
+
   constructor() {
     const rootContainer = document.getElementById('main') || document.body;
     const storageObj = getLocalStorage<TPageHistory>(PAGE_KEY);
@@ -18,12 +21,15 @@ class App {
     this.currentPage = storageObj ? storageObj.currentPage : DEFAULT_PAGE;
     this.router = new Router(rootContainer);
     this.menu = new Menu(this.currentPage);
+    this.auth = new Auth();
   }
 
   start() {
     document?.addEventListener('click', this.onLinkClickHandler);
 
     window.addEventListener('load', this.onPageLoadHandler);
+
+    this.auth.drawButton();
   }
 
   private onLinkClickHandler = (event: Event) => {
@@ -36,9 +42,8 @@ class App {
     event.preventDefault();
 
     const pageName = linkItem?.dataset.page;
-    const isMenuLink =
-      Boolean(linkItem.closest('.menu')) ||
-      Boolean(linkItem.closest('.footer__menu'));
+    const isMenuLink = Boolean(linkItem.closest('.menu'))
+      || Boolean(linkItem.closest('.footer__menu'));
 
     if (pageName) {
       if (pageName === this.currentPage) return;

@@ -1,13 +1,17 @@
-import Api from '../api/api';
-import { IWord, IWordApp, IWordWithUserWord } from '../interfaces';
-import Word from '../word/word';
+import Api from '../../api/api';
+import {
+  IWord,
+  IWordApp,
+  IWordWithUserWord,
+} from '../../interfaces/interfaces';
+import Word from '../../components/word/word';
 
 class DictionaryModel {
   words: IWordApp[];
 
   api: Api;
 
-  onUpdateWords?: ((words: IWordApp[]) => void);
+  onUpdateWords?: (words: IWordApp[]) => void;
 
   constructor() {
     this.words = [];
@@ -18,11 +22,13 @@ class DictionaryModel {
     this.onUpdateWords = callback;
   }
 
-  async getWords(group:number, page:number, auth = false) {
+  async getWords(group: number, page: number, auth = false) {
     const words = await this.api.getWords(group, page);
     if (auth) {
       console.log('hello auth');
-      const wordsForAuthUser: IWordWithUserWord[] = await this.getUserWords(words);
+      const wordsForAuthUser: IWordWithUserWord[] = await this.getUserWords(
+        words,
+      );
       this.makeWords(wordsForAuthUser);
     } else {
       this.makeWords(words);
@@ -46,7 +52,7 @@ class DictionaryModel {
     this.makeWords(fullWords);
   }
 
-  async getUserWords(words:IWord[]) {
+  async getUserWords(words: IWord[]) {
     const wordsForAuthUser: IWordWithUserWord[] = [];
     const userWords = await this.api.getUserWords();
     words.forEach((word) => {

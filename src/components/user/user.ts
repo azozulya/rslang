@@ -8,8 +8,8 @@ import {
   IUserSettings,
   IToken,
   IJwt,
-} from '../interfaces';
-import Api from '../api/api';
+} from '../../interfaces/interfaces';
+import Api from '../../api/api';
 
 class User {
   private static instance: User;
@@ -164,7 +164,7 @@ class User {
     group: string,
     page: string,
     wordsPerPage: string,
-    filter: string
+    filter: string,
   ): Promise<IWord[]> {
     return this.api.getUserAggregatedWordsNew(
       this.userId,
@@ -172,7 +172,7 @@ class User {
       group,
       page,
       wordsPerPage,
-      filter
+      filter,
     );
   }
 
