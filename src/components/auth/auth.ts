@@ -1,11 +1,8 @@
 import './auth.scss';
 import User from '../user/user';
-// import Api from '../api/api';
 
 export default class Auth {
   private static instance: Auth;
-
-  // private api: Api;
 
   private content: string;
 
@@ -17,14 +14,6 @@ export default class Auth {
     this.container__class = 'login-form';
     this.content = '';
     this.user = User.getInstance();
-    // this.api = Api.getInstance();
-  }
-
-  static getInstance() {
-    if (!Auth.instance) {
-      Auth.instance = new Auth();
-    }
-    return Auth.instance;
   }
 
   async drawButton() {
