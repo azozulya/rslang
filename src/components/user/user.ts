@@ -18,6 +18,7 @@ class User {
   private message: string;
 
   private name: string;
+
   static User: User;
 
   constructor() {
@@ -29,12 +30,12 @@ class User {
     this.name = JSON.parse(<string>localStorage.getItem('RSLang_Auth')).name;
   }
 
-  static getInstance() {
+  /* static getInstance() {
     if (!User.instance) {
       User.instance = new User();
     }
     return User.instance;
-  }
+  } */
 
   getStorage(key: string) {
     return localStorage.getItem(key);
@@ -151,4 +152,8 @@ class User {
     return this.api.updateUserSettings(this.userId, this.token, body);
   }
 }
-export default User;
+
+const userApi = new User();
+export default userApi;
+
+// export default User;

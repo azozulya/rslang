@@ -2,7 +2,6 @@
 import Api from '../api/api';
 import { IWordApp } from '../interfaces';
 import create from '../utils/createElement';
-import './dictionary.scss';
 import { getLocalStorage, setLocalStorage } from '../utils/LocalStorage';
 import Pagination from './pagination';
 

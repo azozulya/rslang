@@ -24,8 +24,10 @@ class DictionaryModel {
   }
 
   async getHardWords() {
+    const userWords = await this.getUserWords();
+    const hardWords = userWords.filter((word) => word.optional?.hard === true);
+    console.log('hardWords', hardWords);
     const words: Promise<IWord>[] = [];
-    const hardWords = await this.api.getUserWords();
     // eslint-disable-next-line no-restricted-syntax
     for (const userHardWord of hardWords) {
       const { wordId } = userHardWord;
@@ -38,8 +40,14 @@ class DictionaryModel {
     this.makeWords(fullWords);
   }
 
-  makeWords(words: Array<IWord>) {
+  async getUserWords() {
+    const userWord = await this.api.getUserWords();
+    return userWord;
+  }
+
+  async makeWords(words: Array<IWord>) {
     this.words = [];
+    // this userWords = await
     words.forEach((word) => {
       const wordInDictionary = new Word(word);
       this.words.push(wordInDictionary);

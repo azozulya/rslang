@@ -49,8 +49,9 @@ export interface IAuth {
 export interface IUserWord {
   difficulty: string;
   optional?: {
-    wordID: string
-  };
+    learned?: boolean;
+    hard?: boolean;
+  }
   wordId?: string;
 }
 
