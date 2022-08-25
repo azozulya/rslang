@@ -12,11 +12,11 @@ class Word implements IWordApp {
     this.word = word;
   }
 
-  /* addHandlers(word: HTMLElement) {
+  addHandlers(word: HTMLElement) {
     word.addEventListener('click', (e) => this.defineTarget(e));
   }
 
-  /* defineTarget(event:Event) {
+  defineTarget(event:Event) {
     const element = <HTMLElement>event.target;
     if (element.classList.contains('word__audio')) this.listenWord();
 
@@ -47,8 +47,10 @@ class Word implements IWordApp {
     console.log(this.word.id);
   }
 
-  /* async addToHardWords() {
-    this.word.optional?.hard = true;
+  async addToHardWords() {
+    if (this.word.optional) this.word.optional.hard = true;
+    else this.word.optional = { hard: true };
+
     const word: IUserWord = { difficulty: 'none', optional: { hard: this.word.optional?.hard } };
     const userWord = await userApi.getUserWord(this.word.id);
     if (userWord) userApi.updateUserWord(this.word.id, word);
@@ -60,7 +62,9 @@ class Word implements IWordApp {
   }
 
   async deleteFromHardWords() {
-    this.word.optional?.hard = false;
+    if (this.word.optional) this.word.optional.hard = false;
+    else this.word.optional = { hard: false };
+
     const word: IUserWord = { difficulty: 'none', optional: { hard: this.word.optional?.hard } };
     await userApi.updateUserWord(this.word.id, word);
 
@@ -68,12 +72,15 @@ class Word implements IWordApp {
   }
 
   async addToLearnedWords() {
-    this.word.optional?.learned = true;
+    if (this.word.optional) this.word.optional.learned = true;
+    else this.word.optional = { learned: true };
+
     const word: IUserWord = {
-       difficulty: 'none', optional: {
-          learned: this.word.optional?.learned
-        }
-      };
+      difficulty: 'none',
+      optional: {
+        learned: this.word.optional?.learned,
+      },
+    };
     const userWord = await userApi.getUserWord(this.word.id);
     if (userWord) userApi.updateUserWord(this.word.id, word);
     else {
@@ -84,16 +91,19 @@ class Word implements IWordApp {
   }
 
   async deleteFromLearnedWords() {
-    this.word.optional?.learned = false;
+    if (this.word.optional) this.word.optional.learned = false;
+    else this.word.optional = { learned: false };
+
     const word: IUserWord = {
-      difficulty: 'none', optional: {
-        learned: this.word.optional?.learned
-      }
+      difficulty: 'none',
+      optional: {
+        learned: this.word.optional?.learned,
+      },
     };
     await userApi.updateUserWord(this.word.id, word);
 
     this.changeIcon();
-  } */
+  }
 
   changeIcon() {
     const word = <HTMLElement>document.getElementById(this.word.id);
