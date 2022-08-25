@@ -1,5 +1,6 @@
+import JWT from 'jwt-decode';
 import {
-  IWord, IUser, IAuth, IUserWord, IUserStatistics, IUserSettings, IToken,
+  IWord, IUser, IAuth, IUserWord, IUserStatistics, IUserSettings, IToken, IJwt,
 } from '../interfaces';
 import Api from '../api/api';
 
@@ -51,9 +52,36 @@ class User {
     localStorage.setItem(key, value);
   }
 
-  isAuthenticated(): boolean {
-    const getValue = <string | null> this.getStorage('Authenticated');
-    return getValue == null ? false : JSON.parse(getValue);
+  // isAuthenticated(): boolean {
+  //   const getValue = <string | null> this.getStorage('Authenticated');
+  //   return getValue == null ? false : JSON.parse(getValue);
+  // }
+
+  logout() {
+    localStorage.clear();
+
+    this.userId = '';
+    this.token = '';
+    this.refreshToken = '';
+    this.message = '';
+    this.name = '';
+  }
+
+  async isAuthenticated(): Promise<boolean> {
+    if (this.token === '') {
+      this.setStorage('Authenticated', JSON.stringify(false));
+      return false;
+    }
+
+    const expToken = (<IJwt>JWT(this.token)).exp;
+    const currentTime = Math.trunc(Date.now() / 1000);
+
+    if (expToken <= currentTime) {
+      this.setStorage('Authenticated', JSON.stringify(true));
+      return false;
+    }
+
+    return true;
   }
 
   getWords(group: number, page: number): Promise<IWord[]> {
@@ -91,6 +119,7 @@ class User {
     result.name = this.name;
 
     this.setStorage('RSLang_Auth', JSON.stringify(result));
+    this.setStorage('Authenticated', JSON.stringify(true));
 
     return result;
   }
