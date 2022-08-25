@@ -8,7 +8,6 @@ export interface ICreateElement {
 }
 
 export interface IWord {
-  [key: string]: string | number;
 
   id: string;
   group: number;
@@ -25,9 +24,17 @@ export interface IWord {
   textMeaningTranslate: string;
   textExampleTranslate: string;
 }
+export interface IWordWithUserWord extends IWord {
+  optional?: {
+    learned?: boolean;
+    hard?: boolean;
+  }
+}
 
 export interface IWordApp {
   word: IWord;
+  hard?: boolean;
+  learned?: boolean;
   draw(): void;
 }
 export interface IUser {
@@ -49,8 +56,9 @@ export interface IAuth {
 export interface IUserWord {
   difficulty: string;
   optional?: {
-    wordID: string
-  };
+    learned?: boolean;
+    hard?: boolean;
+  }
   wordId?: string;
 }
 

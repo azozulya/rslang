@@ -1,0 +1,99 @@
+.dictionary {
+  width: 100%;
+
+  &__groups_list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2em;
+    list-style: none;
+    padding: 0;
+  }
+
+    &__groups_item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 7.5em;
+    height: 2em;
+    text-transform: uppercase;
+    color: #ffffff;
+    border-radius: 0.65em;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: 0.25s;
+
+      &:nth-child(1) {
+        background-color: $word-group-0;
+      }
+      &:nth-child(2) {
+        background-color: $word-group-1;
+      }
+      &:nth-child(3) {
+        background-color: $word-group-2;
+      }
+      &:nth-child(4) {
+        background-color: $word-group-3;
+      }
+      &:nth-child(5) {
+        background-color: $word-group-4;
+      }
+      &:nth-child(6) {
+        background-color: $word-group-5;
+      }
+
+      &:hover {
+        opacity: 1;
+      }
+
+    &_active {
+      opacity: 1;
+      transform: scale(1.2);
+    }
+  }
+
+  &__extentions {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__hardwords,
+  &__sprint,
+  &__audio {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 12em;
+    height: 3em;
+    color: #000000;
+    background-image: url(../../assets/img/hard_words.svg);
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position-x: left;
+    cursor: pointer;
+    transition: 0.25s;
+  }
+
+  &__sprint {
+    background-image: url(../../assets/img/game_sprint.svg);
+  }
+  &__audio {
+    background-image: url(../../assets/img/game_audio.svg);
+  }
+  &__hardwords:hover,
+  &__sprint:hover,
+  &__audio:hover {
+    color: $secondary-main;
+  }
+  &__games {
+    display: flex;
+  }
+
+  &__words {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 2em;
+  }
+
+}

@@ -1,7 +1,6 @@
 import Router from '../router';
 import Menu from '../utils/menu';
 import Auth from '../auth/auth';
-import createStorage from '../utils/initStorage';
 
 class App {
   private router: Router;
@@ -17,7 +16,7 @@ class App {
 
     this.router = new Router(rootContainer);
     this.menu = new Menu();
-    this.auth = Auth.getInstance();
+    this.auth = new Auth();
   }
 
   start() {

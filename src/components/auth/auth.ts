@@ -1,5 +1,5 @@
 import './auth.scss';
-import User from '../user/user';
+import userApi from '../user/user';
 
 export default class Auth {
   private static instance: Auth;
@@ -8,17 +8,14 @@ export default class Auth {
 
   container__class: string;
 
-  private user: User;
-
   constructor() {
     this.container__class = 'login-form';
     this.content = '';
-    this.user = User.getInstance();
   }
 
   async drawButton() {
     const button = <HTMLElement>document.getElementById('auth');
-    if (await this.user.isAuthenticated()) {
+    if (await userApi.isAuthenticated()) {
       button.innerHTML = '<button id="main_logout" class="btn btn--orange auth__btn">Выйти</button>';
       button.addEventListener('click', (e: Event) => this.request(e));
     } else {
@@ -173,7 +170,7 @@ export default class Auth {
   private logout() {
     const button = <HTMLElement>document.getElementById('auth');
     button.innerHTML = '<button id="main_login" class="btn btn--orange auth__btn">Войти</button>';
-    this.user.logout();
+    userApi.logout();
   }
 
   private closeModal() {
@@ -185,7 +182,7 @@ export default class Auth {
     const email = (<HTMLInputElement>document.getElementById('email')).value;
     const password = (<HTMLInputElement>document.getElementById('password')).value;
 
-    const res = await this.user.loginUser({ email, password });
+    const res = await userApi.loginUser({ email, password });
     if (res === 200) {
       this.closeModal();
       const button = <HTMLElement>document.getElementById('auth');
@@ -204,7 +201,7 @@ export default class Auth {
     const password = (<HTMLInputElement>document.getElementById('password')).value;
     console.log('sendRegisterData: IN');
 
-    const statusCreate = await this.user.createUser({ name, email, password });
+    const statusCreate = await userApi.createUser({ name, email, password });
     console.log('sendRegisterData: OUT');
     console.log(statusCreate);
 
@@ -223,7 +220,7 @@ export default class Auth {
       (<HTMLElement>document.getElementById('title')).innerHTML = 'Спасибо за регистрацию!!!';
       console.log('sendRegisterData: LOGIN IN');
 
-      const statusLogin = await this.user.loginUser({ email, password });
+      const statusLogin = await userApi.loginUser({ email, password });
       console.log('sendRegisterData: LOGIN OUT');
 
       if (statusLogin === 200) {
@@ -235,6 +232,7 @@ export default class Auth {
   }
 
   private validateEmail(value: string): boolean {
+    // eslint-disable-next-line no-useless-escape
     const EMAIL_REGEXP = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return EMAIL_REGEXP.test(value);
   }

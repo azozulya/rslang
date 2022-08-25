@@ -36,7 +36,7 @@ module.exports = {
     '@typescript-eslint/no-var-requires': 'off',
     'import/no-extraneous-dependencies': ["error", {"devDependencies": true}],
     'class-methods-use-this': ["off"],
-    'max-lines-per-function': ["error", 40]
+    'max-lines-per-function': ["error", 40],
   },
   
   
