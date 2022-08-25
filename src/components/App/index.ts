@@ -1,5 +1,7 @@
 import Router from '../router';
 import Menu from '../utils/menu';
+import Auth from '../auth/auth';
+import createStorage from '../utils/initStorage';
 
 class App {
   private router: Router;
@@ -8,11 +10,14 @@ class App {
 
   private menu: Menu;
 
+  private auth: Auth;
+
   constructor() {
     const rootContainer = document.getElementById('main') || document.body;
 
     this.router = new Router(rootContainer);
     this.menu = new Menu();
+    this.auth = Auth.getInstance();
   }
 
   start() {
@@ -21,6 +26,8 @@ class App {
     window.addEventListener('load', this.onPageLoadHandler);
 
     this.menu.init();
+
+    this.auth.drawButton();
   }
 
   private onLinkClickHandler = (event: Event) => {
