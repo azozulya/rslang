@@ -1,13 +1,11 @@
-import JWT from 'jwt-decode';
 import './auth.scss';
 import User from '../user/user';
-import Api from '../api/api';
-import { IAuth, IJwt } from '../interfaces';
+// import Api from '../api/api';
 
 export default class Auth {
   private static instance: Auth;
 
-  private api: Api;
+  // private api: Api;
 
   private content: string;
 
@@ -19,7 +17,7 @@ export default class Auth {
     this.container__class = 'login-form';
     this.content = '';
     this.user = User.getInstance();
-    this.api = Api.getInstance();
+    // this.api = Api.getInstance();
   }
 
   static getInstance() {
@@ -29,33 +27,9 @@ export default class Auth {
     return Auth.instance;
   }
 
-  async isLogin(): Promise<boolean> {
-    const getValue = <string | null> this.user.getStorage('RSLang_Auth');
-    if (getValue !== null) {
-      const storage = <IAuth>JSON.parse(<string>getValue);
-      // console.log(storage.refreshToken);
-      if (storage.refreshToken === '') return false;
-      const refreshTokenDate = (<IJwt>JWT(storage.refreshToken)).exp;
-      console.log(Math.trunc(Date.now() / 1000));
-      console.log(refreshTokenDate);
-
-      const currentDate = Date.now() / 1000;
-      const differenceToken = refreshTokenDate - currentDate;
-      // console.log(refreshTokenDate);
-      // console.log(`${refreshTokenDate - currentDate / 1000}`);
-      if (differenceToken <= 3600 && differenceToken > 0) {
-        await this.user.getUserToken();
-        // if (refreshTokenDate - currentDate <= 3600) await this.api.getUserToken(storage.userId, storage.refreshToken);
-        return true;
-      }
-    }
-    // console.log('RSLang_Auth: NULL');
-    return false;
-  }
-
   async drawButton() {
     const button = <HTMLElement>document.getElementById('auth');
-    if (await this.isLogin()) {
+    if (await this.user.isAuthenticated()) {
       button.innerHTML = '<button id="main_logout" class="btn btn--orange auth__btn">Выйти</button>';
       button.addEventListener('click', (e: Event) => this.request(e));
     } else {
@@ -72,7 +46,7 @@ export default class Auth {
     loginWindow.addEventListener('click', (event) => {
       if (event.target === loginWindow) this.closeModal();
     });
-    container.innerHTML = '<div id="modal"><div>';
+    container.innerHTML = '<div id="modal"></div>';
 
     this.drawLoginUser();
   }
@@ -81,32 +55,36 @@ export default class Auth {
     const container = <HTMLElement>document.getElementById('modal');
     container.innerHTML = '';
     this.content = `
-    <div>
-      <div class="name" data-validate="true">
+    <div class="header">РЕГИСТРАЦИЯ</div>
+    <div class="block" style="height:25px">
+      <div id="cross"><span id="modal-close" class="close">&times;</span></div>
+      <div id="title">&nbsp;</div>
+    </div>
+    <div class="block">
+      <div id="input-name" class="name" data-validate="true">
         <div class="label">Имя</div>
         <div class="input"><input id="name" type="text" autocomplete="off" required></div>
       </div>
       <div id="error-name" class="error">&nbsp</div>
     </div>
-    <div>
-      <div class="email" data-validate="true">
+    <div class="block">
+      <div id="input-email" class="email" data-validate="true">
         <div class="label">Email</div>
         <div class="input"><input id="email" type="email" autocomplete="off" required></div>
       </div>
       <div id="error-email" class="error">&nbsp;</div>
     </div>
-    <div>
-      <div class="password" data-validate="true">
+    <div class="block">
+      <div id="input-password" class="password" data-validate="true">
         <div class="label">Пароль</div>
         <div class="input"><input id="password" type="password" autocomplete="off" minlength="8" required ></div>
       </div>
       <div id="error-password" class="error">&nbsp;</div>
     </div>
-    <div class="button">
-      <button id="close">ОТМЕНА</button><button id="register">РЕГИСТРАЦИЯ</button>
-    </div>
+    <div class="button"><button id="register">РЕГИСТРАЦИЯ</button></div>
   `;
     container.innerHTML = this.content;
+    this.addHandlersBlock();
 
     this.addValidateEmail();
     this.addValidatePassword();
@@ -117,29 +95,34 @@ export default class Auth {
     const container = <HTMLElement>document.getElementById('modal');
     container.innerHTML = '';
     this.content = `
-    <div>
+    <div class="header">ВХОД</div>
+    <div class="block" style="height:25px">
+      <div id="cross"><span id="modal-close" class="close">&times;</span></div>
+      <div id="title">&nbsp;</div>
+    </div>
+    <div class="block">
       <div id="input-email" class="email" data-validate="true">
-        <div class="label">Email</div>
+        <div id="emailLabel" class="label">Email</div>
         <div class="input"><input id="email" type="email" autocomplete="off" required></div>
       </div>
       <div id="error-email" class="error">&nbsp;</div>
     </div>
-    <div>
-      <div class="password" data-validate="true">
-        <div class="label">Пароль</div>
+    <div class="block">
+      <div id="input-password" class="password" data-validate="true">
+        <div id="passwordLabel" class="label">Пароль</div>
         <div class="input"><input id="password" type="password" autocomplete="off" minlength="8" required></div>
       </div>
       <div id="error-password" class="error">&nbsp;</div>
-    </div>
+    </div class="block">
       <div class="button">
-        <button id="registerLink">Регистрация</button><button id="close">ОТМЕНА</button><button id="login">ВХОД</button>
+        <button id="login">ВХОД</button><p><button id="registerLink">Регистрация</button>
       </div>
   `;
+
     container.innerHTML = this.content;
-    const inputEmail = <HTMLElement>document.getElementById('input-email');
-    inputEmail.addEventListener('click', () => {
-      (<HTMLInputElement>document.getElementById('email')).focus();
-    });
+
+    // this.addHandlersBlockLogin();
+
     this.addValidateEmail();
     this.addValidatePassword();
     this.addHandlers();
@@ -168,16 +151,40 @@ export default class Auth {
     modal.addEventListener('click', (e: Event) => this.request(e));
   }
 
+  private addHandlersBlock() {
+    const inputName = <HTMLElement>document.getElementById('input-name');
+    inputName.addEventListener('click', () => {
+      (<HTMLInputElement>document.getElementById('name')).focus();
+    });
+
+    const inputEmail = <HTMLElement>document.getElementById('input-email');
+    inputEmail.addEventListener('click', () => {
+      (<HTMLInputElement>document.getElementById('email')).focus();
+    });
+
+    const inputPassword = <HTMLElement>document.getElementById('input-password');
+    inputPassword.addEventListener('click', () => {
+      (<HTMLInputElement>document.getElementById('password')).focus();
+    });
+  }
+
   private request(event: Event) {
     const target = <HTMLElement>event.target;
-    console.log(target);
-
+    console.log(<HTMLElement>event.target);
     if (target.id === 'main_login') this.draw();
+    if (target.id === 'main_logout') this.logout();
     if (target.id === 'registerLink') this.drawCreateUser();
     if (target.id === 'login') this.sendLoginData();
     if (target.id === 'register') this.sendRegisterData();
-    if (target.id === 'close') this.closeModal();
-    // if (target.id === 'input-email') (<HTMLInputElement>document.getElementById('email')).focus();
+    if (target.id === 'modal-close') this.closeModal();
+    if (target.id === 'input-email' || target.id === 'emailLabel') (<HTMLInputElement>document.getElementById('email')).focus();
+    if (target.id === 'input-password' || target.id === 'passwordLabel') (<HTMLInputElement>document.getElementById('password')).focus();
+  }
+
+  private logout() {
+    const button = <HTMLElement>document.getElementById('auth');
+    button.innerHTML = '<button id="main_login" class="btn btn--orange auth__btn">Войти</button>';
+    this.user.logout();
   }
 
   private closeModal() {
@@ -188,12 +195,17 @@ export default class Auth {
   private async sendLoginData() {
     const email = (<HTMLInputElement>document.getElementById('email')).value;
     const password = (<HTMLInputElement>document.getElementById('password')).value;
+
     const res = await this.user.loginUser({ email, password });
-    console.log(`sendLoginData: ${res}`);
     if (res === 200) {
       this.closeModal();
       const button = <HTMLElement>document.getElementById('auth');
       button.innerHTML = '<button id="main_logout" class="btn btn--orange auth__btn">Выйти</button>';
+    }
+    if (res === 404) {
+      (<HTMLElement>document.getElementById('title')).innerHTML = 'Не верный Email или пароль!!!';
+      (<HTMLInputElement>document.getElementById('email')).value = '';
+      (<HTMLInputElement>document.getElementById('password')).value = '';
     }
   }
 
@@ -201,23 +213,35 @@ export default class Auth {
     const name = (<HTMLInputElement>document.getElementById('name')).value;
     const email = (<HTMLInputElement>document.getElementById('email')).value;
     const password = (<HTMLInputElement>document.getElementById('password')).value;
+    console.log('sendRegisterData: IN');
+
     const statusCreate = await this.user.createUser({ name, email, password });
+    console.log('sendRegisterData: OUT');
+    console.log(statusCreate);
+
+    if (statusCreate === 417) {
+      console.log('USER EXIST');
+
+      (<HTMLElement>document.getElementById('title')).innerHTML = `Email "${email}" занят, используйте кнопку "ВОЙТИ"!`;
+
+      (<HTMLInputElement>document.getElementById('name')).value = '';
+      (<HTMLInputElement>document.getElementById('email')).value = '';
+      (<HTMLInputElement>document.getElementById('password')).value = '';
+    }
     if (statusCreate === 200) {
-      console.log('REGISTER: OK');
+      console.log('CREATE: OK');
+
+      (<HTMLElement>document.getElementById('title')).innerHTML = 'Спасибо за регистрацию!!!';
+      console.log('sendRegisterData: LOGIN IN');
+
       const statusLogin = await this.user.loginUser({ email, password });
+      console.log('sendRegisterData: LOGIN OUT');
+
       if (statusLogin === 200) {
-        console.log('LOGIN: OK');
-        this.closeModal();
         this.closeModal();
         const button = <HTMLElement>document.getElementById('auth');
         button.innerHTML = '<button id="main_logout" class="btn btn--orange auth__btn">Выйти</button>';
       }
-    }
-    if (statusCreate === 417) {
-      (<HTMLInputElement>document.getElementById('name')).value = '';
-      (<HTMLInputElement>document.getElementById('email')).value = '';
-      (<HTMLInputElement>document.getElementById('password')).value = '';
-      console.log('USER EXISTS');
     }
   }
 
