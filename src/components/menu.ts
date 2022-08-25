@@ -27,9 +27,11 @@ class Menu {
     this.menu
       ?.querySelector(`[data-page=${pageName}]`)
       ?.classList.add(this.currentMenuItemClass);
+
+    this.hideBurgerMenu();
   };
 
-  hide = () => {
+  private hideBurgerMenu = () => {
     if (!document.body.classList.contains('noscroll')) return;
 
     this.burgerMenuBtn?.classList.remove('burger-menu__active');
@@ -42,7 +44,7 @@ class Menu {
 
     if (el) return;
 
-    this.hide();
+    this.hideBurgerMenu();
   };
 
   private burgerMenuHandler = () => {

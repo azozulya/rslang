@@ -30,7 +30,7 @@ footer {
     }
   }
   &__container {
-    padding-bottom: 4rem;
+    padding-bottom: 2rem;
     display: flex;
     justify-content: flex-start;
     align-items: flex-start;
@@ -72,7 +72,8 @@ footer {
       flex-direction: row;
     }
 
-    &--link {
+    &--link,
+    &--games {
       font-size: 0.8rem;
       line-height: 1.3rem;
       color: $text-secondary;
@@ -82,36 +83,26 @@ footer {
       @include phone {
         margin-right: 1rem;
       }
-
-      &:hover {
-        color: $text-primary;
-      }
     }
+    &--link:hover {
+      color: $text-primary;
+    }
+  }
+  &__submenu {
+    margin-top: 0;
+    list-style: none;
+    padding-left: 0.5rem;
   }
 }
 
-.rs-link {
-}
 .rs-about {
-  // font-family: 'Roboto';
-  // font-style: normal;
-  // font-weight: 400;
   font-size: 0.8rem;
   line-height: 1.3rem;
   max-width: 15.8rem;
-
-  /* or 150% */
-
   color: $text-secondary;
 }
 .copyright,
 .copyright a {
-  //   font-family: 'Roboto';
-  // font-style: normal;
-  // font-weight: 400;
   font-size: 0.7rem;
   line-height: 24px;
-  /* identical to box height, or 150% */
-
-  //color: rgba(0, 0, 0, 0.87);
 }

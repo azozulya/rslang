@@ -49,7 +49,7 @@ export interface IAuth {
 export interface IUserWord {
   difficulty: string;
   optional?: {
-    wordID: string
+    wordID: string;
   };
   wordId?: string;
 }
@@ -68,3 +68,8 @@ export interface IToken {
   token: string;
   refreshToken: string;
 }
+
+export type TPageHistory = {
+  prevPage: string;
+  currentPage: string;
+};

@@ -4,7 +4,7 @@ class Statistic {
     container.innerHTML = '<br><br><br><br><br><br>Statistic page<br>';
     container.insertAdjacentHTML(
       'afterbegin',
-      '<button data-page="games" data-menu="">Game Sprint</button><br><a href="/games" data-page="games">Game</a>',
+      '<button data-page="sprint">Game Sprint</button><br><a href="#" data-page="audio-call">AudioCall</a>',
     );
   }
 }

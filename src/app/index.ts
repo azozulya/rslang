@@ -1,12 +1,8 @@
 import Router from '../components/router';
+import Menu from '../components/menu';
 import { DEFAULT_PAGE, PAGE_KEY } from '../utils/constants';
 import { getLocalStorage, setLocalStorage } from '../utils/localStorage';
-import Menu from '../components/menu';
-
-type TPageObj = {
-  prevPage: string;
-  currentPage: string;
-};
+import { TPageHistory } from '../types/interfaces';
 
 class App {
   private router: Router;
@@ -17,7 +13,8 @@ class App {
 
   constructor() {
     const rootContainer = document.getElementById('main') || document.body;
-    const storageObj = getLocalStorage<TPageObj>(PAGE_KEY);
+    const storageObj = getLocalStorage<TPageHistory>(PAGE_KEY);
+
     this.currentPage = storageObj ? storageObj.currentPage : DEFAULT_PAGE;
     this.router = new Router(rootContainer);
     this.menu = new Menu(this.currentPage);
@@ -39,35 +36,28 @@ class App {
     event.preventDefault();
 
     const pageName = linkItem?.dataset.page;
-    const isMenuLink = Boolean(linkItem.closest('.menu'));
-    console.log(isMenuLink);
+    const isMenuLink =
+      Boolean(linkItem.closest('.menu')) ||
+      Boolean(linkItem.closest('.footer__menu'));
 
     if (pageName) {
       if (pageName === this.currentPage) return;
 
-      this.router.openPage(pageName, isMenuLink);
-      this.menu.setActive(pageName);
-      this.menu.hide();
-
       this.updateLocalStorage(this.currentPage, pageName);
 
       this.currentPage = pageName;
+      this.router.openPage(pageName, isMenuLink);
+      this.menu.setActive(pageName);
     }
   };
 
   private onPageLoadHandler = () => {
     this.router.openPage(this.currentPage);
-    this.menu.hide();
     this.updateLocalStorage(this.currentPage, this.currentPage);
   };
 
   private updateLocalStorage(prevPage: string, currentPage: string) {
-    const storageValue = getLocalStorage<{
-      prevPage: string;
-      currentPage: string;
-    }>(PAGE_KEY);
-
-    console.log('storageValue: ', storageValue);
+    const storageValue = getLocalStorage<TPageHistory>(PAGE_KEY);
 
     setLocalStorage(PAGE_KEY, {
       ...storageValue,

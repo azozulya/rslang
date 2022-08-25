@@ -22,8 +22,8 @@
           <li class="menu__item">
             <span class="menu__link menu__link--with-dropdown">Игры</span>
             <ul class="menu__dropdown">
-              <li class="menu__dropdown-item"><a href="#" data-page="games" class="menu__link">Спринт</a></li>
-              <li class="menu__dropdown-item"><a href="#" data-page="games" class="menu__link">Аудиовызов</a></li>
+              <li class="menu__dropdown-item"><a href="#" data-page="sprint" class="menu__link">Спринт</a></li>
+              <li class="menu__dropdown-item"><a href="#" data-page="audio-call" class="menu__link">Аудиовызов</a></li>
             </ul>
           </li>
           <li class="menu__item"><a href="#" data-page="statistic" class="menu__link">Статистика</a></li>
@@ -61,7 +61,13 @@
         <h4>Меню</h4>
         <div class="footer__menu">
           <a href="/dictionary" data-page="dictionary" class="footer__menu--link">Учебник</a>
-          <a href="/games" data-page="games" class="footer__menu--link">Игры</a>
+          <div class="footer__menu--games">
+            <small>Игры:</small>
+            <ul class="footer__submenu">
+              <li><a href=" #" data-page="sprint" class="footer__menu--link">Спринт</a></li>
+              <li><a href="#" data-page="audio-call" class="footer__menu--link">Аудиовызов</a></li>
+            </ul>
+          </div>
           <a href="/statistic" data-page="statistic" class="footer__menu--link">Статистика</a>
         </div>
       </div>

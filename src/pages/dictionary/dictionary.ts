@@ -3,9 +3,9 @@ import Api from '../../api/api';
 import { IWord, IWordApp } from '../../types/interfaces';
 import Word from '../../components/word/word';
 import create from '../../utils/createElement';
-import './dictionary.scss';
 import { getLocalStorage, setLocalStorage } from '../../utils/localStorage';
-import Pagination from './pagination';
+import Pagination from '../../components/pagination';
+import { TOTAL_WORDS, WORDS_PER_PAGE } from '../../utils/constants';
 
 class DictionaryView {
   api: Api;
@@ -21,10 +21,6 @@ class DictionaryView {
   private pagination: Pagination | undefined;
 
   private paginationContainer: HTMLElement | undefined;
-
-  private WORDS_PER_PAGE = 20;
-
-  private TOTAL_WORDS = 600;
 
   private getWordsHandler:
   | ((group: number, page: number) => Promise<IWord[]>)
@@ -55,14 +51,14 @@ class DictionaryView {
 
   private drawPagination() {
     this.pagination = new Pagination(
-      this.TOTAL_WORDS,
-      this.WORDS_PER_PAGE,
+      TOTAL_WORDS,
+      WORDS_PER_PAGE,
       this.page + 1,
       this.goToPage,
     );
 
     if (this.paginationContainer) {
-      this.paginationContainer.innerText = '';
+      this.paginationContainer.innerHTML = '<button data-page="sprint">Sprint</button>';
       this.paginationContainer?.append(this.pagination.draw());
     }
   }

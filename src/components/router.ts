@@ -1,7 +1,8 @@
-import Games from '../pages/games';
 import Main from '../pages/main';
 import Dictionary from '../pages/dictionary';
 import Statistic from '../pages/statistic';
+import Sprint from '../pages/sprint';
+import AudioCall from '../pages/audiocall';
 
 class Router {
   private routers = [
@@ -16,9 +17,14 @@ class Router {
       controller: () => new Dictionary(),
     },
     {
-      page: 'games',
+      page: 'sprint',
       class: 'inner-page',
-      controller: () => new Games(),
+      controller: () => new Sprint(),
+    },
+    {
+      page: 'audio-call',
+      class: 'inner-page',
+      controller: () => new AudioCall(),
     },
     {
       page: 'statistic',
@@ -35,7 +41,7 @@ class Router {
     );
 
     if (currentRouter) {
-      this.rootContainer.dataset.arrival = isMenuLink ? 'menu' : '';
+      this.rootContainer.dataset.arrivalFrom = isMenuLink ? 'menu' : 'page';
 
       this.rootContainer.removeAttribute('class');
       this.rootContainer.classList.add(currentRouter.class);
