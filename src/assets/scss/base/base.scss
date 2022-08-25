@@ -16,6 +16,8 @@ body {
   background-color: $light-color;
   height: 100%;
   min-width: $min-width;
+  display: flex;
+  flex-direction: column;
 }
 
 h2 {
@@ -62,7 +64,9 @@ h4 {
     margin-bottom: 0.2rem;
   }
 }
-
+main {
+  flex-grow: 1;
+}
 .inner-page {
   padding-top: 8rem;
 }

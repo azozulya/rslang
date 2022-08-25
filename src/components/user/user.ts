@@ -1,8 +1,15 @@
 import JWT from 'jwt-decode';
 import {
-  IWord, IUser, IAuth, IUserWord, IUserStatistics, IUserSettings, IToken, IJwt,
-} from '../interfaces';
-import Api from '../api/api';
+  IWord,
+  IUser,
+  IAuth,
+  IUserWord,
+  IUserStatistics,
+  IUserSettings,
+  IToken,
+  IJwt,
+} from '../../interfaces/interfaces';
+import Api from '../../api/api';
 
 class User {
   private static instance: User;
@@ -126,7 +133,10 @@ class User {
     return result;
   }
 
-  loginUser(body: { email: string; password: string }): Promise<IAuth | number> {
+  loginUser(body: {
+    email: string;
+    password: string;
+  }): Promise<IAuth | number> {
     return this.api.loginUser(body);
   }
 

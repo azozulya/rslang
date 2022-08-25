@@ -8,7 +8,6 @@ export interface ICreateElement {
 }
 
 export interface IWord {
-
   id: string;
   group: number;
   page: number;
@@ -28,7 +27,7 @@ export interface IWordWithUserWord extends IWord {
   optional?: {
     learned?: boolean;
     hard?: boolean;
-  }
+  };
 }
 
 export interface IWordApp {
@@ -58,7 +57,7 @@ export interface IUserWord {
   optional?: {
     learned?: boolean;
     hard?: boolean;
-  }
+  };
   wordId?: string;
 }
 
@@ -83,3 +82,8 @@ export interface IJwt {
   iat: number;
   exp: number;
 }
+
+export type TPageHistory = {
+  prevPage: string;
+  currentPage: string;
+};

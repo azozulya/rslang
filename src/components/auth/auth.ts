@@ -1,4 +1,3 @@
-import './auth.scss';
 import userApi from '../user/user';
 
 export default class Auth {
@@ -28,7 +27,9 @@ export default class Auth {
     const container = <HTMLElement>document.createElement('div');
     container.id = this.container__class;
     document.body.append(container);
-    const loginWindow = <HTMLElement>document.getElementById(this.container__class);
+    const loginWindow = <HTMLElement>(
+      document.getElementById(this.container__class)
+    );
     loginWindow.addEventListener('click', (event) => {
       if (event.target === loginWindow) this.closeModal();
     });
@@ -125,7 +126,9 @@ export default class Auth {
 
   addValidatePassword() {
     const inputPassword = <HTMLInputElement>document.getElementById('password');
-    const errorPassword = <HTMLElement>document.getElementById('error-password');
+    const errorPassword = <HTMLElement>(
+      document.getElementById('error-password')
+    );
     inputPassword.addEventListener('input', () => {
       if (inputPassword.value.length < 8) errorPassword.innerText = 'Длинна пароля не менее 8 символов';
       else errorPassword.innerHTML = '&nbsp;';
@@ -148,7 +151,9 @@ export default class Auth {
       (<HTMLInputElement>document.getElementById('email')).focus();
     });
 
-    const inputPassword = <HTMLElement>document.getElementById('input-password');
+    const inputPassword = <HTMLElement>(
+      document.getElementById('input-password')
+    );
     inputPassword.addEventListener('click', () => {
       (<HTMLInputElement>document.getElementById('password')).focus();
     });
@@ -180,7 +185,8 @@ export default class Auth {
 
   private async sendLoginData() {
     const email = (<HTMLInputElement>document.getElementById('email')).value;
-    const password = (<HTMLInputElement>document.getElementById('password')).value;
+    const password = (<HTMLInputElement>document.getElementById('password'))
+      .value;
 
     const res = await userApi.loginUser({ email, password });
     if (res === 200) {
@@ -198,7 +204,8 @@ export default class Auth {
   private async sendRegisterData() {
     const name = (<HTMLInputElement>document.getElementById('name')).value;
     const email = (<HTMLInputElement>document.getElementById('email')).value;
-    const password = (<HTMLInputElement>document.getElementById('password')).value;
+    const password = (<HTMLInputElement>document.getElementById('password'))
+      .value;
     console.log('sendRegisterData: IN');
 
     const statusCreate = await userApi.createUser({ name, email, password });
@@ -208,7 +215,9 @@ export default class Auth {
     if (statusCreate === 417) {
       console.log('USER EXIST');
 
-      (<HTMLElement>document.getElementById('title')).innerHTML = `Email "${email}" занят, используйте кнопку "ВОЙТИ"!`;
+      (<HTMLElement>(
+        document.getElementById('title')
+      )).innerHTML = `Email "${email}" занят, используйте кнопку "ВОЙТИ"!`;
 
       (<HTMLInputElement>document.getElementById('name')).value = '';
       (<HTMLInputElement>document.getElementById('email')).value = '';

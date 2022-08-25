@@ -1,9 +1,12 @@
-import Api from '../api/api';
+import Api from '../../api/api';
 import {
-  IWord, IWordApp, IUserWord, IWordWithUserWord,
-} from '../interfaces';
+  IWord,
+  IWordApp,
+  IUserWord,
+  IWordWithUserWord,
+} from '../../interfaces/interfaces';
 import userApi from '../user/user';
-import create from '../utils/createElement';
+import create from '../../utils/createElement';
 
 class Word implements IWordApp {
   word: IWordWithUserWord;
@@ -16,7 +19,7 @@ class Word implements IWordApp {
     word.addEventListener('click', (e) => this.defineTarget(e));
   }
 
-  defineTarget(event:Event) {
+  defineTarget(event: Event) {
     const element = <HTMLElement>event.target;
     if (element.classList.contains('word__audio')) this.listenWord();
 
@@ -41,7 +44,7 @@ class Word implements IWordApp {
     const wordHard = document.getElementById('wordHard');
     wordHard?.addEventListener('click', callback);
   }
- */
+*/
 
   listenWord() {
     console.log(this.word.id);
@@ -51,7 +54,10 @@ class Word implements IWordApp {
     if (this.word.optional) this.word.optional.hard = true;
     else this.word.optional = { hard: true };
 
-    const word: IUserWord = { difficulty: 'none', optional: { hard: this.word.optional?.hard } };
+    const word: IUserWord = {
+      difficulty: 'none',
+      optional: { hard: this.word.optional?.hard },
+    };
     const userWord = await userApi.getUserWord(this.word.id);
     if (userWord) userApi.updateUserWord(this.word.id, word);
     else {
@@ -65,7 +71,10 @@ class Word implements IWordApp {
     if (this.word.optional) this.word.optional.hard = false;
     else this.word.optional = { hard: false };
 
-    const word: IUserWord = { difficulty: 'none', optional: { hard: this.word.optional?.hard } };
+    const word: IUserWord = {
+      difficulty: 'none',
+      optional: { hard: this.word.optional?.hard },
+    };
     await userApi.updateUserWord(this.word.id, word);
 
     this.changeIcon();
@@ -222,18 +231,34 @@ class Word implements IWordApp {
       text: `${this.word.textExampleTranslate}`,
     });
     // TODO Check user login (need separate method)
-    const wordProgress = create({ tagname: 'div', class: 'word__progress', parent: wordDescription });
+    const wordProgress = create({
+      tagname: 'div',
+      class: 'word__progress',
+      parent: wordDescription,
+    });
     const wordSprint = create({
-      tagname: 'div', class: 'word__sprint', parent: wordProgress, text: 'Спринт',
+      tagname: 'div',
+      class: 'word__sprint',
+      parent: wordProgress,
+      text: 'Спринт',
     });
     create({
-      tagname: 'div', class: 'word__sprint_score', parent: wordSprint, text: '3/10',
+      tagname: 'div',
+      class: 'word__sprint_score',
+      parent: wordSprint,
+      text: '3/10',
     });
     const wordAudio = create({
-      tagname: 'div', class: 'word__sprint', parent: wordProgress, text: 'Аудиовызов',
+      tagname: 'div',
+      class: 'word__sprint',
+      parent: wordProgress,
+      text: 'Аудиовызов',
     });
     create({
-      tagname: 'div', class: 'word__sprint_score', parent: wordAudio, text: '17/40',
+      tagname: 'div',
+      class: 'word__sprint_score',
+      parent: wordAudio,
+      text: '17/40',
     });
     // this.addHandlers(wordInDictionary);
   }

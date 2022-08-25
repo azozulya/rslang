@@ -1,13 +1,13 @@
-import { IUserWord, IWord } from '../interfaces';
+import { IWord } from '../../interfaces/interfaces';
 import WordModel from './model';
 import WordView from './word';
 
 class Word {
-  words: WordView [];
+  words: WordView[];
 
   private model: WordModel;
 
-  constructor(words:IWord[]) {
+  constructor(words: IWord[]) {
     this.model = new WordModel();
     this.words = [];
     words.forEach((word) => {
@@ -38,3 +38,5 @@ class Word {
     this.model.addToHardWord(wordId, word);
   }; */
 }
+
+export default Word;

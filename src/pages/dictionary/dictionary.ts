@@ -1,9 +1,10 @@
 /* eslint-disable max-lines-per-function */
-import Api from '../api/api';
-import { IWordApp } from '../interfaces';
-import create from '../utils/createElement';
-import { getLocalStorage, setLocalStorage } from '../utils/LocalStorage';
-import Pagination from './pagination';
+import Api from '../../api/api';
+import { IWordApp } from '../../interfaces/interfaces';
+import create from '../../utils/createElement';
+import { getLocalStorage, setLocalStorage } from '../../utils/localStorage';
+import Pagination from '../../components/pagination';
+import { TOTAL_WORDS, WORDS_PER_PAGE } from '../../utils/constants';
 
 class DictionaryView {
   onGetWords!: (group: number, page: number) => void;
@@ -22,10 +23,6 @@ class DictionaryView {
 
   private paginationContainer: HTMLElement | undefined;
 
-  private WORDS_PER_PAGE = 20;
-
-  private TOTAL_WORDS = 600;
-
   constructor() {
     this.api = Api.getInstance();
     this.words = [];
@@ -34,7 +31,8 @@ class DictionaryView {
     this.group = 0;
   }
 
-  bindGetWords(callback: { (group:number, page:number): void; }) { // to index
+  bindGetWords(callback: { (group: number, page: number): void }) {
+    // to index
     const dictionaryGroups = <HTMLElement>(
       document.getElementById('dictionaryGroups')
     );
@@ -42,7 +40,7 @@ class DictionaryView {
     dictionaryGroups.addEventListener('click', (e: Event) => this.updateGroup(e));
   }
 
-  bindGetHardWords(callback: { (): void; }) {
+  bindGetHardWords(callback: { (): void }) {
     const dictionaryHardWords = <HTMLElement>(
       document.getElementById('dictionaryHardWords')
     );
@@ -51,14 +49,14 @@ class DictionaryView {
 
   private drawPagination() {
     this.pagination = new Pagination(
-      this.TOTAL_WORDS,
-      this.WORDS_PER_PAGE,
+      TOTAL_WORDS,
+      WORDS_PER_PAGE,
       this.page + 1,
       this.goToPage,
     );
 
     if (this.paginationContainer) {
-      this.paginationContainer.innerText = '';
+      this.paginationContainer.innerHTML = '';
       this.paginationContainer?.append(this.pagination.draw());
     }
   }
@@ -90,8 +88,9 @@ class DictionaryView {
 
   highlightGroupBtn() {
     const groupBtns = document.querySelectorAll('.dictionary__groups_item');
-    const { group } = getLocalStorage('wordsGroupAndPage');
-    this.group = group;
+
+    this.group = getLocalStorage('wordsGroupAndPage') || 0;
+
     groupBtns.forEach((button) => {
       if (button.classList.contains('dictionary__groups_item_active')) {
         button.classList.remove('dictionary__groups_item_active');
@@ -115,7 +114,7 @@ class DictionaryView {
     setLocalStorage('wordsGroupAndPage', groupAngPage);
   }
 
-  drawWords(words:IWordApp[]) {
+  drawWords(words: IWordApp[]) {
     const dictionary = <HTMLElement>document.getElementById('dictionaryWords');
     if (dictionary) {
       while (dictionary.firstChild) {

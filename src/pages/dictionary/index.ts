@@ -1,7 +1,7 @@
 import DictionaryView from './dictionary';
-import API from '../api/api';
+import API from '../../api/api';
 import DictionaryModel from './model';
-import { IWordApp } from '../interfaces';
+import { IWordApp } from '../../interfaces/interfaces';
 
 class Dictionary {
   private view: DictionaryView;
@@ -24,7 +24,8 @@ class Dictionary {
     this.handleGetWords(group, page);
     this.addHandlers();
 
-    const login = await this.api.loginUser({ // remove after class Auth is ready
+    const login = await this.api.loginUser({
+      // remove after class Auth is ready
       email: 'a@a.com',
       password: '11111111',
     });
@@ -38,7 +39,7 @@ class Dictionary {
     this.model.bindUpdateWords(this.onUpdateWords);
   }
 
-  onUpdateWords = (words:IWordApp[]) => {
+  onUpdateWords = (words: IWordApp[]) => {
     this.view.drawWords(words);
   };
 
@@ -46,7 +47,7 @@ class Dictionary {
     this.model.getHardWords();
   };
 
-  handleGetWords = (group:number, page:number) => {
+  handleGetWords = (group: number, page: number) => {
     this.model.getWords(group, page, true);
   };
 }
