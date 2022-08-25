@@ -243,10 +243,10 @@ class Api {
   }
 
   async getUserAggregatedWords(
-    group: string,
-    page: string,
-    wordsPerPage: string,
-    filter: string,
+    group?: string,
+    page?: string,
+    wordsPerPage?: string,
+    filter?: string,
   ): Promise<IWord[]> {
     const userId = this.getUserId();
     const token = this.getToken();

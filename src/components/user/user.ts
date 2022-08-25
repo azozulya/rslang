@@ -7,8 +7,9 @@ import {
   IUserStatistics,
   IUserSettings,
   IToken,
-} from '../../types/interfaces';
-import Api from '../../api/api';
+  IJwt,
+} from '../interfaces';
+import Api from '../api/api';
 
 class User {
   private static instance: User;
@@ -29,25 +30,28 @@ class User {
 
   constructor() {
     this.api = Api.getInstance();
-    this.userId = JSON.parse(
-      <string>localStorage.getItem('RSLang_Auth'),
-    ).userId;
-    this.token = JSON.parse(<string>localStorage.getItem('RSLang_Auth')).token;
-    this.refreshToken = JSON.parse(
-      <string>localStorage.getItem('RSLang_Auth'),
-    ).refreshToken;
-    this.message = JSON.parse(
-      <string>localStorage.getItem('RSLang_Auth'),
-    ).message;
-    this.name = JSON.parse(<string>localStorage.getItem('RSLang_Auth')).name;
+    const storage = <string>localStorage.getItem('RSLang_Auth');
+    if (storage !== null) {
+      this.userId = JSON.parse(storage).userId;
+      this.token = JSON.parse(storage).token;
+      this.refreshToken = JSON.parse(storage).refreshToken;
+      this.message = JSON.parse(storage).message;
+      this.name = JSON.parse(storage).name;
+    } else {
+      this.userId = '';
+      this.token = '';
+      this.refreshToken = '';
+      this.message = '';
+      this.name = '';
+    }
   }
 
-  static getInstance() {
+  /* static getInstance() {
     if (!User.instance) {
       User.instance = new User();
     }
     return User.instance;
-  }
+  } */
 
   getStorage(key: string) {
     return localStorage.getItem(key);
@@ -57,9 +61,36 @@ class User {
     localStorage.setItem(key, value);
   }
 
-  isAuthenticated(): boolean {
-    const getValue = <string | null> this.getStorage('Authenticated');
-    return getValue == null ? false : JSON.parse(getValue);
+  // isAuthenticated(): boolean {
+  //   const getValue = <string | null> this.getStorage('Authenticated');
+  //   return getValue == null ? false : JSON.parse(getValue);
+  // }
+
+  logout() {
+    localStorage.clear();
+
+    this.userId = '';
+    this.token = '';
+    this.refreshToken = '';
+    this.message = '';
+    this.name = '';
+  }
+
+  async isAuthenticated(): Promise<boolean> {
+    if (this.token === '') {
+      this.setStorage('Authenticated', JSON.stringify(false));
+      return false;
+    }
+
+    const expToken = (<IJwt>JWT(this.token)).exp;
+    const currentTime = Math.trunc(Date.now() / 1000);
+
+    if (expToken <= currentTime) {
+      this.setStorage('Authenticated', JSON.stringify(true));
+      return false;
+    }
+
+    return true;
   }
 
   getWords(group: number, page: number): Promise<IWord[]> {
@@ -96,10 +127,8 @@ class User {
     result.userId = this.userId;
     result.name = this.name;
 
-    // const decode = <{ id: string, iat: number, exp: number }>JWT(result.token);
-    // console.log(decode.exp);
-
     this.setStorage('RSLang_Auth', JSON.stringify(result));
+    this.setStorage('Authenticated', JSON.stringify(true));
 
     return result;
   }
@@ -135,7 +164,7 @@ class User {
     group: string,
     page: string,
     wordsPerPage: string,
-    filter: string,
+    filter: string
   ): Promise<IWord[]> {
     return this.api.getUserAggregatedWordsNew(
       this.userId,
@@ -143,7 +172,7 @@ class User {
       group,
       page,
       wordsPerPage,
-      filter,
+      filter
     );
   }
 
@@ -167,4 +196,8 @@ class User {
     return this.api.updateUserSettings(this.userId, this.token, body);
   }
 }
-export default User;
+
+const userApi = new User();
+export default userApi;
+
+// export default User;
