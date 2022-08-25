@@ -1,6 +1,5 @@
 import { IGameWord } from '../interfaces';
 import create from '../utils/createElement';
-import { timer } from '../utils/utils';
 
 class GamesView {
   private gameContainer: HTMLElement;
@@ -10,6 +9,8 @@ class GamesView {
   private wordsElements?: HTMLElement[];
 
   private gameSteps?: HTMLElement;
+
+  GAME__TIMER = 30;
 
   private gameState = {
     score: 0,
@@ -106,7 +107,20 @@ class GamesView {
     this.gameSteps = create({ tagname: 'div' });
     const gameTimer = create({ tagname: 'div' });
 
-    timer(30, gameTimer);
+    // timer(30, gameTimer);
+
+    let timer = this.GAME__TIMER;
+
+    const timerId = setInterval(() => {
+      gameTimer.innerText = String(timer);
+
+      if (timer === 0) {
+        clearInterval(timerId);
+        this.stopGame();
+      }
+
+      timer -= 1;
+    }, 1000);
 
     this.gameScreen?.append(gameTimer, this.gameSteps, noBtn, yesBtn);
   }
@@ -210,8 +224,8 @@ class GamesView {
         'beforeend',
         `
         <div>
-          <button class="btn">Сыграть еще раз</button>
-          <button class="btn">Перейти в учебник</button>
+          <button class="btn" data-page="games">Сыграть еще раз</button>
+          <button class="btn" data-page="dictionary">Перейти в учебник</button>
         </div>
 
       `
