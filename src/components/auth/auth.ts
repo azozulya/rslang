@@ -73,9 +73,9 @@ export default class Auth {
     container.innerHTML = this.content;
     this.addHandlersBlock();
 
+    this.addValidateName();
     this.addValidateEmail();
     this.addValidatePassword();
-    this.addHandlers();
   }
 
   drawLoginUser() {
@@ -108,17 +108,26 @@ export default class Auth {
 
     container.innerHTML = this.content;
 
-    // this.addHandlersBlockLogin();
-
     this.addValidateEmail();
     this.addValidatePassword();
     this.addHandlers();
+  }
+
+  addValidateName() {
+    const inputName = <HTMLInputElement>document.getElementById('name');
+    const errorName = <HTMLElement>document.getElementById('error-name');
+    inputName.addEventListener('input', () => {
+      (<HTMLElement>document.getElementById('title')).innerHTML = '&nbsp;';
+      if (inputName.value.length < 3) errorName.innerText = 'Длинна пароля не менее 3 символов';
+      else errorName.innerHTML = '&nbsp;';
+    });
   }
 
   addValidateEmail() {
     const inputEmail = <HTMLInputElement>document.getElementById('email');
     const errorEmail = <HTMLElement>document.getElementById('error-email');
     inputEmail.addEventListener('input', () => {
+      (<HTMLElement>document.getElementById('title')).innerHTML = '&nbsp;';
       if (!this.validateEmail(inputEmail.value)) errorEmail.innerText = 'Неверный формат Email-адреса';
       else errorEmail.innerHTML = '&nbsp;';
     });
@@ -130,6 +139,7 @@ export default class Auth {
       document.getElementById('error-password')
     );
     inputPassword.addEventListener('input', () => {
+      (<HTMLElement>document.getElementById('title')).innerHTML = '&nbsp;';
       if (inputPassword.value.length < 8) errorPassword.innerText = 'Длинна пароля не менее 8 символов';
       else errorPassword.innerHTML = '&nbsp;';
     });
@@ -193,8 +203,7 @@ export default class Auth {
       this.closeModal();
       const button = <HTMLElement>document.getElementById('auth');
       button.innerHTML = '<button id="main_logout" class="btn btn--orange auth__btn">Выйти</button>';
-    }
-    if (res === 404) {
+    } else {
       (<HTMLElement>document.getElementById('title')).innerHTML = 'Не верный Email или пароль!!!';
       (<HTMLInputElement>document.getElementById('email')).value = '';
       (<HTMLInputElement>document.getElementById('password')).value = '';
@@ -226,7 +235,7 @@ export default class Auth {
     if (statusCreate === 200) {
       console.log('CREATE: OK');
 
-      (<HTMLElement>document.getElementById('title')).innerHTML = 'Спасибо за регистрацию!!!';
+      (<HTMLElement>document.getElementById('title')).innerHTML = `${name}, спасибо за регистрацию!`;
       console.log('sendRegisterData: LOGIN IN');
 
       const statusLogin = await userApi.loginUser({ email, password });
@@ -241,8 +250,7 @@ export default class Auth {
   }
 
   private validateEmail(value: string): boolean {
-    // eslint-disable-next-line no-useless-escape
-    const EMAIL_REGEXP = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const EMAIL_REGEXP = /^(([^<>()[\]\\.,;:\s@\\"]+(\.[^<>()[\]\\.,;:\s@\\"]+)*)|(\\".+\\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return EMAIL_REGEXP.test(value);
   }
 }
