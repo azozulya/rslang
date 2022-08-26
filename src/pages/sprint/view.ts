@@ -7,12 +7,6 @@ class GamesView {
 
   private levels: HTMLInputElement[] = [];
 
-  private wordsElements?: HTMLElement[];
-
-  private gameSteps?: HTMLElement;
-
-  private scoreElement?: HTMLElement;
-
   private gameState = {
     score: 0,
     learnedWords: 0,
@@ -49,6 +43,7 @@ class GamesView {
         class: 'game__level',
         text: level,
       });
+      levelLabel.classList.add(`game__level--${level}`);
       const levelInput = <HTMLInputElement>(
         create({ tagname: 'input', class: 'game__level--inp' })
       );
@@ -114,9 +109,11 @@ class GamesView {
     console.log(resultObj);
   };
 
-  private stopGame() {
+  private stopGame = () => {
     this.gameContainer.innerText = '';
+
     if (this.resultScreen) {
+      console.log('result screen');
       this.gameContainer.append(this.resultScreen);
       this.resultScreen.append(JSON.stringify(this.gameState));
 
@@ -131,7 +128,7 @@ class GamesView {
       `,
       );
     }
-  }
+  };
 
   draw() {
     if (this.startScreen) this.gameContainer.append(this.startScreen);
@@ -144,26 +141,31 @@ class GamesView {
 
   private onLevelClickHandler = async () => {
     const currentLevel = this.levels.find((level) => level.checked);
-    console.log('currentLevel: ', currentLevel?.parentElement);
 
-    if (this.startBtn) this.startBtn.disabled = false;
-
-    if (currentLevel) {
+    if (this.startBtn && currentLevel) {
+      this.startBtn.disabled = false;
+      this.startBtn.dataset.level = currentLevel.value;
       this.setActiveLevel(currentLevel);
-      const wordsList = await this.onGetWords?.(Number(currentLevel.value));
-      if (wordsList) {
-        this.createGameScreen(wordsList);
-      }
     }
   };
 
   private setActiveLevel(current: HTMLInputElement): void {
+    this.levels.forEach((level) => level.parentElement?.classList.remove('game__level--active'));
     current.parentElement?.classList.add('game__level--active');
   }
 
-  private onStartClickHandler = () => {
+  private onStartClickHandler = async () => {
     this.gameContainer.innerText = '';
+
     if (this.gameScreen) {
+      const wordsList = await this.onGetWords?.(
+        Number(this.startBtn?.dataset.level),
+      );
+
+      if (wordsList) {
+        this.createGameScreen(wordsList);
+      }
+
       this.gameContainer.append(this.gameScreen);
     }
   };

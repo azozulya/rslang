@@ -1,4 +1,5 @@
 import { IGameWord } from '../interfaces/interfaces';
+import { GAME_TIMER } from '../utils/constants';
 import create from '../utils/createElement';
 
 class SprintGame {
@@ -6,11 +7,15 @@ class SprintGame {
 
   private scoreElement: HTMLElement;
 
-  private GAME__TIMER = 30;
+  private wordContainer: HTMLElement;
+
+  private yesBtn?: HTMLButtonElement;
+
+  private noBtn?: HTMLButtonElement;
 
   private currentWordIndex = 0;
 
-  private gameState = {
+  private defaultState = {
     score: 0,
     learnedWords: 0,
     rightAnswer: 0,
@@ -19,9 +24,14 @@ class SprintGame {
     maxSeriesOfRightAnswer: 0,
   };
 
-  private wordContainer: HTMLElement;
+  private gameState = { ...this.defaultState };
 
-  constructor(private wordsList: IGameWord[], private onStopGame: () => void) {
+  private timerId?: NodeJS.Timer;
+
+  constructor(
+    private wordsList: IGameWord[],
+    private onStopGameHandler: () => void,
+  ) {
     this.gameContainer = create({ tagname: 'div', class: 'sprint' });
     this.scoreElement = create({
       tagname: 'div',
@@ -47,29 +57,49 @@ class SprintGame {
     return this.gameContainer;
   }
 
+  private stopGame = () => {
+    clearInterval(this.timerId);
+    this.currentWordIndex = 0;
+    this.gameState = { ...this.defaultState };
+    this.gameContainer.innerText = '';
+
+    this.noBtn?.removeEventListener('click', this.onNoBtnClickHandler);
+    this.yesBtn?.removeEventListener('click', this.onYesBtnClickHandler);
+
+    this.onStopGameHandler();
+  };
+
   private drawBtns() {
-    const yesBtn = create({
+    this.yesBtn = <HTMLButtonElement>create({
       tagname: 'button',
       class: 'btn',
       text: 'Верно',
     });
-    yesBtn.classList.add('btn--yes');
+    this.yesBtn?.classList.add('btn--yes');
 
-    const noBtn = create({
+    this.noBtn = <HTMLButtonElement>create({
       tagname: 'button',
       class: 'btn',
       text: 'Неверно',
     });
-    noBtn.classList.add('btn--no');
+    this.noBtn.classList.add('btn--no');
 
-    noBtn.addEventListener('click', () => this.checkAnswer('false'));
-    yesBtn.addEventListener('click', () => this.checkAnswer('true'));
+    this.noBtn.addEventListener('click', this.onNoBtnClickHandler);
+    this.yesBtn.addEventListener('click', this.onYesBtnClickHandler);
 
     const btnsContainer = create({ tagname: 'div', class: 'sprint__btns' });
-    btnsContainer.append(noBtn, yesBtn);
+    btnsContainer.append(this.noBtn, this.yesBtn);
 
     return btnsContainer;
   }
+
+  private onNoBtnClickHandler = () => {
+    this.checkAnswer('false');
+  };
+
+  private onYesBtnClickHandler = () => {
+    this.checkAnswer('true');
+  };
 
   private drawTimer() {
     const timerContainer = create({ tagname: 'div', class: 'sprint__timer' });
@@ -80,17 +110,16 @@ class SprintGame {
 
     const gameTimer = create({
       tagname: 'span',
-      text: String(this.GAME__TIMER),
+      text: String(GAME_TIMER),
     });
 
-    let timer = this.GAME__TIMER;
+    let timer = GAME_TIMER;
 
-    const timerId = setInterval(() => {
+    this.timerId = setInterval(() => {
       gameTimer.innerText = String(timer);
 
       if (timer === 0) {
-        clearInterval(timerId);
-        this.onStopGame();
+        this.stopGame();
         return;
       }
 
@@ -120,7 +149,7 @@ class SprintGame {
     this.currentWordIndex += 1;
 
     if (this.currentWordIndex === this.wordsList.length) {
-      this.onStopGame();
+      this.stopGame();
       return;
     }
 

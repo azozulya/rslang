@@ -1,5 +1,3 @@
-$frame-width: 100%;
-
 .game {
   box-sizing: border-box;
   background-color: $secondary-light;
@@ -23,6 +21,7 @@ $frame-width: 100%;
     display: flex;
     margin-bottom: 4rem;
   }
+
   &__level {
     position: relative;
     border: solid 1px $secondary-dark;
@@ -34,21 +33,30 @@ $frame-width: 100%;
     justify-content: center;
     margin: 0 0.5rem;
 
-    &--active {
-      background-color: $accent-dark;
-      color: $light-color;
+    // &--active {
+    //   background-color: $accent-dark;
+    //   color: $light-color;
+    // }
+
+    @each $name, $color in $levels {
+      &--#{$name}:hover,
+      &--#{$name}.game__level--active {
+        background-color: $color;
+        border-color: $color;
+        color: $light-color;
+      }
+    }
+
+    label[checked] {
+      background-color: red;
     }
 
     &:hover,
     &:checked {
-      background-color: $secondary-dark;
-      cursor: pointer;
       box-shadow: 0 0 1rem $secondary-main;
-      color: $light-color;
-      transform: scale(1.1);
-    }
+      cursor: pointer;
 
-    &:checked {
+      transform: scale(1.1);
     }
 
     &--inp {
@@ -59,9 +67,6 @@ $frame-width: 100%;
       height: 1px;
       opacity: 0;
     }
-  }
-
-  &__sprint {
   }
 }
 
@@ -92,26 +97,12 @@ $frame-width: 100%;
     padding: 0.5rem 0.3rem;
   }
 
-  &__frame {
-    box-sizing: border-box;
-    width: $frame-width;
-    overflow: hidden;
-  }
-
-  &__words {
-    display: flex;
-    justify-content: flex-start;
-    width: calc($frame-width * 20);
-  }
-
   &__word {
-    width: $frame-width;
     background-color: $secondary-light;
     padding: 2rem;
     box-sizing: border-box;
     border-radius: 1rem;
     transition-property: all;
-    // transition-delay: 1000ms;
     transition-duration: 1000ms;
 
     &--title {
