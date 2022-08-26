@@ -111,7 +111,7 @@ h4 {
   }
 
   &--blue {
-    @include button(#00bcd4, $light-color);
+    @include button($primary-main, $light-color);
 
     @include media($min-width: 611px) {
       font-size: 1.5rem;
@@ -122,6 +122,14 @@ h4 {
       font-size: 1.2rem;
       padding: 1rem 1.2rem;
     }
+  }
+
+  &--yes {
+    @include button($yes-color, $light-color);
+  }
+
+  &--no {
+    @include button($no-color, $light-color);
   }
 
   &:disabled {

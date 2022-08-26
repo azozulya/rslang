@@ -1,3 +1,4 @@
+import SprintGame from '../../assets/scss/components/sprint';
 import { IGameWord } from '../interfaces';
 import create from '../utils/createElement';
 
@@ -10,7 +11,7 @@ class GamesView {
 
   private gameSteps?: HTMLElement;
 
-  GAME__TIMER = 30;
+  private scoreElement?: HTMLElement;
 
   private gameState = {
     score: 0,
@@ -34,7 +35,7 @@ class GamesView {
   constructor() {
     this.gameContainer = create({ tagname: 'section', class: 'game' });
     this.startScreen = this.createStartScreen();
-    this.gameScreen = create({ tagname: 'div', class: 'game__game' });
+    this.gameScreen = create({ tagname: 'div', class: 'game__sprint' });
     this.resultScreen = create({ tagname: 'div', class: 'game__result' });
   }
 
@@ -94,35 +95,9 @@ class GamesView {
   }
 
   private createGameScreen(wordsList: IGameWord[]) {
-    this.drawWords(wordsList);
+    const game = new SprintGame(wordsList, this.stopGame);
 
-    this.wordsElements?.[0].classList.add('game__word--active');
-
-    const yesBtn = create({ tagname: 'button', class: 'btn', text: 'Верно' });
-    const noBtn = create({ tagname: 'button', class: 'btn', text: 'Неверно' });
-
-    noBtn.addEventListener('click', this.onNoBtnClickHandler);
-    yesBtn.addEventListener('click', this.onYesBtnClickHandler);
-
-    this.gameSteps = create({ tagname: 'div' });
-    const gameTimer = create({ tagname: 'div' });
-
-    // timer(30, gameTimer);
-
-    let timer = this.GAME__TIMER;
-
-    const timerId = setInterval(() => {
-      gameTimer.innerText = String(timer);
-
-      if (timer === 0) {
-        clearInterval(timerId);
-        this.stopGame();
-      }
-
-      timer -= 1;
-    }, 1000);
-
-    this.gameScreen?.append(gameTimer, this.gameSteps, noBtn, yesBtn);
+    this.gameScreen?.append(game.render());
   }
 
   private saveResult = () => {
@@ -139,81 +114,6 @@ class GamesView {
     console.log(resultObj);
   };
 
-  private onNoBtnClickHandler = () => {
-    if (this.checkAnswer('false')) {
-      console.log('no btn click, right answer');
-      this.gameState.rightAnswer += 1;
-      this.gameState.seriesOfRightAnswer += 1;
-      this.gameState.score += 10;
-    } else {
-      this.gameState.wrongAnswer += 1;
-      const { maxSeriesOfRightAnswer, seriesOfRightAnswer } = this.gameState;
-      if (seriesOfRightAnswer > maxSeriesOfRightAnswer) {
-        this.gameState.maxSeriesOfRightAnswer = seriesOfRightAnswer;
-        this.gameState.seriesOfRightAnswer = 0;
-      }
-      console.log('no btn click, wrong answer');
-    }
-
-    this.nextWord();
-  };
-
-  private onYesBtnClickHandler = () => {
-    if (this.checkAnswer('true')) {
-      this.gameState.rightAnswer += 1;
-      this.gameState.seriesOfRightAnswer += 1;
-      this.gameState.score += 10;
-      console.log('yes btn click, right answer');
-    } else {
-      this.gameState.wrongAnswer += 1;
-      const { maxSeriesOfRightAnswer, seriesOfRightAnswer } = this.gameState;
-      if (seriesOfRightAnswer > maxSeriesOfRightAnswer) {
-        this.gameState.maxSeriesOfRightAnswer = seriesOfRightAnswer;
-        this.gameState.seriesOfRightAnswer = 0;
-      }
-      console.log('yes btn click, wrong answer');
-    }
-
-    if (this.gameSteps) {
-      this.gameSteps.innerHTML = JSON.stringify(this.gameState);
-    }
-
-    this.nextWord();
-  };
-
-  private getCurrentWord() {
-    return this.wordsElements?.find((word) =>
-      word.classList.contains('game__word--active')
-    );
-  }
-
-  private checkAnswer = (userAnswer: string) => {
-    const currentWord = this.getCurrentWord();
-
-    return currentWord?.getAttribute('answer') === userAnswer;
-  };
-
-  private nextWord() {
-    const current = this.getCurrentWord();
-    const currentIndex = current?.dataset.index;
-
-    if (Number(currentIndex) + 1 === this.wordsElements?.length) {
-      this.stopGame();
-      return;
-    }
-
-    current?.classList.remove('game__word--active');
-
-    if (currentIndex) {
-      const nextWord = this.wordsElements?.[Number(currentIndex) + 1];
-      nextWord?.classList.add('game__word--active');
-
-      const path = -1 * (Number(currentIndex) + 1) * 200;
-
-      if (nextWord) nextWord.style.transform = `translateX(${path}px)`;
-    }
-  }
-
   private stopGame() {
     this.gameContainer.innerText = '';
     if (this.resultScreen) {
@@ -228,7 +128,7 @@ class GamesView {
           <button class="btn" data-page="dictionary">Перейти в учебник</button>
         </div>
 
-      `
+      `,
       );
     }
   }
@@ -256,31 +156,6 @@ class GamesView {
       }
     }
   };
-
-  private drawWords(wordsList: IGameWord[]) {
-    this.wordsElements = wordsList.map(
-      ({ word, wordTranslate, pseudoTranslate }, idx) => {
-        const wordElement = create({
-          tagname: 'div',
-          class: 'game__word',
-          text: `${word} -> ${pseudoTranslate} [answer: ${wordTranslate}]`,
-        });
-        wordElement.setAttribute(
-          'answer',
-          String(wordTranslate === pseudoTranslate)
-        );
-        wordElement.dataset.index = idx.toString();
-        return wordElement;
-      }
-    );
-
-    const wordFrame = create({ tagname: 'div', class: 'game__frame' });
-    const wordsContainer = create({ tagname: 'div', class: 'game__words' });
-    wordsContainer.append(...this.wordsElements);
-    wordFrame.append(wordsContainer);
-
-    this.gameScreen?.append(wordFrame);
-  }
 
   private setActiveLevel(current: HTMLInputElement): void {
     current.parentElement?.classList.add('game__level--active');
