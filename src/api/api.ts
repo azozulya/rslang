@@ -98,7 +98,7 @@ class Api {
     return `${response.status}: ${response.statusText}`;
   }
 
-  async getUserToken(id: string, rToken: string): Promise<IToken | number> {
+  async getUserToken(id: string, rToken: string): Promise<IToken | undefined> {
     const response = await fetch(`${this.users}/${id}/tokens`, {
       method: 'GET',
       headers: {
@@ -107,7 +107,7 @@ class Api {
         'Content-Type': 'application/json',
       },
     }).catch();
-    return response.status !== 200 ? response.status : <IToken>{ ...(await response.json()) };
+    return response.status !== 200 ? undefined : <IToken>{ ...(await response.json()) };
   }
 
   async loginUser(body: {

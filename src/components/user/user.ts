@@ -76,7 +76,7 @@ class User {
     this.name = '';
   }
 
-  isAuthenticated(): boolean {
+  async isAuthenticated(): Promise<boolean> {
     if (this.token === '') {
       this.setStorage('Authenticated', JSON.stringify(false));
       return false;
@@ -86,11 +86,12 @@ class User {
     const currentTime = Math.trunc(Date.now() / 1000);
 
     if (expToken <= currentTime) {
-      this.setStorage('Authenticated', JSON.stringify(false));
+      this.setStorage('Authenticated', JSON.stringify(true));
       return false;
     }
-
+    await this.getUserToken();
     this.setStorage('Authenticated', JSON.stringify(true));
+
     return true;
   }
 
@@ -118,20 +119,25 @@ class User {
     return this.api.deleteUser(this.userId, this.token);
   }
 
-  async getUserToken(): Promise<IToken> {
+  async getUserToken(): Promise<IToken | undefined> {
     const result = <IAuth>{};
     result.message = this.message;
 
-    const response = this.api.getUserToken(this.userId, this.refreshToken);
-    result.token = (<IToken>(await response)).token;
-    result.refreshToken = (<IToken>(await response)).refreshToken;
-    result.userId = this.userId;
-    result.name = this.name;
+    const response = await this.api.getUserToken(this.userId, this.refreshToken);
+    if (response !== undefined) {
+      result.token = response.token;
+      result.refreshToken = response.refreshToken;
+      result.userId = this.userId;
+      result.name = this.name;
 
-    this.setStorage('RSLang_Auth', JSON.stringify(result));
-    this.setStorage('Authenticated', JSON.stringify(true));
+      this.token = response.token;
+      this.refreshToken = response.refreshToken;
 
-    return result;
+      this.setStorage('RSLang_Auth', JSON.stringify(result));
+      this.setStorage('Authenticated', JSON.stringify(true));
+      console.log('TOKEN UPDATE');
+    }
+    return response;
   }
 
   loginUser(body: {
