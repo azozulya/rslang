@@ -5,7 +5,8 @@ import {
   IUserWord,
   IUserStatistics,
   IUserSettings,
-} from '../interfaces';
+  IToken,
+} from '../interfaces/interfaces';
 
 class Api {
   private static instance: Api;
@@ -34,9 +35,7 @@ class Api {
 
   async getWords(group: number, page: number): Promise<IWord[]> {
     const response = await fetch(`${this.words}?group=${group}&page=${page}`);
-    console.log(response);
     const words: IWord[] = await response.json();
-    console.log(words);
     return words;
   }
 
@@ -45,7 +44,7 @@ class Api {
     return (await response.json()) as IWord;
   }
 
-  async getUser(token: string, id: string): Promise<IUser> {
+  async getUser(id: string, token: string): Promise<IUser> {
     const response = await fetch(`${this.users}/${id}`, {
       method: 'GET',
       headers: {
@@ -71,9 +70,9 @@ class Api {
   }
 
   async updateUser(
-    token: string,
     id: string,
-    body: { email: string; password: string },
+    token: string,
+    body: { email: string; password: string }
   ): Promise<IUser> {
     const response = await fetch(`${this.users}/${id}`, {
       method: 'PUT',
@@ -87,7 +86,7 @@ class Api {
     return (await response.json()) as IUser;
   }
 
-  async deleteUser(token: string, id: string): Promise<string> {
+  async deleteUser(id: string, token: string): Promise<string> {
     const response = await fetch(`${this.users}/${id}`, {
       method: 'DELETE',
       headers: {
@@ -99,7 +98,7 @@ class Api {
     return `${response.status}: ${response.statusText}`;
   }
 
-  async getUserToken(rToken: string, id: string): Promise<IAuth> {
+  async getUserToken(id: string, rToken: string): Promise<IToken> {
     const response = await fetch(`${this.users}/${id}/tokens`, {
       method: 'GET',
       headers: {
@@ -108,8 +107,7 @@ class Api {
         'Content-Type': 'application/json',
       },
     });
-    const result = (await response.json()) as IAuth;
-    localStorage.setItem('RSLang_Auth', JSON.stringify(result));
+    const result = (await response.json()) as IToken;
     return result;
   }
 
@@ -134,9 +132,10 @@ class Api {
     return response.status;
   }
 
-  async getUserWords(id: string): Promise<IUserWord[]> {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${this.users}/${id}/words`, {
+  async getUserWords(): Promise<IUserWord[]> {
+    const userId = this.getUserId();
+    const token = this.getToken();
+    const response = await fetch(`${this.users}/${userId}/words`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -148,11 +147,39 @@ class Api {
     return userWords;
   }
 
-  async createUserWord(
-    token: string,
+  async getUserWordsNew(userId: string, token: string): Promise<IUserWord[]> {
+    const response = await fetch(`${this.users}/${userId}/words`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+    const userWords: IUserWord[] = await response.json();
+    return userWords;
+  }
+
+  async createUserWord(wordId: string, word?: IUserWord): Promise<IUserWord> {
+    const userId = this.getUserId();
+    const token = this.getToken();
+    const response = await fetch(`${this.users}/${userId}/words/${wordId}`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(word),
+    });
+    return (await response.json()) as IUserWord;
+  }
+
+  async createUserWordNew(
     userId: string,
+    token: string,
     wordId: string,
-    word?: IUserWord,
+    word?: IUserWord
   ): Promise<IUserWord> {
     const response = await fetch(`${this.users}/${userId}/words/${wordId}`, {
       method: 'POST',
@@ -167,9 +194,9 @@ class Api {
   }
 
   async getUserWord(
-    token: string,
     userId: string,
-    wordId: string,
+    token: string,
+    wordId: string
   ): Promise<IUserWord> {
     const response = await fetch(`${this.users}/${userId}/words/${wordId}`, {
       method: 'GET',
@@ -182,10 +209,10 @@ class Api {
   }
 
   async updateUserWord(
-    token: string,
     userId: string,
+    token: string,
     wordId: string,
-    word?: IUserWord,
+    word?: IUserWord
   ): Promise<IUserWord> {
     const response = await fetch(`${this.users}/${userId}/words/${wordId}`, {
       method: 'PUT',
@@ -200,9 +227,9 @@ class Api {
   }
 
   async deleteUserWord(
-    token: string,
     userId: string,
-    wordId: string,
+    token: string,
+    wordId: string
   ): Promise<string> {
     const response = await fetch(`${this.users}/${userId}/words/${wordId}`, {
       method: 'DELETE',
@@ -216,12 +243,34 @@ class Api {
   }
 
   async getUserAggregatedWords(
-    token: string,
+    group?: string,
+    page?: string,
+    wordsPerPage?: string,
+    filter?: string
+  ): Promise<IWord[]> {
+    const userId = this.getUserId();
+    const token = this.getToken();
+    const response = await fetch(
+      `${this.users}/${userId}/AggregatedWords?group=${group}&page=${page}&wordsPerPage=${wordsPerPage}&filter=${filter}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return (await response.json()) as IWord[];
+  }
+
+  async getUserAggregatedWordsNew(
     userId: string,
+    token: string,
     group: string,
     page: string,
     wordsPerPage: string,
-    filter: string,
+    filter: string
   ): Promise<IWord[]> {
     const response = await fetch(
       `${this.users}/${userId}/AggregatedWords?group=${group}&page=${page}&wordsPerPage=${wordsPerPage}&filter=${filter}`,
@@ -232,15 +281,15 @@ class Api {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
-      },
+      }
     );
     return (await response.json()) as IWord[];
   }
 
   async getUserAggregatedWord(
-    token: string,
     userId: string,
-    wordId: string,
+    token: string,
+    wordId: string
   ): Promise<IWord> {
     const response = await fetch(
       `${this.users}/${userId}/AggregatedWords/${wordId}`,
@@ -251,14 +300,14 @@ class Api {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
-      },
+      }
     );
     return (await response.json()) as IWord;
   }
 
   async getUserStatistics(
-    token: string,
     userId: string,
+    token: string
   ): Promise<IUserStatistics> {
     const response = await fetch(`${this.users}/${userId}/statistics`, {
       method: 'GET',
@@ -272,9 +321,9 @@ class Api {
   }
 
   async updateUserStatistics(
-    token: string,
     userId: string,
-    body: IUserStatistics,
+    token: string,
+    body: IUserStatistics
   ): Promise<IUserStatistics> {
     const response = await fetch(`${this.users}/${userId}/statistics`, {
       method: 'PUT',
@@ -288,7 +337,7 @@ class Api {
     return (await response.json()) as IUserStatistics;
   }
 
-  async getUserSettings(token: string, userId: string): Promise<IUserSettings> {
+  async getUserSettings(userId: string, token: string): Promise<IUserSettings> {
     const response = await fetch(`${this.users}/${userId}/settings`, {
       method: 'GET',
       headers: {
@@ -301,9 +350,9 @@ class Api {
   }
 
   async updateUserSettings(
-    token: string,
     userId: string,
-    body: IUserSettings,
+    token: string,
+    body: IUserSettings
   ): Promise<IUserSettings> {
     const response = await fetch(`${this.users}/${userId}/settings`, {
       method: 'PUT',
@@ -315,6 +364,22 @@ class Api {
       body: JSON.stringify(body),
     });
     return (await response.json()) as IUserSettings;
+  }
+
+  getUserId(): number | null {
+    const authInfo = localStorage.getItem('RSLang_Auth');
+    if (!authInfo) return null;
+    return JSON.parse(authInfo).userId;
+  }
+
+  getToken() {
+    const authInfo = localStorage.getItem('RSLang_Auth');
+    if (!authInfo) return null;
+    return JSON.parse(authInfo).token;
+  }
+
+  getRefreshToken() {
+    return JSON.parse(<string>localStorage.getItem('RSLang_Auth')).refreshToken;
   }
 }
 export default Api;

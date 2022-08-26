@@ -1,9 +1,16 @@
-class Menu {
-  private burgerMenuBtn: HTMLElement | undefined | null;
+import { DEFAULT_PAGE } from '../utils/constants';
 
-  private menu: HTMLElement | null | undefined;
+class Menu {
+  private burgerMenuBtn?: HTMLElement | null;
+
+  private menu?: HTMLElement | null;
 
   private currentMenuItemClass = 'menu__link--active';
+
+  constructor(current: string) {
+    this.init();
+    this.setActive(current);
+  }
 
   init() {
     this.menu = document.getElementById('menu');
@@ -20,9 +27,11 @@ class Menu {
     this.menu
       ?.querySelector(`[data-page=${pageName}]`)
       ?.classList.add(this.currentMenuItemClass);
+
+    this.hideBurgerMenu();
   };
 
-  hide = () => {
+  private hideBurgerMenu = () => {
     if (!document.body.classList.contains('noscroll')) return;
 
     this.burgerMenuBtn?.classList.remove('burger-menu__active');
@@ -35,7 +44,7 @@ class Menu {
 
     if (el) return;
 
-    this.hide();
+    this.hideBurgerMenu();
   };
 
   private burgerMenuHandler = () => {

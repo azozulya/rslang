@@ -11,10 +11,18 @@ header {
     justify-content: space-between;
     align-items: baseline;
     background-color: $bg-header-color;
-    padding-top: 1.3rem;
-    padding-bottom: 1.3rem;
     box-shadow: 0 0.1rem 0.5rem $bg-header-color;
     border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+
+    @include media($min-width: $burger-menu-start-from + 1) {
+      padding-top: 1.3rem;
+      padding-bottom: 1.3rem;
+    }
+    @include media($max-width: $burger-menu-start-from) {
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
   }
   &__right-block {
     display: flex;

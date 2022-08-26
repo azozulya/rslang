@@ -18,14 +18,20 @@
       <h1><a href="/" data-page="main" class="logo">RS Lang</a></h1>
       <nav id="menu" class="menu">
         <ul class="menu__list">
-          <li class="menu__item"><a href="/dictionary" data-page="dictionary" class="menu__link">Учебник</a></li>
-          <li class="menu__item"><a href="/games" data-page="games" class="menu__link">Игры</a></li>
-          <li class="menu__item"><a href="/statistic" data-page="statistic" class="menu__link">Статистика</a></li>
+          <li class="menu__item"><a href="#" data-page="dictionary" class="menu__link">Учебник</a></li>
+          <li class="menu__item">
+            <span class="menu__link menu__link--with-dropdown">Игры</span>
+            <ul class="menu__dropdown">
+              <li class="menu__dropdown-item"><a href="#" data-page="sprint" class="menu__link">Спринт</a></li>
+              <li class="menu__dropdown-item"><a href="#" data-page="audio-call" class="menu__link">Аудиовызов</a></li>
+            </ul>
+          </li>
+          <li class="menu__item"><a href="#" data-page="statistic" class="menu__link">Статистика</a></li>
         </ul>
       </nav>
       <div class="header__right-block">
-        <div class="auth">
-          <button class="btn btn--orange auth__btn">Войти</button>
+        <div id="auth" class="auth">
+          <!-- <button class="btn btn--orange auth__btn">Войти</button> -->
         </div>
         <div id="burgerMenu" class="burger-menu">
           <span class="burger-menu__line"></span>
@@ -55,7 +61,13 @@
         <h4>Меню</h4>
         <div class="footer__menu">
           <a href="/dictionary" data-page="dictionary" class="footer__menu--link">Учебник</a>
-          <a href="/games" data-page="games" class="footer__menu--link">Игры</a>
+          <div class="footer__menu--games">
+            <small>Игры:</small>
+            <ul class="footer__submenu">
+              <li><a href=" #" data-page="sprint" class="footer__menu--link">Спринт</a></li>
+              <li><a href="#" data-page="audio-call" class="footer__menu--link">Аудиовызов</a></li>
+            </ul>
+          </div>
           <a href="/statistic" data-page="statistic" class="footer__menu--link">Статистика</a>
         </div>
       </div>

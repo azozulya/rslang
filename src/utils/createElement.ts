@@ -1,4 +1,4 @@
-import { ICreateElement } from '../interfaces';
+import { ICreateElement } from '../interfaces/interfaces';
 
 export default function create(el: ICreateElement): HTMLElement {
   let element: HTMLElement | null = null;

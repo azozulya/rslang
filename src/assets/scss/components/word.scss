@@ -2,10 +2,36 @@
   display: flex;
   gap: 2em;
   width: 45%;
-  height: 17em;
-  border: 2px #6DB4A7 solid;
+  height: 18em;
+  border: 2px $word-group-0 solid;
   border-radius: 0.65em;
   padding: 0.5em;
+
+  @include desktop {
+    width: 40em;
+  }
+  @include tablet {
+    width: 30em;
+  }
+
+  &_group-0 {
+    border: 2px $word-group-0 solid;
+  }
+  &_group-1 {
+    border: 2px $word-group-1 solid;
+  }
+  &_group-2 {
+    border: 2px $word-group-2 solid;
+  }
+  &_group-3 {
+    border: 2px $word-group-3 solid;
+  }
+  &_group-4 {
+    border: 2px $word-group-4 solid;
+  }
+  &_group-5 {
+    border: 2px $word-group-5 solid;
+  }
 }
 .word__image {
   width: 16em;
@@ -59,11 +85,16 @@
 }
 .word__hard:hover, 
 .word__learned:hover,
-.word__audio:hover {
+.word__audio:hover,
+.word__hard_active,
+.word__learned_active {
   filter: invert(67%) sepia(15%) saturate(5650%) hue-rotate(359deg) brightness(101%) contrast(105%);
 }
 .word__learned {
   background-image: url(../../assets/img/learned_word.svg);
+}
+.word__hard_active{
+  
 }
 .word__text {
   color: rgba(0, 0, 0, 0.54);
@@ -90,8 +121,10 @@
   font-size: 0.75em;
 }
 
+/* 
 @media only screen and (min-width: 769px) and (max-width: 1440px) {
   .word {
     width: 50em;
   }
 }
+*/

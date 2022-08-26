@@ -7,10 +7,14 @@
 @import './components/hero';
 @import './components/features';
 @import './components/team';
+@import './components/dictionary.scss';
 @import './components/pagination';
+@import './components/dictionary';
+@import './components/word';
 
 @import './components/sprint';
 
 @import './layout/header';
 @import './layout/menu';
+@import './layout/auth';
 @import './layout/footer';

@@ -1,4 +1,4 @@
-export function setLocalStorage<T>(name:string, value: T): void {
+export function setLocalStorage<T>(name: string, value: T): void {
   localStorage.setItem(name, JSON.stringify(value));
 }
 
