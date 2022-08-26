@@ -171,7 +171,6 @@ export default class Auth {
 
   private request(event: Event) {
     const target = <HTMLElement>event.target;
-    console.log(<HTMLElement>event.target);
     if (target.id === 'main_login') this.draw();
     if (target.id === 'main_logout') this.logout();
     if (target.id === 'registerLink') this.drawCreateUser();
@@ -215,15 +214,10 @@ export default class Auth {
     const email = (<HTMLInputElement>document.getElementById('email')).value;
     const password = (<HTMLInputElement>document.getElementById('password'))
       .value;
-    console.log('sendRegisterData: IN');
 
     const statusCreate = await userApi.createUser({ name, email, password });
-    console.log('sendRegisterData: OUT');
-    console.log(statusCreate);
 
     if (statusCreate === 417) {
-      console.log('USER EXIST');
-
       (<HTMLElement>(
         document.getElementById('title')
       )).innerHTML = `Email "${email}" занят, используйте кнопку "ВОЙТИ"!`;
@@ -233,13 +227,8 @@ export default class Auth {
       (<HTMLInputElement>document.getElementById('password')).value = '';
     }
     if (statusCreate === 200) {
-      console.log('CREATE: OK');
-
       (<HTMLElement>document.getElementById('title')).innerHTML = `${name}, спасибо за регистрацию!`;
-      console.log('sendRegisterData: LOGIN IN');
-
       const statusLogin = await userApi.loginUser({ email, password });
-      console.log('sendRegisterData: LOGIN OUT');
 
       if (statusLogin === 200) {
         this.closeModal();
