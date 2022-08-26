@@ -53,7 +53,7 @@ class User {
     return User.instance;
   } */
 
-  getStorage(key: string) {
+  getStorage(key: string): string | null {
     return localStorage.getItem(key);
   }
 
@@ -86,10 +86,11 @@ class User {
     const currentTime = Math.trunc(Date.now() / 1000);
 
     if (expToken <= currentTime) {
-      this.setStorage('Authenticated', JSON.stringify(true));
+      this.setStorage('Authenticated', JSON.stringify(false));
       return false;
     }
 
+    this.setStorage('Authenticated', JSON.stringify(true));
     return true;
   }
 
