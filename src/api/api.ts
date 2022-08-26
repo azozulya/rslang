@@ -33,18 +33,19 @@ class Api {
     return Api.instance;
   }
 
-  async getWords(group: number, page: number): Promise<IWord[]> {
-    const response = await fetch(`${this.words}?group=${group}&page=${page}`);
-    const words: IWord[] = await response.json();
-    return words;
+  async getWords(group: number, page: number): Promise<IWord[] | number | undefined> {
+    const response = await fetch(`${this.words}?group=${group}&page=${page}`).catch();
+    if (response.status === 404) return undefined;
+    return response.status !== 200 ? response.status : <IWord[]>{ ...(await response.json()) };
   }
 
-  async getWord(id: string): Promise<IWord> {
-    const response = await fetch(`${this.words}/${id}`);
-    return (await response.json()) as IWord;
+  async getWord(id: string): Promise<IWord | number | undefined> {
+    const response = await fetch(`${this.words}/${id}`).catch();
+    if (response.status === 404) return undefined;
+    return response.status !== 200 ? response.status : <IWord>{ ...(await response.json()) };
   }
 
-  async getUser(id: string, token: string): Promise<IUser> {
+  async getUser(id: string, token: string): Promise<IUser | number> {
     const response = await fetch(`${this.users}/${id}`, {
       method: 'GET',
       headers: {
@@ -52,8 +53,8 @@ class Api {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-    });
-    return (await response.json()) as IUser;
+    }).catch();
+    return response.status !== 200 ? response.status : <IUser>{ ...(await response.json()) };
   }
 
   async createUser(user: IUser): Promise<IUser | number> {
@@ -65,7 +66,6 @@ class Api {
         'Content-Type': 'application/json',
       },
     }).catch();
-    // return response.status !== 200 ? response.status : { ...(await response.json()) as IUser };
     return response.status;
   }
 
@@ -73,7 +73,7 @@ class Api {
     id: string,
     token: string,
     body: { email: string; password: string },
-  ): Promise<IUser> {
+  ): Promise<IUser | number> {
     const response = await fetch(`${this.users}/${id}`, {
       method: 'PUT',
       body: JSON.stringify(body),
@@ -82,8 +82,8 @@ class Api {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-    });
-    return (await response.json()) as IUser;
+    }).catch();
+    return response.status !== 200 ? response.status : <IUser>{ ...(await response.json()) };
   }
 
   async deleteUser(id: string, token: string): Promise<string> {
@@ -98,7 +98,7 @@ class Api {
     return `${response.status}: ${response.statusText}`;
   }
 
-  async getUserToken(id: string, rToken: string): Promise<IToken> {
+  async getUserToken(id: string, rToken: string): Promise<IToken | number> {
     const response = await fetch(`${this.users}/${id}/tokens`, {
       method: 'GET',
       headers: {
@@ -106,9 +106,8 @@ class Api {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-    });
-    const result = (await response.json()) as IToken;
-    return result;
+    }).catch();
+    return response.status !== 200 ? response.status : <IToken>{ ...(await response.json()) };
   }
 
   async loginUser(body: {
@@ -132,9 +131,7 @@ class Api {
     return response.status;
   }
 
-  async getUserWords(): Promise<IUserWord[]> {
-    const userId = this.getUserId();
-    const token = this.getToken();
+  async getUserWords(userId: string, token: string): Promise<IUserWord[] | number | undefined> {
     const response = await fetch(`${this.users}/${userId}/words`, {
       method: 'GET',
       headers: {
@@ -142,45 +139,17 @@ class Api {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-    });
-    const userWords: IUserWord[] = await response.json();
-    return userWords;
+    }).catch();
+    if (response.status === 404) return undefined;
+    return response.status !== 200 ? response.status : <IUserWord[]>{ ...(await response.json()) };
   }
 
-  async getUserWordsNew(userId: string, token: string): Promise<IUserWord[]> {
-    const response = await fetch(`${this.users}/${userId}/words`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-    });
-    const userWords: IUserWord[] = await response.json();
-    return userWords;
-  }
-
-  async createUserWord(wordId: string, word?: IUserWord): Promise<IUserWord> {
-    const userId = this.getUserId();
-    const token = this.getToken();
-    const response = await fetch(`${this.users}/${userId}/words/${wordId}`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(word),
-    });
-    return (await response.json()) as IUserWord;
-  }
-
-  async createUserWordNew(
+  async createUserWord(
     userId: string,
     token: string,
     wordId: string,
     word?: IUserWord,
-  ): Promise<IUserWord> {
+  ): Promise<IUserWord | number | undefined> {
     const response = await fetch(`${this.users}/${userId}/words/${wordId}`, {
       method: 'POST',
       headers: {
@@ -189,23 +158,25 @@ class Api {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(word),
-    });
-    return (await response.json()) as IUserWord;
+    }).catch();
+    if (response.status === 404) return undefined;
+    return response.status !== 200 ? response.status : <IUserWord>{ ...(await response.json()) };
   }
 
   async getUserWord(
     userId: string,
     token: string,
     wordId: string,
-  ): Promise<IUserWord> {
+  ): Promise<IUserWord | number | undefined> {
     const response = await fetch(`${this.users}/${userId}/words/${wordId}`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
       },
-    });
-    return (await response.json()) as IUserWord;
+    }).catch();
+    if (response.status === 404) return undefined;
+    return response.status !== 200 ? response.status : <IUserWord>{ ...(await response.json()) };
   }
 
   async updateUserWord(
@@ -213,7 +184,7 @@ class Api {
     token: string,
     wordId: string,
     word?: IUserWord,
-  ): Promise<IUserWord> {
+  ): Promise<IUserWord | number | undefined> {
     const response = await fetch(`${this.users}/${userId}/words/${wordId}`, {
       method: 'PUT',
       headers: {
@@ -222,8 +193,9 @@ class Api {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(word),
-    });
-    return (await response.json()) as IUserWord;
+    }).catch();
+    if (response.status === 404) return undefined;
+    return response.status !== 200 ? response.status : <IUserWord>{ ...(await response.json()) };
   }
 
   async deleteUserWord(
@@ -243,35 +215,13 @@ class Api {
   }
 
   async getUserAggregatedWords(
-    group?: string,
-    page?: string,
-    wordsPerPage?: string,
-    filter?: string,
-  ): Promise<IWord[]> {
-    const userId = this.getUserId();
-    const token = this.getToken();
-    const response = await fetch(
-      `${this.users}/${userId}/AggregatedWords?group=${group}&page=${page}&wordsPerPage=${wordsPerPage}&filter=${filter}`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-      },
-    );
-    return (await response.json()) as IWord[];
-  }
-
-  async getUserAggregatedWordsNew(
     userId: string,
     token: string,
     group: string,
     page: string,
     wordsPerPage: string,
     filter: string,
-  ): Promise<IWord[]> {
+  ): Promise<IWord[] | number | undefined> {
     const response = await fetch(
       `${this.users}/${userId}/AggregatedWords?group=${group}&page=${page}&wordsPerPage=${wordsPerPage}&filter=${filter}`,
       {
@@ -282,15 +232,16 @@ class Api {
           'Content-Type': 'application/json',
         },
       },
-    );
-    return (await response.json()) as IWord[];
+    ).catch();
+    if (response.status === 404) return undefined;
+    return response.status !== 200 ? response.status : <IWord[]>{ ...(await response.json()) };
   }
 
   async getUserAggregatedWord(
     userId: string,
     token: string,
     wordId: string,
-  ): Promise<IWord> {
+  ): Promise<IWord | number | undefined> {
     const response = await fetch(
       `${this.users}/${userId}/AggregatedWords/${wordId}`,
       {
@@ -301,14 +252,15 @@ class Api {
           'Content-Type': 'application/json',
         },
       },
-    );
-    return (await response.json()) as IWord;
+    ).catch();
+    if (response.status === 404) return undefined;
+    return response.status !== 200 ? response.status : <IWord>{ ...(await response.json()) };
   }
 
   async getUserStatistics(
     userId: string,
     token: string,
-  ): Promise<IUserStatistics> {
+  ): Promise<IUserStatistics | number | undefined> {
     const response = await fetch(`${this.users}/${userId}/statistics`, {
       method: 'GET',
       headers: {
@@ -316,15 +268,17 @@ class Api {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-    });
-    return (await response.json()) as IUserStatistics;
+    }).catch();
+    if (response.status === 404) return undefined;
+    return response.status !== 200
+      ? response.status : <IUserStatistics>{ ...(await response.json()) };
   }
 
   async updateUserStatistics(
     userId: string,
     token: string,
     body: IUserStatistics,
-  ): Promise<IUserStatistics> {
+  ): Promise<IUserStatistics | number | undefined> {
     const response = await fetch(`${this.users}/${userId}/statistics`, {
       method: 'PUT',
       headers: {
@@ -333,11 +287,16 @@ class Api {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
-    });
-    return (await response.json()) as IUserStatistics;
+    }).catch();
+    if (response.status === 404) return undefined;
+    return response.status !== 200
+      ? response.status : <IUserStatistics>{ ...(await response.json()) };
   }
 
-  async getUserSettings(userId: string, token: string): Promise<IUserSettings> {
+  async getUserSettings(
+    userId: string,
+    token: string,
+  ): Promise<IUserSettings | number | undefined> {
     const response = await fetch(`${this.users}/${userId}/settings`, {
       method: 'GET',
       headers: {
@@ -345,15 +304,17 @@ class Api {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-    });
-    return (await response.json()) as IUserSettings;
+    }).catch();
+    if (response.status === 404) return undefined;
+    return response.status !== 200
+      ? response.status : <IUserSettings>{ ...(await response.json()) };
   }
 
   async updateUserSettings(
     userId: string,
     token: string,
     body: IUserSettings,
-  ): Promise<IUserSettings> {
+  ): Promise<IUserSettings | number | undefined> {
     const response = await fetch(`${this.users}/${userId}/settings`, {
       method: 'PUT',
       headers: {
@@ -362,24 +323,10 @@ class Api {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
-    });
-    return (await response.json()) as IUserSettings;
-  }
-
-  getUserId(): number | null {
-    const authInfo = localStorage.getItem('RSLang_Auth');
-    if (!authInfo) return null;
-    return JSON.parse(authInfo).userId;
-  }
-
-  getToken() {
-    const authInfo = localStorage.getItem('RSLang_Auth');
-    if (!authInfo) return null;
-    return JSON.parse(authInfo).token;
-  }
-
-  getRefreshToken() {
-    return JSON.parse(<string>localStorage.getItem('RSLang_Auth')).refreshToken;
+    }).catch();
+    if (response.status === 404) return undefined;
+    return response.status !== 200
+      ? response.status : <IUserSettings>{ ...(await response.json()) };
   }
 }
 export default Api;
