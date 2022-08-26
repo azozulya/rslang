@@ -37,7 +37,7 @@ class Router {
 
   openPage = (pageName: string, isMenuLink = false) => {
     const currentRouter = this.routers.find(
-      (router) => router.page === pageName
+      (router) => router.page === pageName,
     );
 
     if (currentRouter) {

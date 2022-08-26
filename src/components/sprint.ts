@@ -1,5 +1,5 @@
-import { IGameWord } from '../../../components/interfaces';
-import create from '../../../components/utils/createElement';
+import { IGameWord } from '../interfaces/interfaces';
+import create from '../utils/createElement';
 
 class SprintGame {
   private gameContainer: HTMLElement;

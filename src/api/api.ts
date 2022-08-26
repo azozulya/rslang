@@ -72,7 +72,7 @@ class Api {
   async updateUser(
     id: string,
     token: string,
-    body: { email: string; password: string }
+    body: { email: string; password: string },
   ): Promise<IUser> {
     const response = await fetch(`${this.users}/${id}`, {
       method: 'PUT',
@@ -179,7 +179,7 @@ class Api {
     userId: string,
     token: string,
     wordId: string,
-    word?: IUserWord
+    word?: IUserWord,
   ): Promise<IUserWord> {
     const response = await fetch(`${this.users}/${userId}/words/${wordId}`, {
       method: 'POST',
@@ -196,7 +196,7 @@ class Api {
   async getUserWord(
     userId: string,
     token: string,
-    wordId: string
+    wordId: string,
   ): Promise<IUserWord> {
     const response = await fetch(`${this.users}/${userId}/words/${wordId}`, {
       method: 'GET',
@@ -212,7 +212,7 @@ class Api {
     userId: string,
     token: string,
     wordId: string,
-    word?: IUserWord
+    word?: IUserWord,
   ): Promise<IUserWord> {
     const response = await fetch(`${this.users}/${userId}/words/${wordId}`, {
       method: 'PUT',
@@ -229,7 +229,7 @@ class Api {
   async deleteUserWord(
     userId: string,
     token: string,
-    wordId: string
+    wordId: string,
   ): Promise<string> {
     const response = await fetch(`${this.users}/${userId}/words/${wordId}`, {
       method: 'DELETE',
@@ -246,7 +246,7 @@ class Api {
     group?: string,
     page?: string,
     wordsPerPage?: string,
-    filter?: string
+    filter?: string,
   ): Promise<IWord[]> {
     const userId = this.getUserId();
     const token = this.getToken();
@@ -259,7 +259,7 @@ class Api {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
-      }
+      },
     );
     return (await response.json()) as IWord[];
   }
@@ -270,7 +270,7 @@ class Api {
     group: string,
     page: string,
     wordsPerPage: string,
-    filter: string
+    filter: string,
   ): Promise<IWord[]> {
     const response = await fetch(
       `${this.users}/${userId}/AggregatedWords?group=${group}&page=${page}&wordsPerPage=${wordsPerPage}&filter=${filter}`,
@@ -281,7 +281,7 @@ class Api {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
-      }
+      },
     );
     return (await response.json()) as IWord[];
   }
@@ -289,7 +289,7 @@ class Api {
   async getUserAggregatedWord(
     userId: string,
     token: string,
-    wordId: string
+    wordId: string,
   ): Promise<IWord> {
     const response = await fetch(
       `${this.users}/${userId}/AggregatedWords/${wordId}`,
@@ -300,14 +300,14 @@ class Api {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
-      }
+      },
     );
     return (await response.json()) as IWord;
   }
 
   async getUserStatistics(
     userId: string,
-    token: string
+    token: string,
   ): Promise<IUserStatistics> {
     const response = await fetch(`${this.users}/${userId}/statistics`, {
       method: 'GET',
@@ -323,7 +323,7 @@ class Api {
   async updateUserStatistics(
     userId: string,
     token: string,
-    body: IUserStatistics
+    body: IUserStatistics,
   ): Promise<IUserStatistics> {
     const response = await fetch(`${this.users}/${userId}/statistics`, {
       method: 'PUT',
@@ -352,7 +352,7 @@ class Api {
   async updateUserSettings(
     userId: string,
     token: string,
-    body: IUserSettings
+    body: IUserSettings,
   ): Promise<IUserSettings> {
     const response = await fetch(`${this.users}/${userId}/settings`, {
       method: 'PUT',
