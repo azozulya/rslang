@@ -14,7 +14,7 @@ export default class Auth {
 
   async drawButton() {
     const button = <HTMLElement>document.getElementById('auth');
-    if (await userApi.isAuthenticated()) {
+    if (userApi.isAuthenticated()) {
       button.innerHTML = '<button id="main_logout" class="btn btn--orange auth__btn">Выйти</button>';
       button.addEventListener('click', (e: Event) => this.request(e));
     } else {
