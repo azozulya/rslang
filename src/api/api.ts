@@ -33,16 +33,14 @@ class Api {
     return Api.instance;
   }
 
-  async getWords(group: number, page: number): Promise<IWord[] | number | undefined> {
+  async getWords(group: number, page: number): Promise<IWord[] | undefined> {
     const response = await fetch(`${this.words}?group=${group}&page=${page}`).catch();
-    if (response.status === 404) return undefined;
-    return response.status !== 200 ? response.status : <IWord[]>{ ...(await response.json()) };
+    return response.status !== 200 ? undefined : <IWord[]>{ ...(await response.json()) };
   }
 
-  async getWord(id: string): Promise<IWord | number | undefined> {
+  async getWord(id: string): Promise<IWord | undefined> {
     const response = await fetch(`${this.words}/${id}`).catch();
-    if (response.status === 404) return undefined;
-    return response.status !== 200 ? response.status : <IWord>{ ...(await response.json()) };
+    return response.status !== 200 ? undefined : <IWord>{ ...(await response.json()) };
   }
 
   async getUser(id: string, token: string): Promise<IUser | number> {
@@ -131,7 +129,7 @@ class Api {
     return response.status;
   }
 
-  async getUserWords(userId: string, token: string): Promise<IUserWord[] | number | undefined> {
+  async getUserWords(userId: string, token: string): Promise<IUserWord[] | undefined> {
     const response = await fetch(`${this.users}/${userId}/words`, {
       method: 'GET',
       headers: {
@@ -140,8 +138,7 @@ class Api {
         'Content-Type': 'application/json',
       },
     }).catch();
-    if (response.status === 404) return undefined;
-    return response.status !== 200 ? response.status : <IUserWord[]>{ ...(await response.json()) };
+    return response.status !== 200 ? undefined : <IUserWord[]>{ ...(await response.json()) };
   }
 
   async createUserWord(
@@ -149,7 +146,7 @@ class Api {
     token: string,
     wordId: string,
     word?: IUserWord,
-  ): Promise<IUserWord | number | undefined> {
+  ): Promise<IUserWord | undefined> {
     const response = await fetch(`${this.users}/${userId}/words/${wordId}`, {
       method: 'POST',
       headers: {
@@ -159,15 +156,14 @@ class Api {
       },
       body: JSON.stringify(word),
     }).catch();
-    if (response.status === 404) return undefined;
-    return response.status !== 200 ? response.status : <IUserWord>{ ...(await response.json()) };
+    return response.status !== 200 ? undefined : <IUserWord>{ ...(await response.json()) };
   }
 
   async getUserWord(
     userId: string,
     token: string,
     wordId: string,
-  ): Promise<IUserWord | number | undefined> {
+  ): Promise<IUserWord | undefined> {
     const response = await fetch(`${this.users}/${userId}/words/${wordId}`, {
       method: 'GET',
       headers: {
@@ -175,8 +171,7 @@ class Api {
         Accept: 'application/json',
       },
     }).catch();
-    if (response.status === 404) return undefined;
-    return response.status !== 200 ? response.status : <IUserWord>{ ...(await response.json()) };
+    return response.status !== 200 ? undefined : <IUserWord>{ ...(await response.json()) };
   }
 
   async updateUserWord(
@@ -184,7 +179,7 @@ class Api {
     token: string,
     wordId: string,
     word?: IUserWord,
-  ): Promise<IUserWord | number | undefined> {
+  ): Promise<IUserWord | undefined> {
     const response = await fetch(`${this.users}/${userId}/words/${wordId}`, {
       method: 'PUT',
       headers: {
@@ -194,8 +189,7 @@ class Api {
       },
       body: JSON.stringify(word),
     }).catch();
-    if (response.status === 404) return undefined;
-    return response.status !== 200 ? response.status : <IUserWord>{ ...(await response.json()) };
+    return response.status !== 200 ? undefined : <IUserWord>{ ...(await response.json()) };
   }
 
   async deleteUserWord(
@@ -221,7 +215,7 @@ class Api {
     page: string,
     wordsPerPage: string,
     filter: string,
-  ): Promise<IWord[] | number | undefined> {
+  ): Promise<IWord[] | undefined> {
     const response = await fetch(
       `${this.users}/${userId}/AggregatedWords?group=${group}&page=${page}&wordsPerPage=${wordsPerPage}&filter=${filter}`,
       {
@@ -233,15 +227,14 @@ class Api {
         },
       },
     ).catch();
-    if (response.status === 404) return undefined;
-    return response.status !== 200 ? response.status : <IWord[]>{ ...(await response.json()) };
+    return response.status !== 200 ? undefined : <IWord[]>{ ...(await response.json()) };
   }
 
   async getUserAggregatedWord(
     userId: string,
     token: string,
     wordId: string,
-  ): Promise<IWord | number | undefined> {
+  ): Promise<IWord | undefined> {
     const response = await fetch(
       `${this.users}/${userId}/AggregatedWords/${wordId}`,
       {
@@ -253,14 +246,13 @@ class Api {
         },
       },
     ).catch();
-    if (response.status === 404) return undefined;
-    return response.status !== 200 ? response.status : <IWord>{ ...(await response.json()) };
+    return response.status !== 200 ? undefined : <IWord>{ ...(await response.json()) };
   }
 
   async getUserStatistics(
     userId: string,
     token: string,
-  ): Promise<IUserStatistics | number | undefined> {
+  ): Promise<IUserStatistics | undefined> {
     const response = await fetch(`${this.users}/${userId}/statistics`, {
       method: 'GET',
       headers: {
@@ -269,16 +261,15 @@ class Api {
         'Content-Type': 'application/json',
       },
     }).catch();
-    if (response.status === 404) return undefined;
     return response.status !== 200
-      ? response.status : <IUserStatistics>{ ...(await response.json()) };
+      ? undefined : <IUserStatistics>{ ...(await response.json()) };
   }
 
   async updateUserStatistics(
     userId: string,
     token: string,
     body: IUserStatistics,
-  ): Promise<IUserStatistics | number | undefined> {
+  ): Promise<IUserStatistics | undefined> {
     const response = await fetch(`${this.users}/${userId}/statistics`, {
       method: 'PUT',
       headers: {
@@ -288,15 +279,14 @@ class Api {
       },
       body: JSON.stringify(body),
     }).catch();
-    if (response.status === 404) return undefined;
     return response.status !== 200
-      ? response.status : <IUserStatistics>{ ...(await response.json()) };
+      ? undefined : <IUserStatistics>{ ...(await response.json()) };
   }
 
   async getUserSettings(
     userId: string,
     token: string,
-  ): Promise<IUserSettings | number | undefined> {
+  ): Promise<IUserSettings | undefined> {
     const response = await fetch(`${this.users}/${userId}/settings`, {
       method: 'GET',
       headers: {
@@ -305,16 +295,15 @@ class Api {
         'Content-Type': 'application/json',
       },
     }).catch();
-    if (response.status === 404) return undefined;
     return response.status !== 200
-      ? response.status : <IUserSettings>{ ...(await response.json()) };
+      ? undefined : <IUserSettings>{ ...(await response.json()) };
   }
 
   async updateUserSettings(
     userId: string,
     token: string,
     body: IUserSettings,
-  ): Promise<IUserSettings | number | undefined> {
+  ): Promise<IUserSettings | undefined> {
     const response = await fetch(`${this.users}/${userId}/settings`, {
       method: 'PUT',
       headers: {
@@ -324,9 +313,8 @@ class Api {
       },
       body: JSON.stringify(body),
     }).catch();
-    if (response.status === 404) return undefined;
     return response.status !== 200
-      ? response.status : <IUserSettings>{ ...(await response.json()) };
+      ? undefined : <IUserSettings>{ ...(await response.json()) };
   }
 }
 export default Api;

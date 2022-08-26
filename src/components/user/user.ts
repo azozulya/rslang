@@ -53,18 +53,14 @@ class User {
     return User.instance;
   } */
 
-  getStorage(key: string): string | null {
-    return localStorage.getItem(key);
+  getStorage(key: string): string | undefined {
+    const result = localStorage.getItem(key);
+    return result !== null ? result : undefined;
   }
 
   setStorage(key: string, value: string): void {
     localStorage.setItem(key, value);
   }
-
-  // isAuthenticated(): boolean {
-  //   const getValue = <string | null> this.getStorage('Authenticated');
-  //   return getValue == null ? false : JSON.parse(getValue);
-  // }
 
   logout() {
     localStorage.clear();
@@ -95,11 +91,11 @@ class User {
     return true;
   }
 
-  getWords(group: number, page: number): Promise<IWord[] | undefined | number> {
+  getWords(group: number, page: number): Promise<IWord[] | undefined> {
     return this.api.getWords(group, page);
   }
 
-  getWord(id: string): Promise<IWord | number | undefined> {
+  getWord(id: string): Promise<IWord | undefined> {
     return this.api.getWord(id);
   }
 
@@ -147,19 +143,19 @@ class User {
     return this.api.loginUser(body);
   }
 
-  getUserWords(): Promise<IUserWord[] | number | undefined> {
+  getUserWords(): Promise<IUserWord[] | undefined> {
     return this.api.getUserWords(this.userId, this.token);
   }
 
-  createUserWord(wordId: string, word?: IUserWord): Promise<IUserWord | number | undefined> {
+  createUserWord(wordId: string, word?: IUserWord): Promise<IUserWord | undefined> {
     return this.api.createUserWord(this.userId, this.token, wordId, word);
   }
 
-  getUserWord(wordId: string): Promise<IUserWord | number | undefined> {
+  getUserWord(wordId: string): Promise<IUserWord | undefined> {
     return this.api.getUserWord(this.userId, this.token, wordId);
   }
 
-  updateUserWord(wordId: string, word?: IUserWord): Promise<IUserWord | number | undefined> {
+  updateUserWord(wordId: string, word?: IUserWord): Promise<IUserWord | undefined> {
     return this.api.updateUserWord(this.userId, this.token, wordId, word);
   }
 
@@ -172,7 +168,7 @@ class User {
     page: string,
     wordsPerPage: string,
     filter: string,
-  ): Promise<IWord[] | number | undefined> {
+  ): Promise<IWord[] | undefined> {
     return this.api.getUserAggregatedWords(
       this.userId,
       this.token,
@@ -183,23 +179,23 @@ class User {
     );
   }
 
-  getUserAggregatedWord(wordId: string): Promise<IWord | number | undefined> {
+  getUserAggregatedWord(wordId: string): Promise<IWord | undefined> {
     return this.api.getUserAggregatedWord(this.userId, this.token, wordId);
   }
 
-  getUserStatistics(): Promise<IUserStatistics | number | undefined> {
+  getUserStatistics(): Promise<IUserStatistics | undefined> {
     return this.api.getUserStatistics(this.userId, this.token);
   }
 
-  updateUserStatistics(body: IUserStatistics): Promise<IUserStatistics | number | undefined> {
+  updateUserStatistics(body: IUserStatistics): Promise<IUserStatistics | undefined> {
     return this.api.updateUserStatistics(this.userId, this.token, body);
   }
 
-  getUserSettings(): Promise<IUserSettings | number | undefined> {
+  getUserSettings(): Promise<IUserSettings | undefined> {
     return this.api.getUserSettings(this.userId, this.token);
   }
 
-  updateUserSettings(body: IUserSettings): Promise<IUserSettings | number | undefined> {
+  updateUserSettings(body: IUserSettings): Promise<IUserSettings | undefined> {
     return this.api.updateUserSettings(this.userId, this.token, body);
   }
 }
