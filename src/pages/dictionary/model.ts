@@ -25,7 +25,6 @@ class DictionaryModel {
   async getWords(group: number, page: number, auth = false) {
     const words = await this.api.getWords(group, page);
     if (auth) {
-      console.log('hello auth');
       const wordsForAuthUser: IWordWithUserWord[] = await this.getUserWords(
         words,
       );
@@ -35,10 +34,9 @@ class DictionaryModel {
     }
   }
 
-  async getHardWords() {
+  async getHardWords(auth = false) {
     const userWords = await this.api.getUserWords();
     const hardWords = userWords.filter((word) => word.optional?.hard === true);
-    console.log('hardWords', hardWords);
     const words: Promise<IWord>[] = [];
     // eslint-disable-next-line no-restricted-syntax
     for (const userHardWord of hardWords) {
@@ -49,7 +47,15 @@ class DictionaryModel {
       }
     }
     const fullWords = await Promise.all(words);
-    this.makeWords(fullWords);
+
+    if (auth) {
+      const wordsForAuthUser: IWordWithUserWord[] = await this.getUserWords(
+        fullWords,
+      );
+      this.makeWords(wordsForAuthUser);
+    } else {
+      this.makeWords(fullWords);
+    }
   }
 
   async getUserWords(words: IWord[]) {
@@ -70,7 +76,6 @@ class DictionaryModel {
   }
 
   async makeWords(words: Array<IWordWithUserWord>) {
-    console.log('make words', words);
     this.words = [];
     words.forEach((word) => {
       const wordInDictionary = new Word(word);

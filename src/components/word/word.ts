@@ -1,4 +1,3 @@
-import Api from '../../api/api';
 import {
   IWord,
   IWordApp,
@@ -58,10 +57,10 @@ class Word implements IWordApp {
       difficulty: 'none',
       optional: { hard: this.word.optional?.hard },
     };
-    const userWord = await userApi.getUserWord(this.word.id);
-    if (userWord) userApi.updateUserWord(this.word.id, word);
+    const isUserWord = await this.isUserWord();
+    if (isUserWord) userApi.updateUserWord(this.word.id, word);
     else {
-      Api.getInstance().createUserWord(this.word.id, word);
+      userApi.createUserWord(this.word.id, word);
     }
 
     this.changeIcon();
@@ -90,10 +89,10 @@ class Word implements IWordApp {
         learned: this.word.optional?.learned,
       },
     };
-    const userWord = await userApi.getUserWord(this.word.id);
-    if (userWord) userApi.updateUserWord(this.word.id, word);
+    const isUserWord = await this.isUserWord();
+    if (isUserWord) userApi.updateUserWord(this.word.id, word);
     else {
-      Api.getInstance().createUserWord(this.word.id, word);
+      userApi.createUserWord(this.word.id, word);
     }
 
     this.changeIcon();
@@ -124,6 +123,12 @@ class Word implements IWordApp {
 
     if (this.word.optional?.hard) wordIconHard.classList.add('word__hard_active');
     if (this.word.optional?.learned) wordIconLearned.classList.add('word__learned_active');
+  }
+
+  async isUserWord() {
+    const userWords = await userApi.getUserWords();
+    const userWordIndex = userWords.findIndex((userWord) => userWord.wordId === this.word.id);
+    return userWordIndex >= 0;
   }
 
   // eslint-disable-next-line max-lines-per-function
@@ -174,27 +179,6 @@ class Word implements IWordApp {
       class: 'word__audio',
       parent: wordItem,
     });
-    const wordMarks = create({
-      tagname: 'div',
-      class: 'word__marks',
-      parent: wordHeader,
-    });
-    const wordHard = <HTMLElement>create({
-      tagname: 'div',
-      class: 'word__hard',
-      parent: wordMarks,
-    });
-    if (this.word.optional?.hard) {
-      wordHard.classList.add('word__hard_active');
-    }
-    const wordLearned = <HTMLElement>create({
-      tagname: 'div',
-      class: 'word__learned',
-      parent: wordMarks,
-    });
-    if (this.word.optional?.learned) {
-      wordLearned.classList.add('word__Learned_active');
-    }
     create({
       tagname: 'div',
       class: 'word__translate',
@@ -230,7 +214,37 @@ class Word implements IWordApp {
       parent: wordText,
       text: `${this.word.textExampleTranslate}`,
     });
-    // TODO Check user login (need separate method)
+    this.addHandlers(wordInDictionary);
+  }
+
+  // eslint-disable-next-line max-lines-per-function
+  drawForAuthUser() {
+    this.draw();
+    const word = <HTMLElement>document.getElementById(this.word.id);
+    const wordHeader = <HTMLElement>word.querySelector('.word__header');
+    const wordDescription = <HTMLElement>word.querySelector('.word__description');
+    const wordMarks = create({
+      tagname: 'div',
+      class: 'word__marks',
+      parent: wordHeader,
+    });
+    const wordHard = <HTMLElement>create({
+      tagname: 'div',
+      class: 'word__hard',
+      parent: wordMarks,
+    });
+    if (this.word.optional?.hard) {
+      wordHard.classList.add('word__hard_active');
+    }
+    const wordLearned = <HTMLElement>create({
+      tagname: 'div',
+      class: 'word__learned',
+      parent: wordMarks,
+    });
+    if (this.word.optional?.learned) {
+      wordLearned.classList.add('word__learned_active');
+    }
+
     const wordProgress = create({
       tagname: 'div',
       class: 'word__progress',
@@ -260,7 +274,6 @@ class Word implements IWordApp {
       parent: wordAudio,
       text: '17/40',
     });
-    // this.addHandlers(wordInDictionary);
   }
 }
 export default Word;

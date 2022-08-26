@@ -4,7 +4,7 @@ import { IWordApp } from '../../interfaces/interfaces';
 import create from '../../utils/createElement';
 import { getLocalStorage, setLocalStorage } from '../../utils/localStorage';
 import Pagination from '../../components/pagination';
-import { TOTAL_WORDS, WORDS_PER_PAGE } from '../../utils/constants';
+import { COUNT_OF_GROUPS, TOTAL_WORDS, WORDS_PER_PAGE } from '../../utils/constants';
 
 class DictionaryView {
   onGetWords!: (group: number, page: number) => void;
@@ -26,13 +26,12 @@ class DictionaryView {
   constructor() {
     this.api = Api.getInstance();
     this.words = [];
-    this.COUNT_OF_GROUPS = 5;
+    this.COUNT_OF_GROUPS = COUNT_OF_GROUPS;
     this.page = 0;
     this.group = 0;
   }
 
   bindGetWords(callback: { (group: number, page: number): void }) {
-    // to index
     const dictionaryGroups = <HTMLElement>(
       document.getElementById('dictionaryGroups')
     );
@@ -44,7 +43,9 @@ class DictionaryView {
     const dictionaryHardWords = <HTMLElement>(
       document.getElementById('dictionaryHardWords')
     );
-    dictionaryHardWords.addEventListener('click', callback);
+    if (dictionaryHardWords) {
+      dictionaryHardWords.addEventListener('click', callback);
+    }
   }
 
   private drawPagination() {
@@ -88,8 +89,10 @@ class DictionaryView {
 
   highlightGroupBtn() {
     const groupBtns = document.querySelectorAll('.dictionary__groups_item');
-
-    this.group = getLocalStorage('wordsGroupAndPage') || 0;
+    if (getLocalStorage('wordsGroupAndPage')) {
+      const { group } = getLocalStorage('wordsGroupAndPage');
+      this.group = group;
+    }
 
     groupBtns.forEach((button) => {
       if (button.classList.contains('dictionary__groups_item_active')) {
@@ -114,7 +117,7 @@ class DictionaryView {
     setLocalStorage('wordsGroupAndPage', groupAngPage);
   }
 
-  drawWords(words: IWordApp[]) {
+  drawWords(words: IWordApp[], userAuth = false) {
     const dictionary = <HTMLElement>document.getElementById('dictionaryWords');
     if (dictionary) {
       while (dictionary.firstChild) {
@@ -122,7 +125,8 @@ class DictionaryView {
       }
     }
     words.forEach((wordInDictionary) => {
-      wordInDictionary.draw();
+      if (userAuth) wordInDictionary.drawForAuthUser();
+      else wordInDictionary.draw();
     });
     this.highlightGroupBtn();
   }
@@ -172,14 +176,8 @@ class DictionaryView {
     const dictionaryExtentions = create({
       tagname: 'div',
       class: 'dictionary__extentions',
+      id: 'dictionaryExtentions',
       parent: dictionaryGroups,
-    });
-    create({
-      tagname: 'div',
-      class: 'dictionary__hardwords',
-      id: 'dictionaryHardWords',
-      parent: dictionaryExtentions,
-      text: 'Мои слова',
     });
     const dictionaryGames = create({
       tagname: 'div',
@@ -214,6 +212,19 @@ class DictionaryView {
       parent: dictionary,
     });
 
+    return container;
+  }
+
+  drawForAuthUser() {
+    const container = this.draw();
+    const dictionaryExtentions = <HTMLElement>container.querySelector('.dictionary__extentions');
+    create({
+      tagname: 'div',
+      class: 'dictionary__hardwords',
+      id: 'dictionaryHardWords',
+      parent: dictionaryExtentions,
+      text: 'Мои слова',
+    });
     return container;
   }
 }

@@ -35,6 +35,7 @@ export interface IWordApp {
   hard?: boolean;
   learned?: boolean;
   draw(): void;
+  drawForAuthUser(): void;
 }
 export interface IUser {
   [key: string]: string;
