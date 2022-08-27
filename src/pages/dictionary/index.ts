@@ -1,7 +1,7 @@
 import DictionaryView from './dictionary';
 import API from '../../api/api';
 import DictionaryModel from './model';
-import { IWordApp } from '../../interfaces/interfaces';
+import { IWordApp, IWordAppForAuthUser } from '../../interfaces/interfaces';
 import userApi from '../../components/user/user';
 
 class Dictionary {
@@ -43,6 +43,7 @@ class Dictionary {
     this.view.bindGetHardWords(this.handleGetHardWords);
     this.view.bindGetWords(this.handleGetWords);
     this.model.bindUpdateWords(this.onUpdateWords);
+    this.model.bindUpdateWordsAuth(this.onUpdateWordsAuth);
   }
 
   checkUserAuth() {
@@ -51,7 +52,11 @@ class Dictionary {
   }
 
   onUpdateWords = (words: IWordApp[]) => {
-    this.view.drawWords(words, this.checkUserAuth());
+    this.view.drawWords(words);
+  };
+
+  onUpdateWordsAuth = (words: IWordAppForAuthUser[]) => {
+    this.view.drawWordsAuth(words);
   };
 
   handleGetHardWords = () => {

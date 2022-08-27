@@ -32,11 +32,14 @@ export interface IWordWithUserWord extends IWord {
 
 export interface IWordApp {
   word: IWord;
-  hard?: boolean;
-  learned?: boolean;
   draw(): void;
+}
+
+export interface IWordAppForAuthUser {
+  word: IWordWithUserWord;
   drawForAuthUser(): void;
 }
+
 export interface IUser {
   [key: string]: string;
 

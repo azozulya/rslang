@@ -1,6 +1,6 @@
 /* eslint-disable max-lines-per-function */
 import Api from '../../api/api';
-import { IWordApp } from '../../interfaces/interfaces';
+import { IWordApp, IWordAppForAuthUser } from '../../interfaces/interfaces';
 import create from '../../utils/createElement';
 import { getLocalStorage, setLocalStorage } from '../../utils/localStorage';
 import Pagination from '../../components/pagination';
@@ -117,7 +117,7 @@ class DictionaryView {
     setLocalStorage('wordsGroupAndPage', groupAngPage);
   }
 
-  drawWords(words: IWordApp[], userAuth = false) {
+  drawWords(words: IWordApp[]) {
     const dictionary = <HTMLElement>document.getElementById('dictionaryWords');
     if (dictionary) {
       while (dictionary.firstChild) {
@@ -125,9 +125,25 @@ class DictionaryView {
       }
     }
     words.forEach((wordInDictionary) => {
-      if (userAuth) wordInDictionary.drawForAuthUser();
-      else wordInDictionary.draw();
+      wordInDictionary.draw();
     });
+
+    this.highlightGroupBtn();
+  }
+
+  drawWordsAuth(words:IWordAppForAuthUser[]) {
+    const dictionary = <HTMLElement>document.getElementById('dictionaryWords');
+    if (dictionary) {
+      while (dictionary.firstChild) {
+        dictionary.removeChild(dictionary.firstChild);
+      }
+    }
+    words.forEach((wordInDictionary) => {
+      wordInDictionary.drawForAuthUser();
+    });
+
+    // const isAllLearned = words.every((word) => word.word.optional?.learned);
+
     this.highlightGroupBtn();
   }
 
