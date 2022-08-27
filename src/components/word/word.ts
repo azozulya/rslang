@@ -7,6 +7,7 @@ import {
 } from '../../interfaces/interfaces';
 import userApi from '../user/user';
 import create from '../../utils/createElement';
+import { createDefaultWord } from '../../utils/utils';
 
 class Word implements IWordApp {
   word: IWordWithUserWord;
@@ -54,14 +55,16 @@ class Word implements IWordApp {
     if (this.word.optional) this.word.optional.hard = true;
     else this.word.optional = { hard: true };
 
-    const word: IUserWord = {
-      difficulty: 'none',
-      optional: { hard: this.word.optional?.hard },
-    };
-    const userWord = await userApi.getUserWord(this.word.id);
-    if (userWord) userApi.updateUserWord(this.word.id, word);
-    else {
-      Api.getInstance().createUserWord(this.word.id, word);
+    const wordID = this.word.id;
+    const userWord = await userApi.getUserWord(wordID);
+
+    if (userWord) {
+      userWord.optional.hard = true;
+      userApi.updateUserWord(wordID, userWord);
+    } else {
+      const newWord: IUserWord = createDefaultWord(wordID);
+      newWord.optional.hard = true;
+      Api.getInstance().createUserWord(wordID, newWord);
     }
 
     this.changeIcon();
@@ -71,11 +74,13 @@ class Word implements IWordApp {
     if (this.word.optional) this.word.optional.hard = false;
     else this.word.optional = { hard: false };
 
-    const word: IUserWord = {
-      difficulty: 'none',
-      optional: { hard: this.word.optional?.hard },
-    };
-    await userApi.updateUserWord(this.word.id, word);
+    const userWord: IUserWord | null = await userApi.getUserWord(this.word.id);
+
+    if (!userWord) return;
+
+    userWord.optional.hard = false;
+
+    await userApi.updateUserWord(this.word.id, userWord);
 
     this.changeIcon();
   }
@@ -84,16 +89,15 @@ class Word implements IWordApp {
     if (this.word.optional) this.word.optional.learned = true;
     else this.word.optional = { learned: true };
 
-    const word: IUserWord = {
-      difficulty: 'none',
-      optional: {
-        learned: this.word.optional?.learned,
-      },
-    };
     const userWord = await userApi.getUserWord(this.word.id);
-    if (userWord) userApi.updateUserWord(this.word.id, word);
-    else {
-      Api.getInstance().createUserWord(this.word.id, word);
+
+    if (userWord) {
+      userWord.optional.learned = true;
+      await userApi.updateUserWord(this.word.id, userWord);
+    } else {
+      const newWord = createDefaultWord(this.word.id);
+      newWord.optional.learned = true;
+      userApi.createUserWord(this.word.id, newWord);
     }
 
     this.changeIcon();
@@ -103,13 +107,13 @@ class Word implements IWordApp {
     if (this.word.optional) this.word.optional.learned = false;
     else this.word.optional = { learned: false };
 
-    const word: IUserWord = {
-      difficulty: 'none',
-      optional: {
-        learned: this.word.optional?.learned,
-      },
-    };
-    await userApi.updateUserWord(this.word.id, word);
+    const userWord: IUserWord | null = await userApi.getUserWord(this.word.id);
+
+    if (!userWord) return;
+
+    userWord.optional.learned = false;
+
+    await userApi.updateUserWord(this.word.id, userWord);
 
     this.changeIcon();
   }
@@ -119,11 +123,15 @@ class Word implements IWordApp {
     const wordIconHard = <HTMLElement>word.querySelector('.word__hard');
     const wordIconLearned = <HTMLElement>word.querySelector('.word__learned');
 
-    if (wordIconHard.classList.contains('word__hard_active')) wordIconHard.classList.remove('word__hard_active');
-    if (wordIconLearned.classList.contains('word__learned_active')) wordIconLearned.classList.remove('word__learned_active');
+    if (wordIconHard.classList.contains('word__hard_active'))
+      wordIconHard.classList.remove('word__hard_active');
+    if (wordIconLearned.classList.contains('word__learned_active'))
+      wordIconLearned.classList.remove('word__learned_active');
 
-    if (this.word.optional?.hard) wordIconHard.classList.add('word__hard_active');
-    if (this.word.optional?.learned) wordIconLearned.classList.add('word__learned_active');
+    if (this.word.optional?.hard)
+      wordIconHard.classList.add('word__hard_active');
+    if (this.word.optional?.learned)
+      wordIconLearned.classList.add('word__learned_active');
   }
 
   // eslint-disable-next-line max-lines-per-function

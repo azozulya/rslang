@@ -77,6 +77,7 @@ class User {
   }
 
   async isAuthenticated(): Promise<boolean> {
+    console.log(this.token);
     if (this.token === '') {
       this.setStorage('Authenticated', JSON.stringify(false));
       return false;
@@ -86,7 +87,8 @@ class User {
     const currentTime = Math.trunc(Date.now() / 1000);
 
     if (expToken <= currentTime) {
-      this.setStorage('Authenticated', JSON.stringify(true));
+      console.log('token expare', expToken, currentTime);
+      this.setStorage('Authenticated', JSON.stringify(true)); /// why true???
       return false;
     }
 
@@ -148,7 +150,7 @@ class User {
     return this.api.createUserWordNew(this.userId, this.token, wordId, word);
   }
 
-  getUserWord(wordId: string): Promise<IUserWord> {
+  getUserWord(wordId: string): Promise<IUserWord | null> {
     return this.api.getUserWord(this.userId, this.token, wordId);
   }
 

@@ -1,4 +1,8 @@
-import { IGameWord } from '../interfaces/interfaces';
+import {
+  IGameWord,
+  IUserWord,
+  IUserWordOption,
+} from '../interfaces/interfaces';
 import { GAME_TIMER } from '../utils/constants';
 import create from '../utils/createElement';
 
@@ -31,6 +35,7 @@ class SprintGame {
   constructor(
     private wordsList: IGameWord[],
     private onStopGameHandler: () => void,
+    private updateWordState?: (wordId: string, isRightAnswer: boolean) => void,
   ) {
     this.gameContainer = create({ tagname: 'div', class: 'sprint' });
     this.scoreElement = create({
@@ -163,10 +168,13 @@ class SprintGame {
 
     if (String(wordTranslate === pseudoTranslate) === userAnswer) {
       this.addRightAnswer();
+      this.updateWordState?.(currentWord.id, true);
     } else {
       this.addWrongAnswer();
+      this.updateWordState?.(currentWord.id, false);
     }
-    setTimeout(() => this.nextWord(), 1000);
+
+    setTimeout(() => this.nextWord(), 500);
   };
 
   private async addRightAnswer() {
@@ -179,6 +187,7 @@ class SprintGame {
     score += 10;
 
     this.updateState({ rightAnswer, seriesOfRightAnswer, score });
+
     this.updateScore();
   }
 

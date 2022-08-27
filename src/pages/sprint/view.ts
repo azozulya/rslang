@@ -1,6 +1,8 @@
 import SprintGame from '../../components/sprint';
-import { IGameWord } from '../../interfaces/interfaces';
+import { IGameWord, IUserWord } from '../../interfaces/interfaces';
+import { GAME_TIMER } from '../../utils/constants';
 import create from '../../utils/createElement';
+import { isFromDictionaryPage } from '../../utils/utils';
 
 class GamesView {
   private gameContainer: HTMLElement;
@@ -24,18 +26,30 @@ class GamesView {
 
   private startBtn?: HTMLButtonElement;
 
-  private onGetWords?: (level: number) => Promise<IGameWord[]>;
+  private onGetWordsByLevel?: (level: number) => Promise<IGameWord[]>;
+
+  private onGetWordsFromDictionary?: (level: number) => Promise<IGameWord[]>;
+
+  private onUpdateUserWord?: (wordId: string, isRightAnswer: boolean) => void;
+
+  private isFromDictionary: boolean;
 
   constructor() {
+    this.isFromDictionary = isFromDictionaryPage();
     this.gameContainer = create({ tagname: 'section', class: 'game' });
     this.startScreen = this.createStartScreen();
     this.gameScreen = create({ tagname: 'div', class: 'game__sprint' });
     this.resultScreen = create({ tagname: 'div', class: 'game__result' });
+    console.log('1from dictionary: ', this.isFromDictionary);
   }
 
   private drawLevels() {
     const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
-    const levelsContainer = create({ tagname: 'div', class: 'game__levels' });
+    const levelsContainer = create({
+      tagname: 'div',
+      class: 'game__levels',
+    });
+    const title = create({ tagname: 'h4', text: 'Выбери уровень:' });
 
     levels.forEach((level, idx) => {
       const levelLabel = create({
@@ -58,7 +72,11 @@ class GamesView {
     });
 
     levelsContainer.addEventListener('click', this.onLevelClickHandler);
-    return levelsContainer;
+
+    const levelsSection = document.createDocumentFragment();
+    levelsSection.append(title, levelsContainer);
+
+    return levelsSection;
   }
 
   private createStartBtn() {
@@ -66,7 +84,7 @@ class GamesView {
       create({ tagname: 'button', class: 'btn' })
     );
     startBtn.classList.add('btn--blue');
-    startBtn.disabled = true;
+    startBtn.disabled = !this.isFromDictionary;
     startBtn.innerText = 'Начать';
 
     startBtn.addEventListener('click', this.onStartClickHandler);
@@ -76,21 +94,30 @@ class GamesView {
   private createStartScreen(): HTMLElement {
     const container = create({ tagname: 'div', class: 'game__start' });
 
-    container.innerHTML = `<h3>Спринт</h3>
-    <p class="game__description">
-    Спринт - тренировка на скорость.<br> Попробуй угадать как можно больше слов за 30 секунд.
-    </p>
-    <h4>Выбери уровень:</h4>`;
+    container.innerHTML = `
+      <h3>Спринт</h3>
+      <p class="game__description">
+        Спринт - тренировка на скорость.<br> Попробуй угадать как можно больше слов за ${GAME_TIMER} секунд.
+      </p>
+    `;
 
     this.startBtn = this.createStartBtn();
 
-    container.append(this.drawLevels(), this.startBtn);
+    if (!this.isFromDictionary) {
+      container.append(this.drawLevels());
+    }
+
+    container.append(this.startBtn);
 
     return container;
   }
 
   private createGameScreen(wordsList: IGameWord[]) {
-    const game = new SprintGame(wordsList, this.stopGame);
+    const game = new SprintGame(
+      wordsList,
+      this.stopGame,
+      this.onUpdateUserWord,
+    );
 
     this.gameScreen?.append(game.render());
   }
@@ -120,12 +147,11 @@ class GamesView {
       this.resultScreen.insertAdjacentHTML(
         'beforeend',
         `
-        <div>
-          <button class="btn" data-page="games">Сыграть еще раз</button>
-          <button class="btn" data-page="dictionary">Перейти в учебник</button>
-        </div>
-
-      `,
+          <div>
+            <button class="btn" data-page="games">Сыграть еще раз</button>
+            <button class="btn" data-page="dictionary">Перейти в учебник</button>
+          </div>
+        `,
       );
     }
   };
@@ -136,7 +162,13 @@ class GamesView {
   }
 
   bindGetWords(handler: (level: number) => Promise<IGameWord[]>) {
-    this.onGetWords = handler;
+    this.onGetWordsByLevel = handler;
+  }
+
+  bindUpdateUserWord(
+    handler: (wordId: string, isRightAnswer: boolean) => void,
+  ) {
+    this.onUpdateUserWord = handler;
   }
 
   private onLevelClickHandler = async () => {
@@ -158,9 +190,14 @@ class GamesView {
     this.gameContainer.innerText = '';
 
     if (this.gameScreen) {
-      const wordsList = await this.onGetWords?.(
+      // let wordsList;
+
+      // if (this.isFromDictionary) {
+      // } else {
+      const wordsList = await this.onGetWordsByLevel?.(
         Number(this.startBtn?.dataset.level),
       );
+      // }
 
       if (wordsList) {
         this.createGameScreen(wordsList);

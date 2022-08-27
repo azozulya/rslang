@@ -41,7 +41,7 @@ class Router {
     );
 
     if (currentRouter) {
-      this.rootContainer.dataset.arrivalFrom = isMenuLink ? 'menu' : 'page';
+      this.rootContainer.dataset.linkFrom = isMenuLink ? 'menu' : 'page';
 
       this.rootContainer.removeAttribute('class');
       this.rootContainer.classList.add(currentRouter.class);

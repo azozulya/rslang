@@ -2,9 +2,22 @@
   box-sizing: border-box;
   background-color: $secondary-light;
   max-width: 40rem;
-  margin: 2rem auto;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 2rem;
   padding: 2rem;
   border-radius: 2rem;
+  min-height: 400px;
+
+  @include all-desktop {
+    margin-top: 2rem;
+  }
+
+  @include tablet-phone {
+    margin-left: 1rem;
+    margin-right: 1rem;
+    margin-top: 0;
+  }
 
   &__start {
     display: flex;
@@ -20,6 +33,10 @@
   &__levels {
     display: flex;
     margin-bottom: 4rem;
+
+    @include phone {
+      margin-top: 1.3rem;
+    }
   }
 
   &__level {
@@ -102,8 +119,8 @@
     padding: 2rem;
     box-sizing: border-box;
     border-radius: 1rem;
-    transition-property: all;
-    transition-duration: 1000ms;
+    // transition-property: all;
+    // transition-duration: 1000ms;
 
     &--title {
       text-align: center;
@@ -123,7 +140,7 @@
   &__right-answer .sprint__word--title,
   &__wrong-answer .sprint__word--title {
     animation-timing-function: linear;
-    animation-duration: 500ms;
+    animation-duration: 200ms;
     animation-iteration-count: 1;
   }
 

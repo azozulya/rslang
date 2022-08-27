@@ -53,12 +53,22 @@ export interface IAuth {
 }
 
 export interface IUserWord {
+  wordId: string;
   difficulty: string;
-  optional?: {
-    learned?: boolean;
-    hard?: boolean;
+  optional: IUserWordOption;
+}
+
+export interface IUserWordOption {
+  learned: boolean;
+  hard: boolean;
+  sprint: {
+    rightAnswer: number;
+    wrongAnswer: number;
   };
-  wordId?: string;
+  audiocall: {
+    rightAnswer: number;
+    wrongAnswer: number;
+  };
 }
 
 export interface IUserStatistics {
@@ -89,6 +99,7 @@ export type TPageHistory = {
 };
 
 export interface IGameWord {
+  id: string;
   word: string;
   wordTranslate: string;
   pseudoTranslate: string;
