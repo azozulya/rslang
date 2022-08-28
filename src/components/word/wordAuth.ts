@@ -10,6 +10,8 @@ import Word from './word';
 class WordAuth extends Word implements IWordAppForAuthUser {
   word: IWordWithUserWord;
 
+  // check: () => boolean;
+
   constructor(word: IWordWithUserWord) {
     super(word);
     this.word = word;
@@ -41,21 +43,6 @@ class WordAuth extends Word implements IWordAppForAuthUser {
     wordHard?.addEventListener('click', callback);
   }
 */
-
-  playAudio(wordAudio: HTMLElement) {
-    const tracks = [`http://127.0.0.1:3000/${this.word.audio}`, `http://127.0.0.1:3000/${this.word.audioMeaning}`, `http://127.0.0.1:3000/${this.word.audioExample}`];
-    const player = <HTMLAudioElement>wordAudio.querySelector('.word__audio_player');
-    let currentTrack = 0;
-    player.src = tracks[currentTrack];
-    player.play();
-    player.addEventListener('ended', () => {
-      currentTrack += 1;
-      if (currentTrack < tracks.length) {
-        player.src = tracks[currentTrack];
-        player.play();
-      }
-    });
-  }
 
   async addToHardWords() {
     if (this.word.optional) this.word.optional.hard = true;

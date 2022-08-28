@@ -26,17 +26,18 @@ class Dictionary {
     if (this.checkUserAuth()) container.append(this.view.drawForAuthUser());
     else container.append(this.view.draw());
 
-    const { group, page } = this.view.getGroupAndPage();
+    const { group, page, isActiveHardWords } = this.view.getNavigate();
+    if (isActiveHardWords) this.handleGetHardWords();
     this.handleGetWords(group, page);
     this.addHandlers();
 
-    const login = await this.api.loginUser({
+    /* const login = await this.api.loginUser({
       // remove after class Auth is ready
       email: 'a@a.com',
       password: '11111111',
     });
 
-    console.log('login', login);
+    console.log('login', login); */
   }
 
   addHandlers() {
@@ -47,7 +48,6 @@ class Dictionary {
   }
 
   checkUserAuth() {
-    console.log('auth', this.userApi.isAuthenticated());
     return this.userApi.isAuthenticated();
   }
 

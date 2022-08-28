@@ -91,3 +91,9 @@ export type TPageHistory = {
   prevPage: string;
   currentPage: string;
 };
+
+export type TNavigate = {
+  page: number;
+  group: number;
+  isActiveHardWords: boolean;
+};

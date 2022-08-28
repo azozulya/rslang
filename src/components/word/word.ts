@@ -1,12 +1,11 @@
 import {
   IWord,
   IWordApp,
-  IWordWithUserWord,
 } from '../../interfaces/interfaces';
 import create from '../../utils/createElement';
 
 class Word implements IWordApp {
-  word: IWordWithUserWord;
+  word: IWord;
 
   constructor(word: IWord) {
     this.word = word;
