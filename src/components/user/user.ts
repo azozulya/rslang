@@ -136,11 +136,32 @@ class User {
     return response;
   }
 
-  loginUser(body: {
+  // loginUser(body: {
+  //   email: string;
+  //   password: string;
+  // }): Promise<IAuth | number> {
+  //   return this.api.loginUser(body);
+  // }
+
+  async loginUser(body: {
     email: string;
     password: string;
   }): Promise<IAuth | number> {
-    return this.api.loginUser(body);
+    const response = await this.api.loginUser(body);
+
+    if (response.status === 200) {
+      const result = await response.json();
+
+      this.message = result.message;
+      this.name = result.name;
+      this.userId = result.userId;
+      this.token = result.token;
+      this.refreshToken = result.refreshToken;
+
+      this.setStorage('RSLang_Auth', JSON.stringify(result));
+      this.setStorage('Authenticated', JSON.stringify(true));
+    }
+    return response.status;
   }
 
   getUserWords(): Promise<IUserWord[] | undefined> {
