@@ -187,11 +187,11 @@ class DictionaryView {
     const isLearnedAndHard = this.wordsForAuthUser.every(
       (word) => word.word.optional?.learned === true || word.word.optional?.hard === true,
     );
-    const isAllNotHard = this.wordsForAuthUser.some(
+    /* const isAllNotHard = this.wordsForAuthUser.some(
       (word) => word.word.optional?.learned === true,
-    );
+    ); */
 
-    const isChecked = isLearnedAndHard && isAllNotHard;
+    const isChecked = isLearnedAndHard; // && isAllNotHard;
     return isChecked;
   }
 
