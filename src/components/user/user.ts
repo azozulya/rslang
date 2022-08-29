@@ -72,7 +72,7 @@ class User {
     this.name = '';
   }
 
-  async isAuthenticated(): Promise<boolean> {
+  async isAuthenticated() {
     if (this.token === '') {
       this.setStorage('Authenticated', JSON.stringify(false));
       return false;

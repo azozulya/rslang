@@ -1,15 +1,11 @@
-import Api from '../../api/api';
 import {
   IWord,
   IWordApp,
-  IUserWord,
-  IWordWithUserWord,
 } from '../../interfaces/interfaces';
-import userApi from '../user/user';
 import create from '../../utils/createElement';
 
 class Word implements IWordApp {
-  word: IWordWithUserWord;
+  word: IWord;
 
   constructor(word: IWord) {
     this.word = word;
@@ -21,109 +17,22 @@ class Word implements IWordApp {
 
   defineTarget(event: Event) {
     const element = <HTMLElement>event.target;
-    if (element.classList.contains('word__audio')) this.listenWord();
+    if (element.classList.contains('word__audio')) this.playAudio(element);
+  }
 
-    if (element.classList.contains('word__hard')) {
-      if (this.word.optional?.hard) this.deleteFromHardWords();
-      else {
-        if (this.word.optional?.learned) this.deleteFromLearnedWords();
-        this.addToHardWords();
+  playAudio(wordAudio: HTMLElement) {
+    const tracks = [`http://127.0.0.1:3000/${this.word.audio}`, `http://127.0.0.1:3000/${this.word.audioMeaning}`, `http://127.0.0.1:3000/${this.word.audioExample}`];
+    const player = <HTMLAudioElement>wordAudio.querySelector('.word__audio_player');
+    let currentTrack = 0;
+    player.src = tracks[currentTrack];
+    player.play();
+    player.addEventListener('ended', () => {
+      currentTrack += 1;
+      if (currentTrack < tracks.length) {
+        player.src = tracks[currentTrack];
+        player.play();
       }
-    }
-
-    if (element.classList.contains('word__learned')) {
-      if (this.word.optional?.learned) this.deleteFromLearnedWords();
-      else {
-        if (this.word.optional?.hard) this.deleteFromHardWords();
-        this.addToLearnedWords();
-      }
-    }
-  }
-
-  /* bindAddToHardWord(callback) {
-    const wordHard = document.getElementById('wordHard');
-    wordHard?.addEventListener('click', callback);
-  }
-*/
-
-  listenWord() {
-    console.log(this.word.id);
-  }
-
-  async addToHardWords() {
-    if (this.word.optional) this.word.optional.hard = true;
-    else this.word.optional = { hard: true };
-
-    const word: IUserWord = {
-      difficulty: 'none',
-      optional: { hard: this.word.optional?.hard },
-    };
-    const userWord = await userApi.getUserWord(this.word.id);
-    if (userWord) userApi.updateUserWord(this.word.id, word);
-    else {
-      Api.getInstance().createUserWord(this.word.id, word);
-    }
-
-    this.changeIcon();
-  }
-
-  async deleteFromHardWords() {
-    if (this.word.optional) this.word.optional.hard = false;
-    else this.word.optional = { hard: false };
-
-    const word: IUserWord = {
-      difficulty: 'none',
-      optional: { hard: this.word.optional?.hard },
-    };
-    await userApi.updateUserWord(this.word.id, word);
-
-    this.changeIcon();
-  }
-
-  async addToLearnedWords() {
-    if (this.word.optional) this.word.optional.learned = true;
-    else this.word.optional = { learned: true };
-
-    const word: IUserWord = {
-      difficulty: 'none',
-      optional: {
-        learned: this.word.optional?.learned,
-      },
-    };
-    const userWord = await userApi.getUserWord(this.word.id);
-    if (userWord) userApi.updateUserWord(this.word.id, word);
-    else {
-      Api.getInstance().createUserWord(this.word.id, word);
-    }
-
-    this.changeIcon();
-  }
-
-  async deleteFromLearnedWords() {
-    if (this.word.optional) this.word.optional.learned = false;
-    else this.word.optional = { learned: false };
-
-    const word: IUserWord = {
-      difficulty: 'none',
-      optional: {
-        learned: this.word.optional?.learned,
-      },
-    };
-    await userApi.updateUserWord(this.word.id, word);
-
-    this.changeIcon();
-  }
-
-  changeIcon() {
-    const word = <HTMLElement>document.getElementById(this.word.id);
-    const wordIconHard = <HTMLElement>word.querySelector('.word__hard');
-    const wordIconLearned = <HTMLElement>word.querySelector('.word__learned');
-
-    if (wordIconHard.classList.contains('word__hard_active')) wordIconHard.classList.remove('word__hard_active');
-    if (wordIconLearned.classList.contains('word__learned_active')) wordIconLearned.classList.remove('word__learned_active');
-
-    if (this.word.optional?.hard) wordIconHard.classList.add('word__hard_active');
-    if (this.word.optional?.learned) wordIconLearned.classList.add('word__learned_active');
+    });
   }
 
   // eslint-disable-next-line max-lines-per-function
@@ -169,32 +78,16 @@ class Word implements IWordApp {
       parent: wordItem,
       text: `${this.word.transcription}`,
     });
-    create({
+    const wordAudio = <HTMLElement>create({
       tagname: 'div',
       class: 'word__audio',
       parent: wordItem,
     });
-    const wordMarks = create({
-      tagname: 'div',
-      class: 'word__marks',
-      parent: wordHeader,
+    create({
+      tagname: 'audio',
+      class: 'word__audio_player',
+      parent: wordAudio,
     });
-    const wordHard = <HTMLElement>create({
-      tagname: 'div',
-      class: 'word__hard',
-      parent: wordMarks,
-    });
-    if (this.word.optional?.hard) {
-      wordHard.classList.add('word__hard_active');
-    }
-    const wordLearned = <HTMLElement>create({
-      tagname: 'div',
-      class: 'word__learned',
-      parent: wordMarks,
-    });
-    if (this.word.optional?.learned) {
-      wordLearned.classList.add('word__Learned_active');
-    }
     create({
       tagname: 'div',
       class: 'word__translate',
@@ -230,37 +123,7 @@ class Word implements IWordApp {
       parent: wordText,
       text: `${this.word.textExampleTranslate}`,
     });
-    // TODO Check user login (need separate method)
-    const wordProgress = create({
-      tagname: 'div',
-      class: 'word__progress',
-      parent: wordDescription,
-    });
-    const wordSprint = create({
-      tagname: 'div',
-      class: 'word__sprint',
-      parent: wordProgress,
-      text: 'Спринт',
-    });
-    create({
-      tagname: 'div',
-      class: 'word__sprint_score',
-      parent: wordSprint,
-      text: '3/10',
-    });
-    const wordAudio = create({
-      tagname: 'div',
-      class: 'word__sprint',
-      parent: wordProgress,
-      text: 'Аудиовызов',
-    });
-    create({
-      tagname: 'div',
-      class: 'word__sprint_score',
-      parent: wordAudio,
-      text: '17/40',
-    });
-    // this.addHandlers(wordInDictionary);
+    this.addHandlers(wordInDictionary);
   }
 }
 export default Word;
