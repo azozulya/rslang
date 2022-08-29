@@ -1,7 +1,6 @@
 import {
   IWord,
   IUser,
-  IAuth,
   IUserWord,
   IUserStatistics,
   IUserSettings,
@@ -35,12 +34,12 @@ class Api {
 
   async getWords(group: number, page: number): Promise<IWord[] | undefined> {
     const response = await fetch(`${this.words}?group=${group}&page=${page}`).catch();
-    return response.status !== 200 ? undefined : <IWord[]>{ ...(await response.json()) };
+    return response.status !== 200 ? undefined : <IWord[]>(await response.json());
   }
 
   async getWord(id: string): Promise<IWord | undefined> {
     const response = await fetch(`${this.words}/${id}`).catch();
-    return response.status !== 200 ? undefined : <IWord>{ ...(await response.json()) };
+    return response.status !== 200 ? undefined : <IWord>(await response.json());
   }
 
   async getUser(id: string, token: string): Promise<IUser | number> {
@@ -52,7 +51,7 @@ class Api {
         'Content-Type': 'application/json',
       },
     }).catch();
-    return response.status !== 200 ? response.status : <IUser>{ ...(await response.json()) };
+    return response.status !== 200 ? response.status : <IUser>(await response.json());
   }
 
   async createUser(user: IUser): Promise<IUser | number> {
@@ -81,7 +80,7 @@ class Api {
         'Content-Type': 'application/json',
       },
     }).catch();
-    return response.status !== 200 ? response.status : <IUser>{ ...(await response.json()) };
+    return response.status !== 200 ? response.status : <IUser>(await response.json());
   }
 
   async deleteUser(id: string, token: string): Promise<string> {
@@ -105,14 +104,13 @@ class Api {
         'Content-Type': 'application/json',
       },
     }).catch();
-    return response.status !== 200 ? undefined : <IToken>{ ...(await response.json()) };
+    return response.status !== 200 ? undefined : <IToken>(await response.json());
   }
 
   async loginUser(body: {
     email: string;
     password: string;
-  }): Promise<IAuth | number> {
-    let result: IAuth;
+  }): Promise<Response> {
     const response = await fetch(this.signin, {
       method: 'POST',
       body: JSON.stringify(body),
@@ -121,12 +119,7 @@ class Api {
         'Content-Type': 'application/json',
       },
     }).catch();
-    if (response.status === 200) {
-      result = await response.json();
-      localStorage.setItem('RSLang_Auth', JSON.stringify(result));
-      localStorage.setItem('Authenticated', JSON.stringify(true));
-    }
-    return response.status;
+    return response;
   }
 
   async getUserWords(userId: string, token: string): Promise<IUserWord[] | undefined> {
@@ -138,7 +131,7 @@ class Api {
         'Content-Type': 'application/json',
       },
     }).catch();
-    return response.status !== 200 ? undefined : <IUserWord[]>{ ...(await response.json()) };
+    return response.status !== 200 ? undefined : <IUserWord[]>(await response.json());
   }
 
   async createUserWord(
@@ -156,7 +149,7 @@ class Api {
       },
       body: JSON.stringify(word),
     }).catch();
-    return response.status !== 200 ? undefined : <IUserWord>{ ...(await response.json()) };
+    return response.status !== 200 ? undefined : <IUserWord>(await response.json());
   }
 
   async getUserWord(
@@ -171,7 +164,7 @@ class Api {
         Accept: 'application/json',
       },
     }).catch();
-    return response.status !== 200 ? undefined : <IUserWord>{ ...(await response.json()) };
+    return response.status !== 200 ? undefined : <IUserWord>(await response.json());
   }
 
   async updateUserWord(
@@ -189,7 +182,7 @@ class Api {
       },
       body: JSON.stringify(word),
     }).catch();
-    return response.status !== 200 ? undefined : <IUserWord>{ ...(await response.json()) };
+    return response.status !== 200 ? undefined : <IUserWord>(await response.json());
   }
 
   async deleteUserWord(
@@ -227,7 +220,7 @@ class Api {
         },
       },
     ).catch();
-    return response.status !== 200 ? undefined : <IWord[]>{ ...(await response.json()) };
+    return response.status !== 200 ? undefined : <IWord[]>(await response.json());
   }
 
   async getUserAggregatedWord(
@@ -246,7 +239,7 @@ class Api {
         },
       },
     ).catch();
-    return response.status !== 200 ? undefined : <IWord>{ ...(await response.json()) };
+    return response.status !== 200 ? undefined : <IWord>(await response.json());
   }
 
   async getUserStatistics(
@@ -262,7 +255,7 @@ class Api {
       },
     }).catch();
     return response.status !== 200
-      ? undefined : <IUserStatistics>{ ...(await response.json()) };
+      ? undefined : <IUserStatistics>(await response.json());
   }
 
   async updateUserStatistics(
@@ -280,7 +273,7 @@ class Api {
       body: JSON.stringify(body),
     }).catch();
     return response.status !== 200
-      ? undefined : <IUserStatistics>{ ...(await response.json()) };
+      ? undefined : <IUserStatistics>(await response.json());
   }
 
   async getUserSettings(
@@ -296,7 +289,7 @@ class Api {
       },
     }).catch();
     return response.status !== 200
-      ? undefined : <IUserSettings>{ ...(await response.json()) };
+      ? undefined : <IUserSettings>(await response.json());
   }
 
   async updateUserSettings(
@@ -314,7 +307,7 @@ class Api {
       body: JSON.stringify(body),
     }).catch();
     return response.status !== 200
-      ? undefined : <IUserSettings>{ ...(await response.json()) };
+      ? undefined : <IUserSettings>(await response.json());
   }
 }
 export default Api;
