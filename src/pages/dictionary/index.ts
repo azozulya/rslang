@@ -1,5 +1,4 @@
 import DictionaryView from './dictionary';
-import API from '../../api/api';
 import DictionaryModel from './model';
 import { IWordApp, IWordAppForAuthUser } from '../../interfaces/interfaces';
 import userApi from '../../components/user/user';
@@ -11,19 +10,16 @@ class Dictionary {
 
   private model: DictionaryModel;
 
-  private api: API;
-
   constructor() {
     this.view = new DictionaryView();
     this.model = new DictionaryModel();
-    this.api = API.getInstance();
     this.userApi = userApi;
   }
 
   async draw(rootContainer: HTMLElement) {
     const container = rootContainer;
 
-    if (this.checkUserAuth()) container.append(this.view.drawForAuthUser());
+    if (await this.checkUserAuth()) container.append(this.view.drawForAuthUser());
     else container.append(this.view.draw());
 
     const { group, page, isActiveHardWords } = this.view.getNavigate();
@@ -40,14 +36,14 @@ class Dictionary {
     console.log('login', login); */
   }
 
-  addHandlers() {
+  private addHandlers() {
     this.view.bindGetHardWords(this.handleGetHardWords);
     this.view.bindGetWords(this.handleGetWords);
     this.model.bindUpdateWords(this.onUpdateWords);
     this.model.bindUpdateWordsAuth(this.onUpdateWordsAuth);
   }
 
-  checkUserAuth() {
+  private checkUserAuth() {
     return this.userApi.isAuthenticated();
   }
 
@@ -59,12 +55,12 @@ class Dictionary {
     this.view.drawWordsAuth(words);
   };
 
-  handleGetHardWords = () => {
-    this.model.getHardWords(this.checkUserAuth());
+  handleGetHardWords = async () => {
+    this.model.getHardWords(await this.checkUserAuth());
   };
 
-  handleGetWords = (group: number, page: number) => {
-    this.model.getWords(group, page, this.checkUserAuth());
+  handleGetWords = async (group: number, page: number) => {
+    this.model.getWords(group, page, await this.checkUserAuth());
   };
 }
 

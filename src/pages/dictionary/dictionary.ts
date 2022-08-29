@@ -1,5 +1,4 @@
 /* eslint-disable max-lines-per-function */
-import Api from '../../api/api';
 import { IWordApp, IWordAppForAuthUser, TNavigate } from '../../interfaces/interfaces';
 import create from '../../utils/createElement';
 import { getLocalStorage, setLocalStorage } from '../../utils/localStorage';
@@ -9,17 +8,15 @@ import { COUNT_OF_GROUPS, TOTAL_WORDS, WORDS_PER_PAGE } from '../../utils/consta
 class DictionaryView {
   onGetWords!: (group: number, page: number) => void;
 
-  api: Api;
-
   words: Array<IWordApp>;
 
-  COUNT_OF_GROUPS: number;
+  private COUNT_OF_GROUPS: number;
 
-  page: number;
+  private page: number;
 
-  group: number;
+  private group: number;
 
-  isActiveHardWords: boolean;
+  private isActiveHardWords: boolean;
 
   private pagination: Pagination | undefined;
 
@@ -28,7 +25,6 @@ class DictionaryView {
   private wordsForAuthUser: IWordAppForAuthUser[];
 
   constructor() {
-    this.api = Api.getInstance();
     this.words = [];
     this.COUNT_OF_GROUPS = COUNT_OF_GROUPS;
     this.page = 0;
@@ -55,7 +51,7 @@ class DictionaryView {
     }
   }
 
-  addHandlersForCheckingWord() {
+  private addHandlersForCheckingWord() {
     const dictionaryWords = <HTMLElement>document.getElementById('dictionaryWords');
     dictionaryWords.addEventListener('click', (event) => {
       const element = <HTMLElement>event.target;
@@ -187,7 +183,7 @@ class DictionaryView {
     this.showTextInfo(isAllChecked); // add disable for pagination
   }
 
-  checkWordsOnPage() {
+  private checkWordsOnPage() {
     const isLearnedAndHard = this.wordsForAuthUser.every(
       (word) => word.word.optional?.learned === true || word.word.optional?.hard === true,
     );

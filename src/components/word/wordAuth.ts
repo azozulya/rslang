@@ -122,6 +122,7 @@ class WordAuth extends Word implements IWordAppForAuthUser {
 
   async isUserWord() {
     const userWords = await userApi.getUserWords();
+    if (!userWords) throw new Error('Not found user saved words');
     const userWordIndex = userWords.findIndex((userWord) => userWord.wordId === this.word.id);
     return userWordIndex >= 0;
   }

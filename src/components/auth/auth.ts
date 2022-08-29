@@ -73,9 +73,9 @@ export default class Auth {
     container.innerHTML = this.content;
     this.addHandlersBlock();
 
+    this.addValidateName();
     this.addValidateEmail();
     this.addValidatePassword();
-    this.addHandlers();
   }
 
   drawLoginUser() {
@@ -108,17 +108,26 @@ export default class Auth {
 
     container.innerHTML = this.content;
 
-    // this.addHandlersBlockLogin();
-
     this.addValidateEmail();
     this.addValidatePassword();
     this.addHandlers();
+  }
+
+  addValidateName() {
+    const inputName = <HTMLInputElement>document.getElementById('name');
+    const errorName = <HTMLElement>document.getElementById('error-name');
+    inputName.addEventListener('input', () => {
+      (<HTMLElement>document.getElementById('title')).innerHTML = '&nbsp;';
+      if (inputName.value.length < 3) errorName.innerText = 'Длинна пароля не менее 3 символов';
+      else errorName.innerHTML = '&nbsp;';
+    });
   }
 
   addValidateEmail() {
     const inputEmail = <HTMLInputElement>document.getElementById('email');
     const errorEmail = <HTMLElement>document.getElementById('error-email');
     inputEmail.addEventListener('input', () => {
+      (<HTMLElement>document.getElementById('title')).innerHTML = '&nbsp;';
       if (!this.validateEmail(inputEmail.value)) errorEmail.innerText = 'Неверный формат Email-адреса';
       else errorEmail.innerHTML = '&nbsp;';
     });
@@ -130,6 +139,7 @@ export default class Auth {
       document.getElementById('error-password')
     );
     inputPassword.addEventListener('input', () => {
+      (<HTMLElement>document.getElementById('title')).innerHTML = '&nbsp;';
       if (inputPassword.value.length < 8) errorPassword.innerText = 'Длинна пароля не менее 8 символов';
       else errorPassword.innerHTML = '&nbsp;';
     });
@@ -161,7 +171,6 @@ export default class Auth {
 
   private request(event: Event) {
     const target = <HTMLElement>event.target;
-    console.log(<HTMLElement>event.target);
     if (target.id === 'main_login') this.draw();
     if (target.id === 'main_logout') this.logout();
     if (target.id === 'registerLink') this.drawCreateUser();
@@ -193,8 +202,7 @@ export default class Auth {
       this.closeModal();
       const button = <HTMLElement>document.getElementById('auth');
       button.innerHTML = '<button id="main_logout" class="btn btn--orange auth__btn">Выйти</button>';
-    }
-    if (res === 404) {
+    } else {
       (<HTMLElement>document.getElementById('title')).innerHTML = 'Не верный Email или пароль!!!';
       (<HTMLInputElement>document.getElementById('email')).value = '';
       (<HTMLInputElement>document.getElementById('password')).value = '';
@@ -206,15 +214,10 @@ export default class Auth {
     const email = (<HTMLInputElement>document.getElementById('email')).value;
     const password = (<HTMLInputElement>document.getElementById('password'))
       .value;
-    console.log('sendRegisterData: IN');
 
     const statusCreate = await userApi.createUser({ name, email, password });
-    console.log('sendRegisterData: OUT');
-    console.log(statusCreate);
 
     if (statusCreate === 417) {
-      console.log('USER EXIST');
-
       (<HTMLElement>(
         document.getElementById('title')
       )).innerHTML = `Email "${email}" занят, используйте кнопку "ВОЙТИ"!`;
@@ -224,13 +227,8 @@ export default class Auth {
       (<HTMLInputElement>document.getElementById('password')).value = '';
     }
     if (statusCreate === 200) {
-      console.log('CREATE: OK');
-
-      (<HTMLElement>document.getElementById('title')).innerHTML = 'Спасибо за регистрацию!!!';
-      console.log('sendRegisterData: LOGIN IN');
-
+      (<HTMLElement>document.getElementById('title')).innerHTML = `${name}, спасибо за регистрацию!`;
       const statusLogin = await userApi.loginUser({ email, password });
-      console.log('sendRegisterData: LOGIN OUT');
 
       if (statusLogin === 200) {
         this.closeModal();
@@ -241,8 +239,7 @@ export default class Auth {
   }
 
   private validateEmail(value: string): boolean {
-    // eslint-disable-next-line no-useless-escape
-    const EMAIL_REGEXP = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const EMAIL_REGEXP = /^(([^<>()[\]\\.,;:\s@\\"]+(\.[^<>()[\]\\.,;:\s@\\"]+)*)|(\\".+\\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return EMAIL_REGEXP.test(value);
   }
 }
