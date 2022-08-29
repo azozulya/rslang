@@ -1,22 +1,19 @@
 import SprintGame from '../../components/sprint';
-import { IGameWord, IUserWord } from '../../interfaces/interfaces';
-import { GAME_TIMER } from '../../utils/constants';
+import { IGameStatistic, IGameWord } from '../../interfaces/interfaces';
+import { GAME_TIMER, TOTAL_WORDS, WORDS_PER_PAGE } from '../../utils/constants';
 import create from '../../utils/createElement';
-import { isFromDictionaryPage } from '../../utils/utils';
+import {
+  generateIndex,
+  isFromDictionaryPage,
+  isStartPage,
+} from '../../utils/utils';
 
 class GamesView {
+  isMenuLink = true;
+
   private gameContainer: HTMLElement;
 
   private levels: HTMLInputElement[] = [];
-
-  private gameState = {
-    score: 0,
-    learnedWords: 0,
-    rightAnswer: 0,
-    wrongAnswer: 0,
-    seriesOfRightAnswer: 0,
-    maxSeriesOfRightAnswer: 0,
-  };
 
   private startScreen?: HTMLElement;
 
@@ -26,21 +23,29 @@ class GamesView {
 
   private startBtn?: HTMLButtonElement;
 
-  private onGetWordsByLevel?: (level: number) => Promise<IGameWord[]>;
+  private isFromDictionary: boolean;
 
-  private onGetWordsFromDictionary?: (level: number) => Promise<IGameWord[]>;
+  private onGetWords?: (
+    level: number,
+    page: number
+  ) => Promise<IGameWord[] | null>;
 
   private onUpdateUserWord?: (wordId: string, isRightAnswer: boolean) => void;
 
-  private isFromDictionary: boolean;
+  private getGameStatistic?: () => {
+    learnedWords: number;
+    newWords: number;
+  };
 
   constructor() {
     this.isFromDictionary = isFromDictionaryPage();
     this.gameContainer = create({ tagname: 'section', class: 'game' });
-    this.startScreen = this.createStartScreen();
+
     this.gameScreen = create({ tagname: 'div', class: 'game__sprint' });
     this.resultScreen = create({ tagname: 'div', class: 'game__result' });
-    console.log('1from dictionary: ', this.isFromDictionary);
+
+    console.log('1 from dictionary: ', this.isFromDictionary);
+    console.log('isMenuLink: ', this.isMenuLink);
   }
 
   private drawLevels() {
@@ -103,7 +108,7 @@ class GamesView {
 
     this.startBtn = this.createStartBtn();
 
-    if (!this.isFromDictionary) {
+    if (this.isMenuLink || isStartPage()) {
       container.append(this.drawLevels());
     }
 
@@ -112,63 +117,157 @@ class GamesView {
     return container;
   }
 
-  private createGameScreen(wordsList: IGameWord[]) {
+  private createGameScreen(
+    wordsList: IGameWord[],
+    group: number,
+    page: number,
+  ) {
+    if (!wordsList) return;
+
     const game = new SprintGame(
       wordsList,
+      group,
+      page,
       this.stopGame,
       this.onUpdateUserWord,
+      this.onGetWords,
     );
 
     this.gameScreen?.append(game.render());
   }
 
-  private saveResult = () => {
-    const resultObj = {
-      game: 'sprint',
-      date: Date.now(),
-      score: 220,
-      rightAnswer: 10,
-      wrongAnswer: 6,
-      learnedWords: 4,
-      answerSeries: 8,
-    };
-
-    console.log(resultObj);
-  };
-
-  private stopGame = () => {
+  // eslint-disable-next-line max-lines-per-function
+  private stopGame = (state: IGameStatistic, wordsList: IGameWord[]) => {
     this.gameContainer.innerText = '';
 
+    const stateGame = this.getGameStatistic?.();
+
+    console.log('stopGame, gameStat: ', {
+      ...state,
+      ...stateGame,
+      date: Date.now(),
+      name: 'sprint',
+    });
+
+    const totalState = { ...state, ...stateGame };
+
     if (this.resultScreen) {
-      console.log('result screen');
       this.gameContainer.append(this.resultScreen);
-      this.resultScreen.append(JSON.stringify(this.gameState));
+
+      this.resultScreen.innerText = '';
+      this.resultScreen.insertAdjacentHTML(
+        'afterbegin',
+        `<h3 class="game__result-title">Результат</h3>
+          <div class="game__statistic">
+            Счет: ${totalState.score}<br>
+            Новые слова: ${totalState.newWords}<br>
+            Изученные слова: ${totalState.learnedWords}<br>
+            Серия правильных ответов: ${totalState.winStreak}<br>
+            Всего слов: ${totalState.rightAnswer + totalState.wrongAnswer}
+          </div>`,
+      );
+
+      const playAgain = create({
+        tagname: 'button',
+        class: 'btn',
+        text: 'Сыграть еще раз',
+      });
+      playAgain.classList.add('btn--blue');
+      playAgain.addEventListener('click', () => {
+        if (this.startScreen) {
+          this.gameContainer.innerText = '';
+          this.gameContainer.append(this.startScreen);
+        }
+      });
+
+      this.resultScreen.append(this.drawWordsResult(wordsList), playAgain);
 
       this.resultScreen.insertAdjacentHTML(
         'beforeend',
-        `
-          <div>
-            <button class="btn" data-page="games">Сыграть еще раз</button>
-            <button class="btn" data-page="dictionary">Перейти в учебник</button>
-          </div>
-        `,
+        `<div>
+            <button class="btn btn--blue" data-page="dictionary">Перейти в учебник</button>
+          </div>`,
       );
     }
   };
 
+  private drawWordsResult(wordsList: IGameWord[]) {
+    const wordsResult = create({ tagname: 'div', class: 'game__result-words' });
+
+    const wrongAnswer = wordsList.filter(
+      (word) => Object.prototype.hasOwnProperty.call(word, 'isRightAnswer')
+        && !word.isRightAnswer,
+    );
+    const rightAnswers = wordsList.filter((word) => word.isRightAnswer);
+
+    wordsResult.innerHTML = `Ошибок: <span class="errors-number">${wrongAnswer.length}</span>`;
+    wordsResult.append(this.drawWordsListResult(wrongAnswer));
+
+    wordsResult.insertAdjacentHTML(
+      'beforeend',
+      `Знаю: <span class="right-number">${rightAnswers.length}</span>`,
+    );
+    wordsResult.append(this.drawWordsListResult(rightAnswers));
+
+    return wordsResult;
+  }
+
+  private drawWordsListResult = (wordsList: IGameWord[]) => {
+    const wordsContainer = create({ tagname: 'ul', class: 'words-list' });
+
+    wordsList.forEach((word) => {
+      const audioIcon = create({ tagname: 'svg', class: 'audio-icon' });
+      audioIcon.innerHTML = '<use xlink:href="../../assets/img/audio_sprite.svg#audio"></use>';
+      audioIcon.dataset.audio = word.audio;
+
+      audioIcon.addEventListener('click', () => {
+        const audioWord = new Audio(word.audio);
+        if (!audioWord) return;
+        audioWord.play();
+      });
+
+      const wordElement = create({ tagname: 'li', class: 'words-list__item' });
+      // const audioElement = new Audio(word.audio);
+      // audioElement.classList.add('audio-btn');
+      // audioElement.addEventListener('click', this.playAudioHandler);
+
+      wordElement.append(audioIcon);
+      wordElement.insertAdjacentHTML(
+        'beforeend',
+        `<audio preload class="songs">
+    <source src="${word.audio}" type="audio/mpeg" />
+</audio> <b>${word.word}</b> - ${word.wordTranslate}`,
+      );
+      wordsContainer.append(wordElement);
+    });
+
+    return wordsContainer;
+  };
+
+  private playAudioHandler() {}
+
   draw() {
-    if (this.startScreen) this.gameContainer.append(this.startScreen);
+    this.startScreen = this.createStartScreen();
+    this.gameContainer.append(this.startScreen);
     return this.gameContainer;
   }
 
-  bindGetWords(handler: (level: number) => Promise<IGameWord[]>) {
-    this.onGetWordsByLevel = handler;
+  bindGetWords(
+    handler: (level: number, page: number) => Promise<IGameWord[] | null>,
+  ) {
+    this.onGetWords = handler;
   }
 
   bindUpdateUserWord(
     handler: (wordId: string, isRightAnswer: boolean) => void,
   ) {
     this.onUpdateUserWord = handler;
+  }
+
+  bindGetGameStatistic(
+    handler: () => { learnedWords: number; newWords: number },
+  ) {
+    this.getGameStatistic = handler;
   }
 
   private onLevelClickHandler = async () => {
@@ -188,23 +287,25 @@ class GamesView {
 
   private onStartClickHandler = async () => {
     this.gameContainer.innerText = '';
+    let group = 0;
+    let pageNum = 0;
 
-    if (this.gameScreen) {
-      // let wordsList;
-
-      // if (this.isFromDictionary) {
-      // } else {
-      const wordsList = await this.onGetWordsByLevel?.(
-        Number(this.startBtn?.dataset.level),
-      );
-      // }
-
-      if (wordsList) {
-        this.createGameScreen(wordsList);
-      }
-
-      this.gameContainer.append(this.gameScreen);
+    if (this.isMenuLink || isStartPage()) {
+      group = Number(this.startBtn?.dataset.level);
+      pageNum = generateIndex(TOTAL_WORDS / WORDS_PER_PAGE);
+    } else if (isFromDictionaryPage()) {
+      // TODO: add from localstorage
+      group = 3;
+      pageNum = 0;
     }
+
+    const wordsList = await this.onGetWords?.(group, pageNum);
+
+    if (!wordsList) return;
+
+    this.createGameScreen(wordsList, group, pageNum);
+
+    if (this.gameScreen) this.gameContainer.append(this.gameScreen);
   };
 }
 

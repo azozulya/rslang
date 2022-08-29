@@ -77,7 +77,6 @@ class User {
   }
 
   async isAuthenticated(): Promise<boolean> {
-    console.log(this.token);
     if (this.token === '') {
       this.setStorage('Authenticated', JSON.stringify(false));
       return false;
@@ -163,11 +162,11 @@ class User {
   }
 
   getUserAggregatedWords(
-    group: string,
-    page: string,
-    wordsPerPage: string,
+    group: number,
+    page: number,
+    wordsPerPage: number,
     filter: string,
-  ): Promise<IWord[]> {
+  ) {
     return this.api.getUserAggregatedWordsNew(
       this.userId,
       this.token,
@@ -187,6 +186,7 @@ class User {
   }
 
   updateUserStatistics(body: IUserStatistics): Promise<IUserStatistics> {
+    console.log(body);
     return this.api.updateUserStatistics(this.userId, this.token, body);
   }
 

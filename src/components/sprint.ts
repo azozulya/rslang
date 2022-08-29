@@ -1,8 +1,4 @@
-import {
-  IGameWord,
-  IUserWord,
-  IUserWordOption,
-} from '../interfaces/interfaces';
+import { IGameStatistic, IGameWord } from '../interfaces/interfaces';
 import { GAME_TIMER } from '../utils/constants';
 import create from '../utils/createElement';
 
@@ -22,10 +18,11 @@ class SprintGame {
   private defaultState = {
     score: 0,
     learnedWords: 0,
+    newWords: 0,
     rightAnswer: 0,
     wrongAnswer: 0,
     seriesOfRightAnswer: 0,
-    maxSeriesOfRightAnswer: 0,
+    winStreak: 0,
   };
 
   private gameState = { ...this.defaultState };
@@ -34,8 +31,17 @@ class SprintGame {
 
   constructor(
     private wordsList: IGameWord[],
-    private onStopGameHandler: () => void,
+    private group: number,
+    private page: number,
+    private onStopGameHandler: (
+      state: IGameStatistic,
+      wordsList: IGameWord[]
+    ) => void,
     private updateWordState?: (wordId: string, isRightAnswer: boolean) => void,
+    private getWords?: (
+      level: number,
+      page: number
+    ) => Promise<IGameWord[] | null>,
   ) {
     this.gameContainer = create({ tagname: 'div', class: 'sprint' });
     this.scoreElement = create({
@@ -48,6 +54,13 @@ class SprintGame {
   }
 
   private init() {
+    const firstWord = this.drawWord(this.currentWordIndex);
+
+    if (!firstWord) {
+      this.gameContainer.innerHTML = 'Что-то пошло не так...';
+      return;
+    }
+
     this.gameContainer.append(
       this.drawTimer(),
       this.scoreElement,
@@ -55,7 +68,7 @@ class SprintGame {
       this.drawBtns(),
     );
 
-    this.wordContainer.innerHTML = this.drawWord(this.currentWordIndex);
+    this.wordContainer.innerHTML = firstWord;
   }
 
   render() {
@@ -63,6 +76,8 @@ class SprintGame {
   }
 
   private stopGame = () => {
+    this.onStopGameHandler(this.gameState, this.wordsList);
+
     clearInterval(this.timerId);
     this.currentWordIndex = 0;
     this.gameState = { ...this.defaultState };
@@ -70,8 +85,6 @@ class SprintGame {
 
     this.noBtn?.removeEventListener('click', this.onNoBtnClickHandler);
     this.yesBtn?.removeEventListener('click', this.onYesBtnClickHandler);
-
-    this.onStopGameHandler();
   };
 
   private drawBtns() {
@@ -138,6 +151,7 @@ class SprintGame {
 
   private drawWord(idx: number) {
     const wordItem = this.wordsList[idx];
+    if (!wordItem) return '';
 
     return `
            <div class="sprint__word--title">${wordItem.word}</div>
@@ -145,7 +159,7 @@ class SprintGame {
          `;
   }
 
-  private nextWord() {
+  private async nextWord() {
     this.wordContainer.classList.remove(
       'sprint__right-answer',
       'sprint__wrong-answer',
@@ -159,6 +173,14 @@ class SprintGame {
     }
 
     this.wordContainer.innerHTML = this.drawWord(this.currentWordIndex);
+
+    if (this.currentWordIndex > this.wordsList.length - 7 && this.page > 0) {
+      const additionalWords = await this.getWords?.(this.group, this.page - 1);
+      if (additionalWords) {
+        this.wordsList.push(...additionalWords);
+      }
+      console.log('additionalWords: ', additionalWords);
+    }
   }
 
   private checkAnswer = (userAnswer: string) => {
@@ -167,9 +189,11 @@ class SprintGame {
     const { wordTranslate, pseudoTranslate } = currentWord;
 
     if (String(wordTranslate === pseudoTranslate) === userAnswer) {
+      currentWord.isRightAnswer = true;
       this.addRightAnswer();
       this.updateWordState?.(currentWord.id, true);
     } else {
+      currentWord.isRightAnswer = false;
       this.addWrongAnswer();
       this.updateWordState?.(currentWord.id, false);
     }
@@ -180,13 +204,24 @@ class SprintGame {
   private async addRightAnswer() {
     this.wordContainer.classList.add('sprint__right-answer');
 
-    let { rightAnswer, seriesOfRightAnswer, score } = this.gameState;
+    let {
+      rightAnswer, seriesOfRightAnswer, winStreak, score,
+    } = this.gameState;
 
     rightAnswer += 1;
     seriesOfRightAnswer += 1;
     score += 10;
 
-    this.updateState({ rightAnswer, seriesOfRightAnswer, score });
+    if (seriesOfRightAnswer > winStreak) {
+      winStreak = seriesOfRightAnswer;
+    }
+
+    this.updateState({
+      rightAnswer,
+      seriesOfRightAnswer,
+      winStreak,
+      score,
+    });
 
     this.updateScore();
   }
@@ -194,19 +229,19 @@ class SprintGame {
   private addWrongAnswer() {
     this.wordContainer.classList.add('sprint__wrong-answer');
 
-    let { wrongAnswer, maxSeriesOfRightAnswer, seriesOfRightAnswer } = this.gameState;
+    let { wrongAnswer, winStreak, seriesOfRightAnswer } = this.gameState;
 
     wrongAnswer += 1;
 
-    if (seriesOfRightAnswer > maxSeriesOfRightAnswer) {
-      maxSeriesOfRightAnswer = seriesOfRightAnswer;
+    if (seriesOfRightAnswer > winStreak) {
+      winStreak = seriesOfRightAnswer;
       seriesOfRightAnswer = 0;
     }
 
     this.updateState({
       wrongAnswer,
       seriesOfRightAnswer,
-      maxSeriesOfRightAnswer,
+      winStreak,
     });
   }
 
@@ -215,8 +250,9 @@ class SprintGame {
     seriesOfRightAnswer: number;
     score?: number;
     wrongAnswer?: number;
-    maxSeriesOfRightAnswer?: number;
+    winStreak?: number;
     learnedWords?: number;
+    newWords?: number;
   }) {
     this.gameState = {
       ...this.gameState,

@@ -147,3 +147,17 @@ main {
 .noscroll {
   overflow: hidden;
 }
+
+.not-found-message {
+  max-width: 30rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+
+  &__btn {
+    margin-top: 2rem;
+  }
+}

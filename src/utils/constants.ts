@@ -8,6 +8,10 @@ export const WORDS_PER_PAGE = 20;
 
 export const TOTAL_WORDS = 600;
 
-export const GAME_TIMER = 30;
+export const GAME_TIMER = 10;
 
 export const SPRINT_WORDS_STATISTIC = 'RSLang_sprint';
+
+export const POINTS_TO_LEARNED_HARD_WORD = 5;
+
+export const POINTS_TO_LEARNED_WORD = 3;

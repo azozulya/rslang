@@ -85,6 +85,55 @@
       opacity: 0;
     }
   }
+
+  &__result {
+    height: 500px;
+
+    &-title {
+      margin-bottom: 1rem;
+    }
+
+    &-words {
+      min-height: 250px;
+      height: 50%;
+      overflow-y: auto;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+    }
+  }
+}
+
+.errors-number,
+.right-number {
+  padding: 0 0.3rem;
+  line-height: 1.6rem;
+  border-radius: 0.3rem;
+  color: $light-color;
+  font-weight: 700;
+}
+.errors-number {
+  background-color: $no-color;
+}
+.right-number {
+  background-color: $yes-color;
+}
+
+.words-list {
+  margin: 0;
+  list-style: none;
+  padding: 0;
+  margin-bottom: 2rem;
+  padding-top: 0.7rem;
+
+  &-item {
+  }
+}
+
+.audio-btn {
+  border: solid 1px red;
+  display: block;
+  width: 10rem;
+  height: 5rem;
 }
 
 .sprint {

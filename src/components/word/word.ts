@@ -123,15 +123,11 @@ class Word implements IWordApp {
     const wordIconHard = <HTMLElement>word.querySelector('.word__hard');
     const wordIconLearned = <HTMLElement>word.querySelector('.word__learned');
 
-    if (wordIconHard.classList.contains('word__hard_active'))
-      wordIconHard.classList.remove('word__hard_active');
-    if (wordIconLearned.classList.contains('word__learned_active'))
-      wordIconLearned.classList.remove('word__learned_active');
+    if (wordIconHard.classList.contains('word__hard_active')) wordIconHard.classList.remove('word__hard_active');
+    if (wordIconLearned.classList.contains('word__learned_active')) wordIconLearned.classList.remove('word__learned_active');
 
-    if (this.word.optional?.hard)
-      wordIconHard.classList.add('word__hard_active');
-    if (this.word.optional?.learned)
-      wordIconLearned.classList.add('word__learned_active');
+    if (this.word.optional?.hard) wordIconHard.classList.add('word__hard_active');
+    if (this.word.optional?.learned) wordIconLearned.classList.add('word__learned_active');
   }
 
   // eslint-disable-next-line max-lines-per-function

@@ -36,19 +36,27 @@ class Router {
   constructor(private rootContainer: HTMLElement) {}
 
   openPage = (pageName: string, isMenuLink = false) => {
+    this.rootContainer.removeAttribute('class');
+    this.rootContainer.innerText = '';
+
     const currentRouter = this.routers.find(
       (router) => router.page === pageName,
     );
 
-    if (currentRouter) {
-      this.rootContainer.dataset.linkFrom = isMenuLink ? 'menu' : 'page';
-
-      this.rootContainer.removeAttribute('class');
-      this.rootContainer.classList.add(currentRouter.class);
-      this.rootContainer.innerText = '';
-
-      currentRouter.controller().draw(this.rootContainer);
+    if (!currentRouter) {
+      this.rootContainer.innerHTML = `
+        <div class="inner-page not-found-message">
+          <p>Нет такой страницы. Начните с начала.</p> <button class="btn btn--orange not-found-message__btn" data-page="main">На главную</button>
+        </div>
+      `;
+      return;
     }
+
+    this.rootContainer.dataset.linkFrom = isMenuLink ? 'menu' : 'page';
+
+    this.rootContainer.classList.add(currentRouter.class);
+
+    currentRouter.controller().draw(this.rootContainer);
   };
 }
 

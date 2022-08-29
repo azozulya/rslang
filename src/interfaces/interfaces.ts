@@ -100,7 +100,27 @@ export type TPageHistory = {
 
 export interface IGameWord {
   id: string;
+  audio: string;
   word: string;
   wordTranslate: string;
   pseudoTranslate: string;
+  isRightAnswer?: boolean;
+}
+
+export interface IGameStatistic {
+  score: number;
+  learnedWords: number;
+  newWords: number;
+  rightAnswer: number;
+  wrongAnswer: number;
+  seriesOfRightAnswer: number;
+  winStreak: number;
+}
+
+export interface IAggregatedWord extends IWord {
+  _id: string;
+  userWord: {
+    difficulty: string;
+    optional: IUserWordOption;
+  };
 }

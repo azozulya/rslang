@@ -13,14 +13,14 @@ class Games {
 
     this.view.bindGetWords(this.model.getWordsForGame);
     this.view.bindUpdateUserWord(this.model.updateUserWord);
+    this.view.bindGetGameStatistic(this.model.getGameStatistic);
   }
 
   draw(rootContainer: HTMLElement) {
     const isMenuLink = rootContainer.dataset.linkFrom === 'menu';
-    const isFromDictionary = isFromDictionaryPage();
-    console.log('isMenuLink: ', isMenuLink);
-    console.log('Controller from dictionary page: ', isFromDictionary);
-
+    console.log(isMenuLink);
+    this.model.isMenuLink = isMenuLink;
+    this.view.isMenuLink = isMenuLink;
     rootContainer.append(this.view.draw());
   }
 }
