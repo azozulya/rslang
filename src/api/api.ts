@@ -1,7 +1,6 @@
 import {
   IWord,
   IUser,
-  IAuth,
   IUserWord,
   IUserStatistics,
   IUserSettings,
@@ -107,27 +106,6 @@ class Api {
     }).catch();
     return response.status !== 200 ? undefined : <IToken>{ ...(await response.json()) };
   }
-
-  // async loginUser(body: {
-  //   email: string;
-  //   password: string;
-  // }): Promise<IAuth | number> {
-  //   let result: IAuth;
-  //   const response = await fetch(this.signin, {
-  //     method: 'POST',
-  //     body: JSON.stringify(body),
-  //     headers: {
-  //       Accept: 'application/json',
-  //       'Content-Type': 'application/json',
-  //     },
-  //   }).catch();
-  //   if (response.status === 200) {
-  //     result = await response.json();
-  //     localStorage.setItem('RSLang_Auth', JSON.stringify(result));
-  //     localStorage.setItem('Authenticated', JSON.stringify(true));
-  //   }
-  //   return response.status;
-  // }
 
   async loginUser(body: {
     email: string;

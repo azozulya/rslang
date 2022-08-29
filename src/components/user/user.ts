@@ -131,17 +131,9 @@ class User {
 
       this.setStorage('RSLang_Auth', JSON.stringify(result));
       this.setStorage('Authenticated', JSON.stringify(true));
-      console.log('TOKEN UPDATE');
     }
     return response;
   }
-
-  // loginUser(body: {
-  //   email: string;
-  //   password: string;
-  // }): Promise<IAuth | number> {
-  //   return this.api.loginUser(body);
-  // }
 
   async loginUser(body: {
     email: string;
@@ -223,5 +215,3 @@ class User {
 
 const userApi = new User();
 export default userApi;
-
-// export default User;
