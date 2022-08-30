@@ -57,12 +57,22 @@ export interface IAuth {
 }
 
 export interface IUserWord {
+  wordId: string;
   difficulty: string;
-  optional?: {
-    learned?: boolean;
-    hard?: boolean;
+  optional: IUserWordOption;
+}
+
+export interface IUserWordOption {
+  learned: boolean;
+  hard: boolean;
+  sprint: {
+    rightAnswer: number;
+    wrongAnswer: number;
   };
-  wordId?: string;
+  audiocall: {
+    rightAnswer: number;
+    wrongAnswer: number;
+  };
 }
 
 export interface IUserStatistics {
@@ -97,3 +107,30 @@ export type TNavigate = {
   group: number;
   isActiveHardWords: boolean;
 };
+
+export interface IGameWord {
+  id: string;
+  audio: string;
+  word: string;
+  wordTranslate: string;
+  pseudoTranslate: string;
+  isRightAnswer?: boolean;
+}
+
+export interface IGameStatistic {
+  score: number;
+  learnedWords: number;
+  newWords: number;
+  rightAnswer: number;
+  wrongAnswer: number;
+  seriesOfRightAnswer: number;
+  winStreak: number;
+}
+
+export interface IAggregatedWord extends IWord {
+  _id: string;
+  userWord: {
+    difficulty: string;
+    optional: IUserWordOption;
+  };
+}

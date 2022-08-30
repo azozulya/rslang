@@ -12,25 +12,39 @@ $text-disabled: rgb(158, 158, 158);
 $light-color: #ffffff;
 $dark-color: #424242;
 
+$primary-main: #00bcd4;
 $primary-light: #b2ebf2;
 $primary-secondary: #00bcd4;
 $primary-dark: #00838f;
 
 $secondary-main: #ffa000;
 $secondary-light: #ffecb3;
+$secondary-dark: #ff6f00;
 
 $accent-main: #e91e63;
 $accent-light: #f8bbd0;
 $accent-dark: #ad1457;
 
-$word-group-0:#6DB4A7;
-$word-group-1:#00A8FF;
-$word-group-2:#C583FF;
-$word-group-3:#FFB300;
-$word-group-4:#B45A1B;
-$word-group-5:#FF8374;
+$word-group-0: #6db4a7;
+$word-group-1: #00a8ff;
+$word-group-2: #c583ff;
+$word-group-3: #ffb300;
+$word-group-4: #b45a1b;
+$word-group-5: #ff8374;
+
+$yes-color: hsl(122deg 53% 65%);
+$no-color: red;
 
 $popup-bg-color: rgba(158, 158, 158, 0.6);
 
 $burger-menu-start-from: 980px;
 $min-width: 375px;
+
+$levels: (
+  'A1': $word-group-0,
+  'A2': $word-group-1,
+  'B1': $word-group-2,
+  'B2': $word-group-3,
+  'C1': $word-group-4,
+  'C2': $word-group-5,
+);

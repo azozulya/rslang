@@ -11,7 +11,7 @@ class Main {
         <div class="hero__content">
           <h2>Aнглийский с&nbsp;RS&nbsp;Lang</h2>
           <div class="hero__text">Игровое приложение для&nbsp;эффективного изучения иностранных&nbsp;слов</div>
-          <button class="btn btn--blue" data-page="dictionary">Начать</button>
+          <button class="btn btn--blue hero__btn" data-page="dictionary">Начать</button>
         </div>
         <picture class="hero__img">
           <source srcset="./assets/img/hero_tablet.png" media="(max-width: 900px)">

@@ -48,15 +48,15 @@ class WordAuth extends Word implements IWordAppForAuthUser {
     if (this.word.optional) this.word.optional.hard = true;
     else this.word.optional = { hard: true };
 
-    const word: IUserWord = {
-      difficulty: 'none',
-      optional: { hard: this.word.optional?.hard },
-    };
-    const isUserWord = await this.isUserWord();
-    if (isUserWord) userApi.updateUserWord(this.word.id, word);
-    else {
-      userApi.createUserWord(this.word.id, word);
-    }
+    // const word: IUserWord = {
+    //   difficulty: 'none',
+    //   optional: { hard: this.word.optional?.hard },
+    // };
+    // const isUserWord = await this.isUserWord();
+    // if (isUserWord) userApi.updateUserWord(this.word.id, word);
+    // else {
+    //   userApi.createUserWord(this.word.id, word);
+    // }
 
     this.changeIcon();
   }
@@ -65,11 +65,13 @@ class WordAuth extends Word implements IWordAppForAuthUser {
     if (this.word.optional) this.word.optional.hard = false;
     else this.word.optional = { hard: false };
 
-    const word: IUserWord = {
-      difficulty: 'none',
-      optional: { hard: this.word.optional?.hard },
-    };
-    await userApi.updateUserWord(this.word.id, word);
+    // const word: IUserWord = {
+    //   difficulty: 'none',
+    //   optional: { hard: this.word.optional?.hard },
+    // };
+
+    // this.word.optional.learned = false;
+    // await userApi.updateUserWord(this.word.id, this.word);
 
     this.changeIcon();
   }
@@ -78,17 +80,17 @@ class WordAuth extends Word implements IWordAppForAuthUser {
     if (this.word.optional) this.word.optional.learned = true;
     else this.word.optional = { learned: true };
 
-    const word: IUserWord = {
-      difficulty: 'none',
-      optional: {
-        learned: this.word.optional?.learned,
-      },
-    };
-    const isUserWord = await this.isUserWord();
-    if (isUserWord) userApi.updateUserWord(this.word.id, word);
-    else {
-      userApi.createUserWord(this.word.id, word);
-    }
+    // const word: IUserWord = {
+    //   difficulty: 'none',
+    //   optional: {
+    //     learned: this.word.optional?.learned,
+    //   },
+    // };
+    // const isUserWord = await this.isUserWord();
+    // if (isUserWord) userApi.updateUserWord(this.word.id, word);
+    // else {
+    //   userApi.createUserWord(this.word.id, word);
+    // }
 
     this.changeIcon();
   }
@@ -97,13 +99,14 @@ class WordAuth extends Word implements IWordAppForAuthUser {
     if (this.word.optional) this.word.optional.learned = false;
     else this.word.optional = { learned: false };
 
-    const word: IUserWord = {
-      difficulty: 'none',
-      optional: {
-        learned: this.word.optional?.learned,
-      },
-    };
-    await userApi.updateUserWord(this.word.id, word);
+    // const word: IUserWord = {
+    //   difficulty: 'none',
+    //   optional: {
+    //     learned: false,
+    //   },
+    // };
+
+    // await userApi.updateUserWord(this.word.id, word);
 
     this.changeIcon();
   }
@@ -123,7 +126,9 @@ class WordAuth extends Word implements IWordAppForAuthUser {
   async isUserWord() {
     const userWords = await userApi.getUserWords();
     if (!userWords) throw new Error('Not found user saved words');
-    const userWordIndex = userWords.findIndex((userWord) => userWord.wordId === this.word.id);
+    const userWordIndex = userWords.findIndex(
+      (userWord) => userWord.wordId === this.word.id,
+    );
     return userWordIndex >= 0;
   }
 
@@ -132,7 +137,9 @@ class WordAuth extends Word implements IWordAppForAuthUser {
     this.draw();
     const word = <HTMLElement>document.getElementById(this.word.id);
     const wordHeader = <HTMLElement>word.querySelector('.word__header');
-    const wordDescription = <HTMLElement>word.querySelector('.word__description');
+    const wordDescription = <HTMLElement>(
+      word.querySelector('.word__description')
+    );
     const wordMarks = create({
       tagname: 'div',
       class: 'word__marks',
