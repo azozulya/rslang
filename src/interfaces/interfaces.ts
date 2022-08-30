@@ -103,11 +103,11 @@ export type IStatistic = {
 
   L: number;
   sL: number;
-  sA: number;
+  sR: number;
+  sI: number;
   sB: number;
-  sP: number;
   aL: number;
-  aA: number;
+  aR: number;
+  aI: number;
   aB: number;
-  aP: number;
 };

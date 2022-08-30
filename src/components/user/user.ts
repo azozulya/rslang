@@ -10,6 +10,7 @@ import {
   IJwt,
   IStatistic,
 } from '../../interfaces/interfaces';
+import updateDate from '../../utils/updateDate';
 import Api from '../../api/api';
 
 class User {
@@ -34,7 +35,7 @@ class User {
   constructor() {
     this.api = Api.getInstance();
     this.defaultStatistic = {
-      L: 0, sL: 0, sA: 0, sB: 0, sP: 0, aL: 0, aA: 0, aB: 0, aP: 0,
+      L: 0, sL: 0, sR: 0, sI: 0, sB: 0, aL: 0, aR: 0, aI: 0, aB: 0,
     };
     const storage = <string>localStorage.getItem('RSLang_Auth');
     if (storage !== null) {
@@ -218,28 +219,29 @@ class User {
     return this.api.updateUserSettings(this.userId, this.token, body);
   }
 
-  updateDate(): string {
-    const dateNow = new Date();
-    return `${dateNow.getFullYear()}-${dateNow.getMonth()}-${dateNow.getDate()}`;
-  }
+  // updateDate(): string {
+  //   const dateNow = new Date();
+  //   return `${dateNow.getFullYear()}-${dateNow.getMonth()}-${dateNow.getDate()}`;
+  // }
 
   async updateWordStatistic() {
     const body = <IUserStatistics>{};
+    const currentDate = updateDate();
     const response = await this.getUserStatistics();
     if (!response) {
       const options = <Record<string, unknown>>{};
-      (<IStatistic>options[this.updateDate()]) = this.defaultStatistic;
-      (<IStatistic>options[this.updateDate()]).L = 1;
+      (<IStatistic>options[currentDate]) = this.defaultStatistic;
+      (<IStatistic>options[currentDate]).L = 1;
       body.learnedWords = 1;
       body.optional = options;
       await this.updateUserStatistics(body);
     } else {
       const learned = response.learnedWords + 1;
       const options = <Record<string, unknown>>response.optional;
-      if (options[this.updateDate()]) (<IStatistic>options[this.updateDate()]).L += 1;
+      if (options[currentDate]) (<IStatistic>options[currentDate]).L += 1;
       else {
-        (<IStatistic>options[this.updateDate()]) = this.defaultStatistic;
-        (<IStatistic>options[this.updateDate()]).L = 1;
+        (<IStatistic>options[currentDate]) = this.defaultStatistic;
+        (<IStatistic>options[currentDate]).L = 1;
       }
       body.learnedWords = learned;
       body.optional = options;
@@ -254,42 +256,46 @@ class User {
     incorrectAnswers: number,
     bestSeries: number,
   ) {
+    const currentDate = updateDate();
     const body = <IUserStatistics>{};
     const response = await this.getUserStatistics();
-    const percent = Math.round(
-      (rightAnswers / (rightAnswers + incorrectAnswers)) * 100,
-    );
+    // const percent = Math.round(
+    //   (rightAnswers / (rightAnswers + incorrectAnswers)) * 100,
+    // );
     if (!response) {
       const options = <Record<string, unknown>>{};
-      (<IStatistic>options[this.updateDate()]) = this.defaultStatistic;
-      (<IStatistic>options[this.updateDate()]).sL = learnedWords;
-      (<IStatistic>options[this.updateDate()]).sA = rightAnswers;
-      (<IStatistic>options[this.updateDate()]).sB = bestSeries;
-      (<IStatistic>options[this.updateDate()]).sP = percent;
+      (<IStatistic>options[currentDate]) = this.defaultStatistic;
+      (<IStatistic>options[currentDate]).sL = learnedWords;
+      (<IStatistic>options[currentDate]).sA = rightAnswers;
+      (<IStatistic>options[currentDate]).sI = incorrectAnswers;
+      (<IStatistic>options[currentDate]).sB = bestSeries;
       body.learnedWords = learnedWords;
       body.optional = options;
       await this.updateUserStatistics(body);
     } else {
       const learned = response.learnedWords + learnedWords;
       const options = <Record<string, unknown>>response.optional;
-      if (options[this.updateDate()]) {
-        (<IStatistic>options[this.updateDate()]).sL += learnedWords;
-        (<IStatistic>options[this.updateDate()]).sA += rightAnswers;
-        (<IStatistic>options[this.updateDate()]).sB += bestSeries;
-        const oldPercent = (<IStatistic>options[this.updateDate()]).sP;
-        const newPercent = Math.round((oldPercent + percent) / 2);
-        (<IStatistic>options[this.updateDate()]).sP = newPercent;
+      if (options[currentDate]) {
+        (<IStatistic>options[currentDate]).sL += learnedWords;
+        (<IStatistic>options[currentDate]).sR += rightAnswers;
+        (<IStatistic>options[currentDate]).sI += incorrectAnswers;
+
+        if ((<IStatistic>options[currentDate]).sB < bestSeries) {
+          (<IStatistic>options[currentDate]).sB = bestSeries;
+        }
+        // const oldPercent = (<IStatistic>options[currentDate]).sP;
+        // const newPercent = Math.round((oldPercent + percent) / 2);
+        // (<IStatistic>options[currentDate]).sP = newPercent;
       } else {
-        (<IStatistic>options[this.updateDate()]) = this.defaultStatistic;
-        (<IStatistic>options[this.updateDate()]).sL = learnedWords;
-        (<IStatistic>options[this.updateDate()]).sA = rightAnswers;
-        (<IStatistic>options[this.updateDate()]).sB = bestSeries;
-        (<IStatistic>options[this.updateDate()]).sP = percent;
+        (<IStatistic>options[currentDate]) = this.defaultStatistic;
+        (<IStatistic>options[currentDate]).sL = learnedWords;
+        (<IStatistic>options[currentDate]).sA = rightAnswers;
+        (<IStatistic>options[currentDate]).sI = incorrectAnswers;
+        (<IStatistic>options[currentDate]).sB = bestSeries;
       }
       body.learnedWords = learned;
       body.optional = options;
-      const res = await this.updateUserStatistics(body);
-      console.log(res);
+      await this.updateUserStatistics(body);
     }
   }
 
@@ -300,42 +306,46 @@ class User {
     incorrectAnswers: number,
     bestSeries: number,
   ) {
+    const currentDate = updateDate();
     const body = <IUserStatistics>{};
     const response = await this.getUserStatistics();
-    const percent = Math.round(
-      (rightAnswers / (rightAnswers + incorrectAnswers)) * 100,
-    );
+    // const percent = Math.round(
+    //   (rightAnswers / (rightAnswers + incorrectAnswers)) * 100,
+    // );
     if (!response) {
       const options = <Record<string, unknown>>{};
-      (<IStatistic>options[this.updateDate()]) = this.defaultStatistic;
-      (<IStatistic>options[this.updateDate()]).aL = learnedWords;
-      (<IStatistic>options[this.updateDate()]).aA = rightAnswers;
-      (<IStatistic>options[this.updateDate()]).aB = bestSeries;
-      (<IStatistic>options[this.updateDate()]).aP = percent;
+      (<IStatistic>options[currentDate]) = this.defaultStatistic;
+      (<IStatistic>options[currentDate]).aL = learnedWords;
+      (<IStatistic>options[currentDate]).aA = rightAnswers;
+      (<IStatistic>options[currentDate]).aI = incorrectAnswers;
+      (<IStatistic>options[currentDate]).aB = bestSeries;
       body.learnedWords = learnedWords;
       body.optional = options;
       await this.updateUserStatistics(body);
     } else {
       const learned = response.learnedWords + learnedWords;
       const options = <Record<string, unknown>>response.optional;
-      if (options[this.updateDate()]) {
-        (<IStatistic>options[this.updateDate()]).aL += learnedWords;
-        (<IStatistic>options[this.updateDate()]).aA += rightAnswers;
-        (<IStatistic>options[this.updateDate()]).aB += bestSeries;
-        const oldPercent = (<IStatistic>options[this.updateDate()]).aP;
-        const newPercent = Math.round((oldPercent + percent) / 2);
-        (<IStatistic>options[this.updateDate()]).aP = newPercent;
+      if (options[currentDate]) {
+        (<IStatistic>options[currentDate]).aL += learnedWords;
+        (<IStatistic>options[currentDate]).aR += rightAnswers;
+        (<IStatistic>options[currentDate]).aI += incorrectAnswers;
+
+        if ((<IStatistic>options[currentDate]).aB < bestSeries) {
+          (<IStatistic>options[currentDate]).aB = bestSeries;
+        }
+        // const oldPercent = (<IStatistic>options[currentDate]).sP;
+        // const newPercent = Math.round((oldPercent + percent) / 2);
+        // (<IStatistic>options[currentDate]).sP = newPercent;
       } else {
-        (<IStatistic>options[this.updateDate()]) = this.defaultStatistic;
-        (<IStatistic>options[this.updateDate()]).aL = learnedWords;
-        (<IStatistic>options[this.updateDate()]).aA = rightAnswers;
-        (<IStatistic>options[this.updateDate()]).aB = bestSeries;
-        (<IStatistic>options[this.updateDate()]).aP = percent;
+        (<IStatistic>options[currentDate]) = this.defaultStatistic;
+        (<IStatistic>options[currentDate]).aL = learnedWords;
+        (<IStatistic>options[currentDate]).aA = rightAnswers;
+        (<IStatistic>options[currentDate]).aI = incorrectAnswers;
+        (<IStatistic>options[currentDate]).aB = bestSeries;
       }
       body.learnedWords = learned;
       body.optional = options;
-      const res = await this.updateUserStatistics(body);
-      console.log(res);
+      await this.updateUserStatistics(body);
     }
   }
 }
