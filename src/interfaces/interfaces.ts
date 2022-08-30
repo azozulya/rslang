@@ -97,3 +97,17 @@ export type TNavigate = {
   group: number;
   isActiveHardWords: boolean;
 };
+
+export type IStatistic = {
+  [key: number | string]: number | string;
+
+  L: number;
+  sL: number;
+  sA: number;
+  sB: number;
+  sP: number;
+  aL: number;
+  aA: number;
+  aB: number;
+  aP: number;
+};

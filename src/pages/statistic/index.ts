@@ -1,5 +1,7 @@
 import Chart from 'chart.js/auto';
-/* eslint-disable max-lines-per-function */
+import userApi from '../../components/user/user';
+import { IUserStatistics } from '../../interfaces/interfaces';
+
 class Statistic {
   draw(rootContainer: HTMLElement) {
     const container = rootContainer;
@@ -11,12 +13,18 @@ class Statistic {
     `;
     this.drawToday();
     this.drawAllTime();
+
+    // this.getStatistic();
+    // userApi.updateWordStatistic();
+
+    userApi.updateSprintStatistic(10, 10, 5, 7);
   }
 
+  // eslint-disable-next-line max-lines-per-function
   drawToday() {
     const bodyStatistic = <HTMLElement>document.getElementById('body_statistic');
     const learnedWords = 0;
-    const percent = 0;
+    const percent = 100;
     const sprintLearnedWords = 0;
     const sprintPercent = 0;
     const sprintBest = 0;
@@ -25,8 +33,9 @@ class Statistic {
     const audioBest = 0;
 
     const content = `
-      <div id="today">
-        <h1>Сегодня</div>
+      <div id="body_title">
+        Сегодня
+      </div>
         <div class="today_statistic">
           <div id="learnedWords" class="today_statistic-block">
             <div class="number">
@@ -82,16 +91,21 @@ class Statistic {
   drawAllTime() {
     const bodyStatistic = <HTMLElement>document.getElementById('body_statistic');
     const content = `
-      <div id="today">
-        <h1>За все время</div>
+      <div id="body_title">
+        За всё время
+      </div>
         <div class="allTime_statistic">
           <div class="allTime_statistic-block">
             <div class="title">Изученные слова</div>
-            <canvas id="chart1" width="100%" height="80%"></canvas>
+            <div class="graph">
+              <canvas id="chart1" width="90%" height="50%"></canvas>
+            </div>
           </div>
           <div class="allTime_statistic-block">
             <div class="title">Прогресс изучения</div>
-            <canvas id="chart2" width="100%" height="80%"></canvas>
+            <div class="graph">
+              <canvas id="chart2" width="90%" height="50%"></canvas>
+            </div>
           </div>
         <div>
       </div>
@@ -160,6 +174,48 @@ class Statistic {
       data: dataSet,
       options: optionsSet,
     });
+  }
+
+  async getStatistic() {
+    const response = await userApi.getUserStatistics();
+    if (!response) console.log('NO STATISTIC FOR USER');
+    else console.log(response);
+  }
+
+  async createStatistic() {
+    // const dateNow = new Date();
+    // const updateDate = `${dateNow.getFullYear()}-${dateNow.getMonth()}-${dateNow.getDate()}`;
+
+    // const dateNow = Math.trunc(Date.now() / 1000);
+    // console.log(dateNow);
+    // console.log(updateDate);
+    // console.log(new Date(updateDate));
+    // console.log(Date.parse(updateDate));
+    // console.log(new Date(Date.parse(updateDate)));
+    // this.createStatistic();
+
+    const body = <IUserStatistics>{};
+    const options: Record<string, unknown> = {};
+    options[userApi.updateDate()] = {
+      l: 0,
+      sl: 0,
+      sA: 0,
+      sB: 0,
+      sP: 0,
+      al: 0,
+      aA: 0,
+      aB: 0,
+      aP: 0,
+    };
+
+    body.learnedWords = 0;
+    body.optional = options;
+
+    // body.optional[updateDate] = tmp;
+
+    const res = await userApi.updateUserStatistics(body);
+
+    console.log(res);
   }
 }
 
