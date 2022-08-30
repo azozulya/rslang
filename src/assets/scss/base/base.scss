@@ -115,20 +115,39 @@ main {
   }
 
   &--blue {
-    @include button(#00bcd4, $light-color);
+    @include button($primary-main, $light-color);
+  }
 
-    @include media($min-width: 611px) {
-      font-size: 1.5rem;
-      padding: 1.2rem 1.5rem;
-    }
+  &--yes {
+    @include button($yes-color, $light-color);
+  }
 
-    @include media(610px) {
-      font-size: 1.2rem;
-      padding: 1rem 1.2rem;
-    }
+  &--no {
+    @include button($no-color, $light-color);
+  }
+
+  &:disabled {
+    color: $text-disabled;
+    background-color: $light-color;
+    border-color: $text-disabled;
+    cursor: default;
   }
 }
 
 .noscroll {
   overflow: hidden;
+}
+
+.not-found-message {
+  max-width: 30rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+
+  &__btn {
+    margin-top: 2rem;
+  }
 }

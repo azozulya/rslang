@@ -1,8 +1,6 @@
-import {
-  IWord,
-  IWordApp,
-} from '../../interfaces/interfaces';
+import { IWord, IWordApp } from '../../interfaces/interfaces';
 import create from '../../utils/createElement';
+import { createDefaultWord } from '../../utils/utils';
 
 class Word implements IWordApp {
   word: IWord;
@@ -21,8 +19,14 @@ class Word implements IWordApp {
   }
 
   playAudio(wordAudio: HTMLElement) {
-    const tracks = [`http://127.0.0.1:3000/${this.word.audio}`, `http://127.0.0.1:3000/${this.word.audioMeaning}`, `http://127.0.0.1:3000/${this.word.audioExample}`];
-    const player = <HTMLAudioElement>wordAudio.querySelector('.word__audio_player');
+    const tracks = [
+      `http://127.0.0.1:3000/${this.word.audio}`,
+      `http://127.0.0.1:3000/${this.word.audioMeaning}`,
+      `http://127.0.0.1:3000/${this.word.audioExample}`,
+    ];
+    const player = <HTMLAudioElement>(
+      wordAudio.querySelector('.word__audio_player')
+    );
     let currentTrack = 0;
     player.src = tracks[currentTrack];
     player.play();

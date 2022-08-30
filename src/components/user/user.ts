@@ -82,7 +82,8 @@ class User {
     const currentTime = Math.trunc(Date.now() / 1000);
 
     if (expToken <= currentTime) {
-      this.setStorage('Authenticated', JSON.stringify(true));
+      console.log('token expare', expToken, currentTime);
+      this.setStorage('Authenticated', JSON.stringify(true)); /// why true???
       return false;
     }
     await this.getUserToken();
@@ -107,7 +108,10 @@ class User {
     return this.api.createUser(user);
   }
 
-  updateUser(body: { email: string; password: string }): Promise<IUser | number> {
+  updateUser(body: {
+    email: string;
+    password: string;
+  }): Promise<IUser | number> {
     return this.api.updateUser(this.userId, this.token, body);
   }
 
@@ -119,7 +123,10 @@ class User {
     const result = <IAuth>{};
     result.message = this.message;
 
-    const response = await this.api.getUserToken(this.userId, this.refreshToken);
+    const response = await this.api.getUserToken(
+      this.userId,
+      this.refreshToken,
+    );
     if (response !== undefined) {
       result.token = response.token;
       result.refreshToken = response.refreshToken;
@@ -160,7 +167,10 @@ class User {
     return this.api.getUserWords(this.userId, this.token);
   }
 
-  createUserWord(wordId: string, word?: IUserWord): Promise<IUserWord | undefined> {
+  createUserWord(
+    wordId: string,
+    word?: IUserWord,
+  ): Promise<IUserWord | undefined> {
     return this.api.createUserWord(this.userId, this.token, wordId, word);
   }
 
@@ -168,7 +178,10 @@ class User {
     return this.api.getUserWord(this.userId, this.token, wordId);
   }
 
-  updateUserWord(wordId: string, word?: IUserWord): Promise<IUserWord | undefined> {
+  updateUserWord(
+    wordId: string,
+    word?: IUserWord,
+  ): Promise<IUserWord | undefined> {
     return this.api.updateUserWord(this.userId, this.token, wordId, word);
   }
 
@@ -177,11 +190,11 @@ class User {
   }
 
   getUserAggregatedWords(
-    group: string,
-    page: string,
-    wordsPerPage: string,
+    group: number,
+    page: number,
+    wordsPerPage: number,
     filter: string,
-  ): Promise<IWord[] | undefined> {
+  ) {
     return this.api.getUserAggregatedWords(
       this.userId,
       this.token,
@@ -200,7 +213,9 @@ class User {
     return this.api.getUserStatistics(this.userId, this.token);
   }
 
-  updateUserStatistics(body: IUserStatistics): Promise<IUserStatistics | undefined> {
+  updateUserStatistics(
+    body: IUserStatistics,
+  ): Promise<IUserStatistics | undefined> {
     return this.api.updateUserStatistics(this.userId, this.token, body);
   }
 
