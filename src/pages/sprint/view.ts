@@ -1,12 +1,14 @@
 import SprintGame from '../../components/sprint';
 import { IGameStatistic, IGameWord } from '../../interfaces/interfaces';
 import {
+  DICTIONARY_KEY,
   GAME_TIMER,
   TOTAL_WORDS,
   URL_FOR_STATIC,
   WORDS_PER_PAGE,
 } from '../../utils/constants';
 import create from '../../utils/createElement';
+import { getLocalStorage } from '../../utils/localStorage';
 import {
   generateIndex,
   isFromDictionaryPage,
@@ -269,8 +271,6 @@ class GamesView {
     return wordsContainer;
   };
 
-  private playAudioHandler() {}
-
   draw() {
     this.startScreen = this.createStartScreen();
     this.gameContainer.append(this.startScreen);
@@ -319,9 +319,15 @@ class GamesView {
       group = Number(this.startBtn?.dataset.level);
       pageNum = generateIndex(TOTAL_WORDS / WORDS_PER_PAGE);
     } else if (isFromDictionaryPage()) {
-      // TODO: add from localstorage
-      group = 3;
-      pageNum = 0;
+      const storageObj = getLocalStorage<{ page: number; group: number }>(
+        DICTIONARY_KEY,
+      );
+      console.log(storageObj);
+
+      if (!storageObj) return;
+
+      group = storageObj.group;
+      pageNum = storageObj.page;
     }
 
     const wordsList = await this.onGetWords?.(group, pageNum);

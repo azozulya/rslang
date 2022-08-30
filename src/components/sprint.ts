@@ -1,5 +1,5 @@
 import { IGameStatistic, IGameWord } from '../interfaces/interfaces';
-import { GAME_TIMER } from '../utils/constants';
+import { COUNT_LAST_WORDS, GAME_TIMER } from '../utils/constants';
 import create from '../utils/createElement';
 
 class SprintGame {
@@ -174,7 +174,10 @@ class SprintGame {
 
     this.wordContainer.innerHTML = this.drawWord(this.currentWordIndex);
 
-    if (this.currentWordIndex > this.wordsList.length - 7 && this.page > 0) {
+    if (
+      this.currentWordIndex > this.wordsList.length - COUNT_LAST_WORDS
+      && this.page > 0
+    ) {
       const additionalWords = await this.getWords?.(this.group, this.page - 1);
       if (additionalWords) {
         this.wordsList.push(...additionalWords);
