@@ -125,7 +125,7 @@ class User {
 
     const response = await this.api.getUserToken(
       this.userId,
-      this.refreshToken
+      this.refreshToken,
     );
     if (response !== undefined) {
       result.token = response.token;
@@ -169,7 +169,7 @@ class User {
 
   createUserWord(
     wordId: string,
-    word?: IUserWord
+    word?: IUserWord,
   ): Promise<IUserWord | undefined> {
     return this.api.createUserWord(this.userId, this.token, wordId, word);
   }
@@ -180,7 +180,7 @@ class User {
 
   updateUserWord(
     wordId: string,
-    word?: IUserWord
+    word?: IUserWord,
   ): Promise<IUserWord | undefined> {
     return this.api.updateUserWord(this.userId, this.token, wordId, word);
   }
@@ -190,18 +190,18 @@ class User {
   }
 
   getUserAggregatedWords(
-    group: string,
-    page: string,
-    wordsPerPage: string,
-    filter: string
-  ): Promise<IWord[] | undefined> {
+    group: number,
+    page: number,
+    wordsPerPage: number,
+    filter: string,
+  ) {
     return this.api.getUserAggregatedWords(
       this.userId,
       this.token,
       group,
       page,
       wordsPerPage,
-      filter
+      filter,
     );
   }
 
@@ -214,7 +214,7 @@ class User {
   }
 
   updateUserStatistics(
-    body: IUserStatistics
+    body: IUserStatistics,
   ): Promise<IUserStatistics | undefined> {
     return this.api.updateUserStatistics(this.userId, this.token, body);
   }

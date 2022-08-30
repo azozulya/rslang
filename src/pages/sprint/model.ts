@@ -9,6 +9,7 @@ import {
 import {
   createDefaultWord,
   generateIndex,
+  getDateWithoutTime,
   isFromDictionaryPage,
 } from '../../utils/utils';
 import userApi from '../../components/user/user';
@@ -18,7 +19,16 @@ import {
   SPRINT_WORDS_STATISTIC,
   WORDS_PER_PAGE,
 } from '../../utils/constants';
-import { setLocalStorage } from '../../utils/localStorage';
+import { getLocalStorage, setLocalStorage } from '../../utils/localStorage';
+
+interface IWordStat {
+  [x: number]: {
+    wordID: string;
+    learned: boolean;
+    new: boolean;
+    rightAnswer: boolean;
+  };
+}
 
 class GamesModel {
   private api?: API;
@@ -46,13 +56,26 @@ class GamesModel {
     };
   }
 
+  private async updateStatisctic(wordStat: IWordStat) {
+    // await this.sendStatistic(wordStat);
+
+    const storageObj = getLocalStorage<IWordStat[]>(SPRINT_WORDS_STATISTIC);
+
+    if (!storageObj) {
+      setLocalStorage(SPRINT_WORDS_STATISTIC, wordStat);
+      return;
+    }
+
+    setLocalStorage(SPRINT_WORDS_STATISTIC, [...storageObj, wordStat]);
+  }
+
   updateUserWord = async (wordId: string, isRightAnswer: boolean) => {
     const isUser = await userApi.isAuthenticated();
     console.log(`model: isUser: ${isUser}, isRightAnswer: ${isRightAnswer}`);
 
     if (!isUser) return;
 
-    const userWord: IUserWord | null = await userApi.getUserWord(wordId);
+    const userWord: IUserWord | undefined = await userApi.getUserWord(wordId);
 
     if (!userWord) {
       this.addNewUserWord(wordId, isRightAnswer);
@@ -85,74 +108,55 @@ class GamesModel {
 
     await userApi.updateUserWord(userWord.wordId, userWord);
 
-    await this.setStatistic({
-      name: 'word',
-      date: Date.now(),
-      learned: false,
-      wordID: userWord.wordId,
-      new: false,
-      rightAnswer: isRightAnswer,
-    });
+    const date = getDateWithoutTime();
 
-    setLocalStorage(SPRINT_WORDS_STATISTIC, {
-      name: 'word',
-      date: Date.now(),
-      learned: false,
-      wordID: userWord.wordId,
-      new: false,
-      rightAnswer: isRightAnswer,
+    this.updateStatisctic({
+      [date]: {
+        wordID: userWord.wordId,
+        learned,
+        new: false,
+        rightAnswer: isRightAnswer,
+      },
     });
 
     console.log('update userWord: ', userWord);
   };
 
-  private addNewUserWord = async (wordId: string, isRightAnswer: boolean) => {
+  private addNewUserWord = async (wordID: string, isRightAnswer: boolean) => {
     this.gameState.newWords += 1;
 
-    const newUserWord = createDefaultWord(wordId);
+    const newUserWord = createDefaultWord(wordID);
 
     if (isRightAnswer) newUserWord.optional.sprint.rightAnswer += 1;
     else newUserWord.optional.sprint.wrongAnswer += 1;
 
     console.log('create newUserWord: ', newUserWord);
 
-    await userApi.createUserWord(wordId, newUserWord);
+    await userApi.createUserWord(wordID, newUserWord);
 
-    await this.setStatistic({
-      name: 'word',
-      date: Date.now(),
-      learned: false,
-      wordID: wordId,
-      new: true,
-      rightAnswer: isRightAnswer,
-    });
+    const date = getDateWithoutTime();
 
-    setLocalStorage(SPRINT_WORDS_STATISTIC, {
-      name: 'word',
-      date: Date.now(),
-      learned: false,
-      wordID: wordId,
-      new: true,
-      rightAnswer: isRightAnswer,
+    this.updateStatisctic({
+      [date]: {
+        wordID,
+        learned: false,
+        new: true,
+        rightAnswer: isRightAnswer,
+      },
     });
   };
 
-  private async setStatistic(obj: {
-    name: string;
-    date: number;
-    learned: boolean;
-    wordID: string;
-    new: boolean;
-    rightAnswer: boolean;
-  }) {
+  private async sendStatistic(wordStat: IWordStat) {
+    const date = getDateWithoutTime();
     const currentStatistic = await userApi.getUserStatistics();
 
     console.log('current stat: ', currentStatistic);
+
     const statistic = await userApi.updateUserStatistics({
       learnedWords: 0,
       optional: {
-        ...currentStatistic.optional,
-        ...obj,
+        ...currentStatistic?.optional,
+        wordStat,
       },
     });
     console.log('stat: ', statistic);
@@ -199,7 +203,9 @@ class GamesModel {
       ),
     );
 
-    const learnedWords: IAggregatedWord[] = userLearnedWords[0].paginatedResults;
+    const learnedWords: IAggregatedWord[] | [] = userLearnedWords
+      ? userLearnedWords[0]?.paginatedResults
+      : [];
 
     const wordsList = await this.getWords(group, page);
 

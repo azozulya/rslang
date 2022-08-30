@@ -48,9 +48,6 @@ class GamesView {
 
     this.gameScreen = create({ tagname: 'div', class: 'game__sprint' });
     this.resultScreen = create({ tagname: 'div', class: 'game__result' });
-
-    console.log('1 from dictionary: ', this.isFromDictionary);
-    console.log('isMenuLink: ', this.isMenuLink);
   }
 
   private drawLevels() {
