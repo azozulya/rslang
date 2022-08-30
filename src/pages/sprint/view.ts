@@ -48,7 +48,11 @@ class GamesView {
     this.isFromDictionary = isFromDictionaryPage();
     this.gameContainer = create({ tagname: 'section', class: 'game' });
 
-    this.gameScreen = create({ tagname: 'div', class: 'game__sprint' });
+    this.gameScreen = create({
+      tagname: 'div',
+      class: 'game__sprint',
+      text: '<h3>Спринт</h3>',
+    });
     this.resultScreen = create({ tagname: 'div', class: 'game__result' });
   }
 
@@ -106,7 +110,7 @@ class GamesView {
     container.innerHTML = `
       <h3>Спринт</h3>
       <p class="game__description">
-        Спринт - тренировка на скорость.<br> Попробуй угадать как можно больше слов за ${GAME_TIMER} секунд.
+        Спринт - тренировка на скорость.<br> Попробуй угадать как можно больше слов за&nbsp;${GAME_TIMER}&nbsp;секунд.
       </p>
     `;
 

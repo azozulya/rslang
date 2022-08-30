@@ -98,6 +98,12 @@
     }
   }
 
+  &__sprint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
   &__result {
     height: 500px;
 
@@ -191,6 +197,22 @@
     color: $light-color;
     border-radius: 0.3rem;
     padding: 0.5rem 0.3rem;
+
+    &-wrapper {
+    }
+
+    &-addition {
+    }
+
+    &-points {
+      font-size: 0.8rem;
+    }
+
+    &-dots {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
   }
 
   &__word {
@@ -232,15 +254,8 @@
   }
 
   @keyframes blinkRight {
-    0% {
-      background-color: $yes-color;
-      opacity: 0.5;
-    }
     50% {
-      opacity: 1;
-    }
-    100% {
-      background-color: none;
+      background-color: $yes-color;
     }
   }
 
