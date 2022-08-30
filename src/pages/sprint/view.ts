@@ -1,6 +1,11 @@
 import SprintGame from '../../components/sprint';
 import { IGameStatistic, IGameWord } from '../../interfaces/interfaces';
-import { GAME_TIMER, TOTAL_WORDS, WORDS_PER_PAGE } from '../../utils/constants';
+import {
+  GAME_TIMER,
+  TOTAL_WORDS,
+  URL_FOR_STATIC,
+  WORDS_PER_PAGE,
+} from '../../utils/constants';
 import create from '../../utils/createElement';
 import {
   generateIndex,
@@ -88,7 +93,7 @@ class GamesView {
     const startBtn = <HTMLButtonElement>(
       create({ tagname: 'button', class: 'btn' })
     );
-    startBtn.classList.add('btn--blue');
+    startBtn.classList.add('btn--blue', 'game__start-btn');
     startBtn.disabled = !this.isFromDictionary;
     startBtn.innerText = 'Начать';
 
@@ -136,20 +141,19 @@ class GamesView {
     this.gameScreen?.append(game.render());
   }
 
-  // eslint-disable-next-line max-lines-per-function
   private stopGame = (state: IGameStatistic, wordsList: IGameWord[]) => {
     this.gameContainer.innerText = '';
 
     const stateGame = this.getGameStatistic?.();
 
-    console.log('stopGame, gameStat: ', {
+    const totalState = {
       ...state,
       ...stateGame,
       date: Date.now(),
       name: 'sprint',
-    });
+    };
 
-    const totalState = { ...state, ...stateGame };
+    console.log('stopGame, gameStat: ', totalState);
 
     if (this.resultScreen) {
       this.gameContainer.append(this.resultScreen);
@@ -167,29 +171,43 @@ class GamesView {
           </div>`,
       );
 
-      const playAgain = create({
-        tagname: 'button',
-        class: 'btn',
-        text: 'Сыграть еще раз',
-      });
-      playAgain.classList.add('btn--blue');
-      playAgain.addEventListener('click', () => {
-        if (this.startScreen) {
-          this.gameContainer.innerText = '';
-          this.gameContainer.append(this.startScreen);
-        }
-      });
-
-      this.resultScreen.append(this.drawWordsResult(wordsList), playAgain);
-
-      this.resultScreen.insertAdjacentHTML(
-        'beforeend',
-        `<div>
-            <button class="btn btn--blue" data-page="dictionary">Перейти в учебник</button>
-          </div>`,
+      this.resultScreen.append(
+        this.drawWordsResult(wordsList),
+        this.drawBtns(),
       );
     }
   };
+
+  private drawBtns() {
+    const playAgainBtn = create({
+      tagname: 'button',
+      class: 'btn',
+      text: 'Сыграть еще раз',
+    });
+    playAgainBtn.classList.add('btn--blue', 'game__result-btn');
+    playAgainBtn.addEventListener('click', () => {
+      if (this.startScreen) {
+        this.gameContainer.innerText = '';
+        this.gameContainer.append(this.startScreen);
+      }
+    });
+
+    const goToDictionaryBtn = create({
+      tagname: 'button',
+      class: 'btn',
+      text: 'Перейти в учебник',
+    });
+    goToDictionaryBtn.classList.add('btn--blue', 'game__result-btn');
+    goToDictionaryBtn.dataset.page = 'dictionary';
+
+    const btnsContainer = create({
+      tagname: 'div',
+      class: 'game__result-btns',
+    });
+    btnsContainer.append(playAgainBtn, goToDictionaryBtn);
+
+    return btnsContainer;
+  }
 
   private drawWordsResult(wordsList: IGameWord[]) {
     const wordsResult = create({ tagname: 'div', class: 'game__result-words' });
@@ -212,31 +230,41 @@ class GamesView {
     return wordsResult;
   }
 
+  private createAudioIcon(audioLink: string, audioElement: HTMLAudioElement) {
+    const audioFragment = document.createDocumentFragment();
+    const svgIcon = document.createElementNS(
+      'http://www.w3.org/2000/svg',
+      'svg',
+    );
+    svgIcon.classList.add('audio-icon');
+    svgIcon.innerHTML = '<use xlink:href="../../assets/img/audio_sprite.svg#audio"></use>';
+
+    svgIcon.addEventListener('click', () => {
+      const audio = audioElement;
+      audio.src = URL_FOR_STATIC + audioLink;
+      audio.play();
+    });
+
+    audioFragment.append(svgIcon);
+
+    return audioFragment;
+  }
+
   private drawWordsListResult = (wordsList: IGameWord[]) => {
     const wordsContainer = create({ tagname: 'ul', class: 'words-list' });
+    const audio = new Audio();
+
+    wordsContainer.append(audio);
 
     wordsList.forEach((word) => {
-      const audioIcon = create({ tagname: 'svg', class: 'audio-icon' });
-      audioIcon.innerHTML = '<use xlink:href="../../assets/img/audio_sprite.svg#audio"></use>';
-      audioIcon.dataset.audio = word.audio;
-
-      audioIcon.addEventListener('click', () => {
-        const audioWord = new Audio(word.audio);
-        if (!audioWord) return;
-        audioWord.play();
-      });
-
       const wordElement = create({ tagname: 'li', class: 'words-list__item' });
-      // const audioElement = new Audio(word.audio);
-      // audioElement.classList.add('audio-btn');
-      // audioElement.addEventListener('click', this.playAudioHandler);
+      const audioIcon = this.createAudioIcon(word.audio, audio);
 
       wordElement.append(audioIcon);
+
       wordElement.insertAdjacentHTML(
         'beforeend',
-        `<audio preload class="songs">
-    <source src="${word.audio}" type="audio/mpeg" />
-</audio> <b>${word.word}</b> - ${word.wordTranslate}`,
+        `<b>${word.word}</b>&nbsp;—&nbsp;${word.wordTranslate}`,
       );
       wordsContainer.append(wordElement);
     });

@@ -3,7 +3,6 @@ import API from '../../api/api';
 import {
   IAggregatedWord,
   IGameWord,
-  IUserStatistics,
   IUserWord,
   IWord,
 } from '../../interfaces/interfaces';
@@ -12,13 +11,11 @@ import {
   generateIndex,
   isFromDictionaryPage,
 } from '../../utils/utils';
-import WordList from '../../utils/testWord';
 import userApi from '../../components/user/user';
 import {
   POINTS_TO_LEARNED_HARD_WORD,
   POINTS_TO_LEARNED_WORD,
   SPRINT_WORDS_STATISTIC,
-  TOTAL_WORDS,
   WORDS_PER_PAGE,
 } from '../../utils/constants';
 import { setLocalStorage } from '../../utils/localStorage';
@@ -89,15 +86,12 @@ class GamesModel {
     await userApi.updateUserWord(userWord.wordId, userWord);
 
     await this.setStatistic({
-      learnedWords: 0,
-      optional: {
-        name: 'word',
-        date: Date.now(),
-        learned: false,
-        wordID: userWord.wordId,
-        new: false,
-        rightAnswer: isRightAnswer,
-      },
+      name: 'word',
+      date: Date.now(),
+      learned: false,
+      wordID: userWord.wordId,
+      new: false,
+      rightAnswer: isRightAnswer,
     });
 
     setLocalStorage(SPRINT_WORDS_STATISTIC, {
@@ -125,15 +119,12 @@ class GamesModel {
     await userApi.createUserWord(wordId, newUserWord);
 
     await this.setStatistic({
-      learnedWords: 0,
-      optional: {
-        name: 'word',
-        date: Date.now(),
-        learned: false,
-        wordID: wordId,
-        new: true,
-        rightAnswer: isRightAnswer,
-      },
+      name: 'word',
+      date: Date.now(),
+      learned: false,
+      wordID: wordId,
+      new: true,
+      rightAnswer: isRightAnswer,
     });
 
     setLocalStorage(SPRINT_WORDS_STATISTIC, {
@@ -146,9 +137,24 @@ class GamesModel {
     });
   };
 
-  private async setStatistic(obj: IUserStatistics) {
-    console.log('stat: ', obj);
-    const statistic = await userApi.updateUserStatistics(obj);
+  private async setStatistic(obj: {
+    name: string;
+    date: number;
+    learned: boolean;
+    wordID: string;
+    new: boolean;
+    rightAnswer: boolean;
+  }) {
+    const currentStatistic = await userApi.getUserStatistics();
+
+    console.log('current stat: ', currentStatistic);
+    const statistic = await userApi.updateUserStatistics({
+      learnedWords: 0,
+      optional: {
+        ...currentStatistic.optional,
+        ...obj,
+      },
+    });
     console.log('stat: ', statistic);
   }
 
@@ -175,9 +181,6 @@ class GamesModel {
 
     if (wordList && wordList.length) return this.formatWords(wordList);
 
-    // eslint-disable-next-line max-len
-    // %7B%22%24and%22%3A%5B%7B%22userWord.difficulty%22%3A%22none%22%2C%20%22userWord.optional.learned%22%3Afalse%7D%5D%7D
-    // %7B%22%24and%22%3A%5B%7B%22userWord.optional.learned%22%3Afalse7D%5D%7D
     return null;
   };
 
@@ -200,15 +203,15 @@ class GamesModel {
 
     const wordsList = await this.getWords(group, page);
 
-    console.log('learned: ', learnedWords, userLearnedWords);
-    console.log('all: ', wordsList);
+    // console.log('learned: ', learnedWords, userLearnedWords);
+    // console.log('all: ', wordsList);
 
     if (wordsList && learnedWords.length) {
       const excludeIDs: string[] = learnedWords.map(
         // eslint-disable-next-line no-underscore-dangle
         (word: IAggregatedWord) => word._id,
       );
-      console.log('excludeIDs: ', excludeIDs);
+      // console.log('excludeIDs: ', excludeIDs);
 
       const filteredWords = wordsList.filter(
         (word: IWord) => !excludeIDs.includes(word.id),

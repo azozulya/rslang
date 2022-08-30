@@ -1,7 +1,7 @@
 .game {
   box-sizing: border-box;
   background-color: $secondary-light;
-  max-width: 40rem;
+  max-width: 30rem;
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 2rem;
@@ -23,6 +23,18 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+
+    &-btn {
+      @include media($min-width: 611px) {
+        font-size: 1.5rem;
+        padding: 1.2rem 1.5rem;
+      }
+
+      @include media(610px) {
+        font-size: 1.2rem;
+        padding: 1rem 1.2rem;
+      }
+    }
   }
 
   &__description {
@@ -100,6 +112,15 @@
       margin-top: 1rem;
       margin-bottom: 1rem;
     }
+
+    &-btns {
+      display: flex;
+      gap: 2rem;
+    }
+    &-btn {
+      font-size: 1rem;
+      padding: 0.6rem 1rem;
+    }
   }
 }
 
@@ -125,15 +146,24 @@
   margin-bottom: 2rem;
   padding-top: 0.7rem;
 
-  &-item {
+  &__item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
   }
 }
 
-.audio-btn {
-  border: solid 1px red;
+.audio-icon {
   display: block;
-  width: 10rem;
-  height: 5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  fill: $text-primary;
+  margin-right: 0.5rem;
+
+  &:hover {
+    cursor: pointer;
+    fill: $secondary-dark;
+  }
 }
 
 .sprint {

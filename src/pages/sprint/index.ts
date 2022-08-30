@@ -1,4 +1,3 @@
-import { isFromDictionaryPage } from '../../utils/utils';
 import GamesModel from './model';
 import GamesView from './view';
 
@@ -18,9 +17,10 @@ class Games {
 
   draw(rootContainer: HTMLElement) {
     const isMenuLink = rootContainer.dataset.linkFrom === 'menu';
-    console.log(isMenuLink);
+
     this.model.isMenuLink = isMenuLink;
     this.view.isMenuLink = isMenuLink;
+
     rootContainer.append(this.view.draw());
   }
 }

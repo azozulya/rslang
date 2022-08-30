@@ -15,3 +15,5 @@ export const SPRINT_WORDS_STATISTIC = 'RSLang_sprint';
 export const POINTS_TO_LEARNED_HARD_WORD = 5;
 
 export const POINTS_TO_LEARNED_WORD = 3;
+
+export const URL_FOR_STATIC = 'http://localhost:3000/';

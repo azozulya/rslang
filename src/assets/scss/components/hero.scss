@@ -110,4 +110,16 @@ $bg-color: #b2ebf2;
       }
     }
   }
+
+  &__btn {
+    @include media($min-width: 611px) {
+      font-size: 1.5rem;
+      padding: 1.2rem 1.5rem;
+    }
+
+    @include media(610px) {
+      font-size: 1.2rem;
+      padding: 1rem 1.2rem;
+    }
+  }
 }
