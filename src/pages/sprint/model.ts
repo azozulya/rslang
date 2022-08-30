@@ -54,13 +54,13 @@ class GamesModel {
     };
   }
 
-  private async updateStatisctic(wordStat: IWordStat) {
+  private async updateStatistic(wordStat: IWordStat) {
     await this.sendStatistic(wordStat);
 
     const date = getDateWithoutTime();
 
     const storageObj = getLocalStorage<{ [x: number]: IWordStat[] }>(
-      SPRINT_WORDS_STATISTIC,
+      SPRINT_WORDS_STATISTIC
     );
 
     if (!storageObj) {
@@ -98,30 +98,33 @@ class GamesModel {
 
   private updateExistWord = async (
     userWord: IUserWord,
-    isRightAnswer: boolean,
+    isRightAnswer: boolean
   ) => {
     const { sprint } = userWord.optional;
     let { hard, learned } = userWord.optional;
 
-    if (isRightAnswer) sprint.rightAnswer += 1;
-    else sprint.wrongAnswer += 1;
+    if (isRightAnswer) {
+      sprint.rightAnswer += 1;
 
-    const diff = sprint.rightAnswer - sprint.wrongAnswer;
+      const diff = sprint.rightAnswer - sprint.wrongAnswer;
 
-    if (
-      (hard && diff === POINTS_TO_LEARNED_HARD_WORD)
-      || (!hard && diff === POINTS_TO_LEARNED_WORD)
-    ) {
-      this.gameState.learnedWords += 1;
-      learned = true;
-      hard = false;
+      if (
+        (hard && diff === POINTS_TO_LEARNED_HARD_WORD) ||
+        (!hard && diff === POINTS_TO_LEARNED_WORD)
+      ) {
+        this.gameState.learnedWords += 1;
+        learned = true;
+        hard = false;
+      }
+    } else {
+      sprint.wrongAnswer += 1;
+
+      if (learned) learned = false;
     }
 
     await userApi.updateUserWord(userWord.wordId, userWord);
 
-    const date = getDateWithoutTime();
-
-    this.updateStatisctic({
+    this.updateStatistic({
       wordID: userWord.wordId,
       learned,
       new: false,
@@ -143,9 +146,7 @@ class GamesModel {
 
     await userApi.createUserWord(wordID, newUserWord);
 
-    const date = getDateWithoutTime();
-
-    this.updateStatisctic({
+    this.updateStatistic({
       wordID,
       learned: false,
       new: true,
@@ -155,9 +156,9 @@ class GamesModel {
 
   getWordsForGame = async (group: number, page: number) => {
     if (
-      (await userApi.isAuthenticated())
-      && isFromDictionaryPage()
-      && !this.isMenuLink
+      (await userApi.isAuthenticated()) &&
+      isFromDictionaryPage() &&
+      !this.isMenuLink
     ) {
       const words = await this.getAgreggatedUserWords(group, page);
 
@@ -167,7 +168,7 @@ class GamesModel {
     }
 
     console.log(
-      `getWords, fromMenuLink || notAuth, page: ${page}, group: ${group}`,
+      `getWords, fromMenuLink || notAuth, page: ${page}, group: ${group}`
     );
 
     const wordList = await this.getWords(group, page);
@@ -181,7 +182,7 @@ class GamesModel {
 
   private async getAgreggatedUserWords(
     group = 3,
-    page = 0,
+    page = 0
   ): Promise<IGameWord[] | null> {
     const userLearnedWords = await userApi.getUserAggregatedWords(
       group,
@@ -190,8 +191,8 @@ class GamesModel {
       encodeURIComponent(
         JSON.stringify({
           $and: [{ 'userWord.optional.learned': true }, { page }],
-        }),
-      ),
+        })
+      )
     );
 
     const learnedWords: IAggregatedWord[] | [] = userLearnedWords
@@ -206,12 +207,12 @@ class GamesModel {
     if (wordsList && learnedWords.length) {
       const excludeIDs: string[] = learnedWords.map(
         // eslint-disable-next-line no-underscore-dangle
-        (word: IAggregatedWord) => word._id,
+        (word: IAggregatedWord) => word._id
       );
       // console.log('excludeIDs: ', excludeIDs);
 
       const filteredWords = wordsList.filter(
-        (word: IWord) => !excludeIDs.includes(word.id),
+        (word: IWord) => !excludeIDs.includes(word.id)
       );
       console.log('filteredWords: ', filteredWords);
 
@@ -225,10 +226,9 @@ class GamesModel {
   }
 
   private formatWords(words: IWord[]): IGameWord[] {
-    return words.map(({
-      word, wordTranslate, id, audio,
-    }, idx) => {
-      const randomIndex = Math.random() > 0.5 ? idx : generateIndex(words.length);
+    return words.map(({ word, wordTranslate, id, audio }, idx) => {
+      const randomIndex =
+        Math.random() > 0.5 ? idx : generateIndex(words.length);
       return {
         id,
         audio,
