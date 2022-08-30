@@ -1,38 +1,39 @@
 /* eslint-disable max-lines-per-function */
-import Api from '../../api/api';
-import { IWordApp } from '../../interfaces/interfaces';
+import { IWordApp, IWordAppForAuthUser, TNavigate } from '../../interfaces/interfaces';
 import create from '../../utils/createElement';
 import { getLocalStorage, setLocalStorage } from '../../utils/localStorage';
 import Pagination from '../../components/pagination';
-import { TOTAL_WORDS, WORDS_PER_PAGE } from '../../utils/constants';
+import { COUNT_OF_GROUPS, TOTAL_WORDS, WORDS_PER_PAGE } from '../../utils/constants';
 
 class DictionaryView {
   onGetWords!: (group: number, page: number) => void;
 
-  api: Api;
-
   words: Array<IWordApp>;
 
-  COUNT_OF_GROUPS: number;
+  private COUNT_OF_GROUPS: number;
 
-  page: number;
+  private page: number;
 
-  group: number;
+  private group: number;
+
+  private isActiveHardWords: boolean;
 
   private pagination: Pagination | undefined;
 
   private paginationContainer: HTMLElement | undefined;
 
+  private wordsForAuthUser: IWordAppForAuthUser[];
+
   constructor() {
-    this.api = Api.getInstance();
     this.words = [];
-    this.COUNT_OF_GROUPS = 5;
+    this.COUNT_OF_GROUPS = COUNT_OF_GROUPS;
     this.page = 0;
     this.group = 0;
+    this.isActiveHardWords = false;
+    this.wordsForAuthUser = [];
   }
 
   bindGetWords(callback: { (group: number, page: number): void }) {
-    // to index
     const dictionaryGroups = <HTMLElement>(
       document.getElementById('dictionaryGroups')
     );
@@ -44,7 +45,20 @@ class DictionaryView {
     const dictionaryHardWords = <HTMLElement>(
       document.getElementById('dictionaryHardWords')
     );
-    dictionaryHardWords.addEventListener('click', callback);
+    if (dictionaryHardWords) {
+      dictionaryHardWords.addEventListener('click', callback);
+      dictionaryHardWords.addEventListener('click', (e: Event) => this.switchHardWords(e));
+    }
+  }
+
+  private addHandlersForCheckingWord() {
+    const dictionaryWords = <HTMLElement>document.getElementById('dictionaryWords');
+    dictionaryWords.addEventListener('click', (event) => {
+      const element = <HTMLElement>event.target;
+      if (element.classList.contains('word__hard') || element.classList.contains('word__learned')) {
+        this.changeViewIfAllLearned();
+      }
+    });
   }
 
   private drawPagination() {
@@ -63,55 +77,122 @@ class DictionaryView {
 
   goToPage = async (page: number) => {
     this.page = page - 1;
-    await this.updateWords();
+    await this.updateWords(); // need to change method (?)
   };
 
   async updateGroup(event: Event) {
-    this.changeWordsGroup(event);
+    this.switchHardWords(event);
+    this.switchWordsGroup(event);
     this.highlightGroupBtn();
     this.updateWords();
   }
 
   async updateWords() {
-    const { group, page } = this.getGroupAndPage();
+    const { group, page } = this.getNavigate();
     this.onGetWords(group, page);
   }
 
-  getGroupAndPage() {
-    const groupAndPage: { page: number; group: number } = getLocalStorage('wordsGroupAndPage');
-    if (groupAndPage) {
-      this.page = groupAndPage.page;
-      this.group = groupAndPage.group;
+  getNavigate() {
+    const navigate: TNavigate = getLocalStorage('wordsNavigate');
+    if (navigate) {
+      this.page = navigate.page;
+      this.group = navigate.group;
+      this.isActiveHardWords = navigate.isActiveHardWords;
     }
-    return { group: this.group, page: this.page };
+    return { group: this.group, page: this.page, isActiveHardWords: this.isActiveHardWords };
   }
 
-  highlightGroupBtn() {
+  private highlightGroupBtn() {
     const groupBtns = document.querySelectorAll('.dictionary__groups_item');
-
-    this.group = getLocalStorage('wordsGroupAndPage') || 0;
+    if (getLocalStorage('wordsNavigate')) {
+      const { group } = getLocalStorage('wordsNavigate');
+      this.group = group;
+    }
 
     groupBtns.forEach((button) => {
       if (button.classList.contains('dictionary__groups_item_active')) {
         button.classList.remove('dictionary__groups_item_active');
       }
-      if (this.group === Number(button.id[0])) {
-        button.classList.add('dictionary__groups_item_active');
+      if (!this.isActiveHardWords) {
+        if (this.group === Number(button.id[0])) {
+          button.classList.add('dictionary__groups_item_active');
+        }
       }
     });
   }
 
-  changeWordsGroup(event: Event) {
+  private switchWordsGroup(event: Event) {
     const dictionaryGroup = <HTMLElement>event.target;
     if (dictionaryGroup.classList.contains('dictionary__groups_item')) {
       this.group = Number(dictionaryGroup.id[0]);
     }
-    this.saveWordsGroupAndPage();
+    this.saveWordsNavigate();
   }
 
-  saveWordsGroupAndPage() {
-    const groupAngPage = { page: this.page, group: this.group };
-    setLocalStorage('wordsGroupAndPage', groupAngPage);
+  private saveWordsNavigate() {
+    const navigate: TNavigate = {
+      page: this.page,
+      group: this.group,
+      isActiveHardWords: this.isActiveHardWords,
+    };
+    setLocalStorage('wordsNavigate', navigate);
+  }
+
+  private switchHardWords(event:Event) {
+    const element = <HTMLElement>event.target;
+    if (element.classList.contains('dictionary__groups_item')) this.isActiveHardWords = false;
+    if (element.classList.contains('dictionary__hardwords')) {
+      this.isActiveHardWords = true;
+      this.highlightGroupBtn();
+    }
+    this.saveWordsNavigate();
+    this.highlightHardWords();
+  }
+
+  private highlightMenu() {
+    this.highlightHardWords();
+    this.highlightGroupBtn();
+  }
+
+  private highlightHardWords() {
+    const hardWords = <HTMLElement>document.getElementById('dictionaryHardWords');
+    if (hardWords) {
+      if (this.isActiveHardWords) hardWords.classList.add('dictionary__hardwords_active');
+      else (hardWords.classList.remove('dictionary__hardwords_active'));
+    }
+  }
+
+  private disableGameLinks(IsDisable: boolean) {
+    const sprint = <HTMLElement>document.getElementById('dictionarySprint');
+    const audioCall = <HTMLElement>document.getElementById('dictionaryAudio');
+    const games = [sprint, audioCall];
+    games.forEach((game) => {
+      if (IsDisable) game.classList.add('dictionary__games_disable');
+      else game.classList.remove('dictionary__games_disable');
+    });
+  }
+
+  private showTextInfo(IsShow: boolean) {
+    const textContainer = <HTMLElement>document.getElementById('dictionaryInfo');
+    textContainer.textContent = IsShow ? 'Вы отметили все слова на странице' : '';
+  }
+
+  private changeViewIfAllLearned() {
+    const isAllChecked = this.checkWordsOnPage();
+    this.disableGameLinks(isAllChecked);
+    this.showTextInfo(isAllChecked); // add disable for pagination
+  }
+
+  private checkWordsOnPage() {
+    const isLearnedAndHard = this.wordsForAuthUser.every(
+      (word) => word.word.optional?.learned === true || word.word.optional?.hard === true,
+    );
+    /* const isAllNotHard = this.wordsForAuthUser.some(
+      (word) => word.word.optional?.learned === true,
+    ); */
+
+    const isChecked = isLearnedAndHard; // && isAllNotHard;
+    return isChecked;
   }
 
   drawWords(words: IWordApp[]) {
@@ -124,7 +205,28 @@ class DictionaryView {
     words.forEach((wordInDictionary) => {
       wordInDictionary.draw();
     });
-    this.highlightGroupBtn();
+    this.drawPagination();
+    this.highlightMenu();
+  }
+
+  drawWordsAuth(words:IWordAppForAuthUser[]) {
+    this.wordsForAuthUser = words;
+
+    const dictionary = <HTMLElement>document.getElementById('dictionaryWords');
+    if (dictionary) {
+      while (dictionary.firstChild) {
+        dictionary.removeChild(dictionary.firstChild);
+      }
+    }
+    words.forEach((wordInDictionary) => {
+      wordInDictionary.drawForAuthUser();
+    });
+
+    this.changeViewIfAllLearned();
+
+    this.addHandlersForCheckingWord();
+    this.drawPagination();
+    this.highlightMenu();
   }
 
   // eslint-disable-next-line max-lines-per-function
@@ -172,14 +274,8 @@ class DictionaryView {
     const dictionaryExtentions = create({
       tagname: 'div',
       class: 'dictionary__extentions',
+      id: 'dictionaryExtentions',
       parent: dictionaryGroups,
-    });
-    create({
-      tagname: 'div',
-      class: 'dictionary__hardwords',
-      id: 'dictionaryHardWords',
-      parent: dictionaryExtentions,
-      text: 'Мои слова',
     });
     const dictionaryGames = create({
       tagname: 'div',
@@ -217,6 +313,26 @@ class DictionaryView {
       'beforeend',
       '<button data-page="sprint">Sprint</button>',
     );
+    return container;
+  }
+
+  drawForAuthUser() {
+    const container = this.draw();
+    const dictionaryGroups = <HTMLElement>container.querySelector('.dictionary__groups');
+    const dictionaryExtentions = <HTMLElement>container.querySelector('.dictionary__extentions');
+    create({
+      tagname: 'div',
+      class: 'dictionary__hardwords',
+      id: 'dictionaryHardWords',
+      parent: dictionaryExtentions,
+      text: 'Сложные слова',
+    });
+    create({
+      tagname: 'div',
+      class: 'dictionary__info',
+      id: 'dictionaryInfo',
+      parent: dictionaryGroups,
+    });
     return container;
   }
 }

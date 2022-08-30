@@ -32,10 +32,14 @@ export interface IWordWithUserWord extends IWord {
 
 export interface IWordApp {
   word: IWord;
-  hard?: boolean;
-  learned?: boolean;
   draw(): void;
 }
+
+export interface IWordAppForAuthUser {
+  word: IWordWithUserWord;
+  drawForAuthUser(): void;
+}
+
 export interface IUser {
   [key: string]: string;
 
@@ -96,6 +100,12 @@ export interface IJwt {
 export type TPageHistory = {
   prevPage: string;
   currentPage: string;
+};
+
+export type TNavigate = {
+  page: number;
+  group: number;
+  isActiveHardWords: boolean;
 };
 
 export interface IGameWord {

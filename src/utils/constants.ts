@@ -8,6 +8,8 @@ export const WORDS_PER_PAGE = 20;
 
 export const TOTAL_WORDS = 600;
 
+export const COUNT_OF_GROUPS = 5;
+
 export const GAME_TIMER = 10;
 
 export const SPRINT_WORDS_STATISTIC = 'RSLang_sprint';
