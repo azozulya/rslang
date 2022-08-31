@@ -13,11 +13,13 @@ class AudioCall {
 
   draw(rootContainer: HTMLElement) {
     const container = rootContainer;
+    container.append(this.view.renderGame());
     // const isLoadFromDictionary = Boolean(
     //   rootContainer.dataset.arrivalFrom !== 'menu'
     // );
 
-    container.innerHTML = `<br><br><br><br><br><br>AudioCall page<br> Click: ${rootContainer.dataset.arrivalFrom}`;
+  // container.innerHTML = `<br><br><br><br><br><br>AudioCall page<br>
+  // Click: ${rootContainer.dataset.arrivalFrom}`;
   }
 }
 

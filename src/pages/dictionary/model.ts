@@ -1,9 +1,10 @@
+/* eslint-disable no-underscore-dangle */
 import Api from '../../api/api';
 import {
+  IAggregatedWord,
   IWord,
   IWordApp,
   IWordAppForAuthUser,
-  IWordWithUserWord,
 } from '../../interfaces/interfaces';
 import Word from '../../components/word/word';
 import WordAuth from '../../components/word/wordAuth';
@@ -18,7 +19,7 @@ class DictionaryModel {
 
   onUpdateWords?: (words: IWordApp[]) => void;
 
-  onUpdateWordsAuth?: (words:IWordAppForAuthUser[]) => void;
+  onUpdateWordsAuth?: (words:(IWordAppForAuthUser | IWordApp)[]) => void;
 
   constructor() {
     this.words = [];
@@ -30,7 +31,7 @@ class DictionaryModel {
     this.onUpdateWords = callback;
   }
 
-  bindUpdateWordsAuth(callback: (words: IWordAppForAuthUser[]) => void) {
+  bindUpdateWordsAuth(callback: (words: (IWordAppForAuthUser | IWordApp)[]) => void) {
     this.onUpdateWordsAuth = callback;
   }
 
@@ -38,7 +39,7 @@ class DictionaryModel {
     const words = await this.api.getWords(group, page);
     if (!words) throw new Error('Not found words');
     if (auth) {
-      const wordsForAuthUser: IWordWithUserWord[] = await this.getUserWords(
+      const wordsForAuthUser: (IAggregatedWord | IWord) [] = await this.getUserWords(
         words,
       );
       this.makeWordsforAuthUser(wordsForAuthUser);
@@ -63,7 +64,7 @@ class DictionaryModel {
       const fullWords = await Promise.all(words);
 
       if (auth) {
-        const wordsForAuthUser: IWordWithUserWord[] = await this.getUserWords(
+        const wordsForAuthUser: (IWord | IAggregatedWord)[] = await this.getUserWords(
           fullWords,
         );
         this.makeWordsforAuthUser(wordsForAuthUser);
@@ -74,15 +75,21 @@ class DictionaryModel {
   }
 
   private async getUserWords(words: (IWord | undefined)[]) {
-    const wordsForAuthUser: IWordWithUserWord[] = [];
+    const wordsForAuthUser: (IAggregatedWord | IWord)[] = [];
     const userWords = await userApi.getUserWords();
     if (!userWords) throw new Error('Not found saved user words');
     words.forEach((word) => {
       if (word) {
         const found = userWords.find((userWord) => word.id === userWord.wordId);
         if (found) {
-          const wordAuth: IWordWithUserWord = { ...word };
-          wordAuth.optional = found.optional;
+          const wordAuth: IAggregatedWord = {
+            ...word,
+            _id: found.wordId,
+            userWord: {
+              difficulty: found.difficulty,
+              optional: found.optional,
+            },
+          };
           wordsForAuthUser.push(wordAuth);
         } else {
           wordsForAuthUser.push(word);
@@ -104,7 +111,7 @@ class DictionaryModel {
     if (this.onUpdateWords) this.onUpdateWords(this.words);
   }
 
-  private async makeWordsforAuthUser(words: Array<IWordWithUserWord>) {
+  private async makeWordsforAuthUser(words: Array<IAggregatedWord | IWord>) {
     this.wordsForAuthUser = [];
     words.forEach((word) => {
       const wordInDictionary = new WordAuth(word);
