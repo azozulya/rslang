@@ -23,3 +23,5 @@ export const POINTS_TO_LEARNED_WORD = 3;
 export const COUNT_LAST_WORDS = 3;
 
 export const URL_FOR_STATIC = 'http://localhost:3000/';
+
+export const GROUP_LIST = ['A1 Beginner', 'A2 Elementary', 'B1 Intermediate', 'B2 UpIntermediate', 'C1 Advanced', 'C2 Proficiency'];

@@ -51,7 +51,7 @@ class Dictionary {
     this.view.drawWords(words);
   };
 
-  onUpdateWordsAuth = (words: IWordAppForAuthUser[]) => {
+  onUpdateWordsAuth = (words: (IWordAppForAuthUser | IWordApp)[]) => {
     this.view.drawWordsAuth(words);
   };
 

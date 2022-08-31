@@ -1,5 +1,6 @@
-/* eslint-disable max-lines-per-function */
-import { IWordApp, IWordAppForAuthUser, TNavigate } from '../../interfaces/interfaces';
+import {
+  IWordApp, IWordAppForAuthUser, TNavigate,
+} from '../../interfaces/interfaces';
 import create from '../../utils/createElement';
 import { getLocalStorage, setLocalStorage } from '../../utils/localStorage';
 import Pagination from '../../components/pagination';
@@ -22,7 +23,7 @@ class DictionaryView {
 
   private paginationContainer: HTMLElement | undefined;
 
-  private wordsForAuthUser: IWordAppForAuthUser[];
+  private wordsForAuthUser: (IWordApp | IWordAppForAuthUser) [];
 
   constructor() {
     this.words = [];
@@ -185,13 +186,14 @@ class DictionaryView {
 
   private checkWordsOnPage() {
     const isLearnedAndHard = this.wordsForAuthUser.every(
-      (word) => word.word.optional?.learned === true || word.word.optional?.hard === true,
+      (word) => {
+        if ('userWord' in word.word) {
+          return word.word.userWord.optional.learned === true
+           || word.word.userWord.optional.hard === true;
+        } return false;
+      },
     );
-    /* const isAllNotHard = this.wordsForAuthUser.some(
-      (word) => word.word.optional?.learned === true,
-    ); */
-
-    const isChecked = isLearnedAndHard; // && isAllNotHard;
+    const isChecked = isLearnedAndHard;
     return isChecked;
   }
 
@@ -209,7 +211,7 @@ class DictionaryView {
     this.highlightMenu();
   }
 
-  drawWordsAuth(words:IWordAppForAuthUser[]) {
+  drawWordsAuth(words:(IWordAppForAuthUser | IWordApp)[]) {
     this.wordsForAuthUser = words;
 
     const dictionary = <HTMLElement>document.getElementById('dictionaryWords');
@@ -219,7 +221,7 @@ class DictionaryView {
       }
     }
     words.forEach((wordInDictionary) => {
-      wordInDictionary.drawForAuthUser();
+      if ('drawForAuthUser' in wordInDictionary) wordInDictionary.drawForAuthUser();
     });
 
     this.changeViewIfAllLearned();
