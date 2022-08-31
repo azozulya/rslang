@@ -126,6 +126,12 @@ main {
     @include button($no-color, $light-color);
   }
 
+  &--yes,
+  &--no {
+    font-size: 1rem;
+    padding: 0.6rem 1rem;
+  }
+
   &:disabled {
     color: $text-disabled;
     background-color: $light-color;

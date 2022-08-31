@@ -24,6 +24,8 @@ export const COUNT_LAST_WORDS = 3; // load additional words for sprint
 
 export const POINTS_FOR_RIGHT_ANSWER = 10;
 
+export const MAX_POINTS_FOR_RIGHT_ANSWER = 50;
+
 export const SERIA_RIGHT_ANSWER = 3; // 3 dots + 10
 
 export const URL_FOR_STATIC = 'http://localhost:3000/';
