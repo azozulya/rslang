@@ -102,6 +102,18 @@ export type TNavigate = {
   isActiveHardWords: boolean;
 };
 
+export interface IStatistic {
+  L: number;
+  sL: number;
+  sR: number;
+  sI: number;
+  sB: number;
+  aL: number;
+  aR: number;
+  aI: number;
+  aB: number;
+}
+
 export interface IGameWord {
   id: string;
   audio: string;

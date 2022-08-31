@@ -1,0 +1,170 @@
+#statistic {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  .title {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: left;
+  }
+  #body_statistic {
+    display: flex;
+    flex-wrap: wrap;
+    width: 70%;
+    align-items: center;
+    justify-content: center;
+    #body_title {
+      display: flex;
+      flex-wrap: wrap;
+      width: 100%;
+      justify-content: center;
+      align-items: center;
+      font-size: 40px;
+      padding-top: 40px;
+      padding-bottom: 20px;
+    }
+    .today_statistic {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(auto, 360px));
+      grid-template-rows: repeat(2, auto);
+      grid-gap: 30px;
+      .today_statistic-block {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        height: 100%;
+        border: 1px solid #00bcd4;
+
+        border-radius: 8px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.15);
+        .imgGame {
+          &_sprint {
+            display: flex;
+            height: 40px;
+            width: 50px;
+            background-image: url(../../assets/img/game_sprint.svg);
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-position-x: left;
+          }
+          &_audio {
+            display: flex;
+            height: 40px;
+            width: 50px;
+            background-image: url(../../assets/img/game_audio.svg);
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-position-x: left;
+          }
+        }
+        .nameGame {
+          &_sprint,
+          &_audio {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            justify-content: left;
+            font-size: 24px;
+            font-weight: 400;
+            padding-left: 10px;
+          }
+        }
+      }
+      #learnedWords {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .number {
+          display: flex;
+          height: 100px;
+          font-size: 100px;
+          font-weight: 700;
+          align-items: center;
+        }
+        .content {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: center;
+          width: 70px;
+          padding-left: 10px;
+        }
+      }
+      #percentAnswer {
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        .percent {
+          display: flex;
+          height: 100px;
+          font-size: 100px;
+          font-weight: 900;
+          align-items: center;
+        }
+        .content {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: center;
+          width: 70px;
+          padding-left: 10px;
+        }
+      }
+      #sprint,
+      #audio {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        .title {
+          display: flex;
+          flex-wrap: nowrap;
+          width: 100%;
+          align-items: center;
+          justify-content: left;
+          border-bottom: 2px solid #00bcd4;
+          padding-left: 10px;
+        }
+        .results {
+          display: flex;
+          padding-top: 10px;
+          padding-left: 10px;
+          padding-bottom: 10px;
+
+          .numbers {
+            padding-right: 10px;
+          }
+        }
+      }
+    }
+    .allTime_statistic {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(350px, 1fr));
+      grid-template-rows: minmax(250px, 350px);
+      grid-gap: 30px;
+      .allTime_statistic-block {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        height: 100%;
+        border: 1px solid #00bcd4;
+        border-radius: 8px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.15);
+        .title {
+          width: 100%;
+          height: 25px;
+          align-items: flex-start;
+          justify-content: center;
+          padding-top: 10px;
+        }
+        .graph {
+          display: flex;
+          width: 100%;
+          padding: 0 10px 10px 10px;
+        }
+      }
+    }
+  }
+}
