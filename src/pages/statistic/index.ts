@@ -114,6 +114,10 @@ class Statistic {
             <span class="word1">слов</span><span>изучено</span>
             </div>
           </div>
+          <div id="newWords" class="today_statistic-block">
+            <div class="number">${this.learnedWordsAll}</div>
+            <div class="content"><span>новых</span><span>слов</span></div>
+          </div>
           <div id="percentAnswer" class="today_statistic-block">
             <div class="percent">${this.percentRightAnswers}%</div>
             <div class="content"><span>верных</span><span>ответов</span></div>
@@ -128,8 +132,8 @@ class Statistic {
                 ${this.sprintLearnedWords}<br>${this.sprintRightAnswers}<br>${this.sprintBestSeries}
               </div>
               <div class=text>
-                изученных слов<br>
-                правильных ответов<br>
+                новых слов<br>
+                % правильных ответов<br>
                 лучшая серия
                 </div>
             </div>
@@ -145,8 +149,8 @@ class Statistic {
             ${this.audioLearnedWords}<br>${this.audioRightAnswers}<br>${this.audioBestSeries}
             </div>
             <div class="text">
-              изученных слов<br>
-              правильных ответов<br>
+              новых слов<br>
+              % правильных ответов<br>
               лучшая серия
             </div>
           </div>
