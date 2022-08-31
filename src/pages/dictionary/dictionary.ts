@@ -4,14 +4,14 @@ import {
 import create from '../../utils/createElement';
 import { getLocalStorage, setLocalStorage } from '../../utils/localStorage';
 import Pagination from '../../components/pagination';
-import { COUNT_OF_GROUPS, TOTAL_WORDS, WORDS_PER_PAGE } from '../../utils/constants';
+import { GROUP_LIST, TOTAL_WORDS, WORDS_PER_PAGE } from '../../utils/constants';
 
 class DictionaryView {
   onGetWords!: (group: number, page: number) => void;
 
-  words: Array<IWordApp>;
+  private GROUP_LIST: string[];
 
-  private COUNT_OF_GROUPS: number;
+  words: Array<IWordApp>;
 
   private page: number;
 
@@ -27,7 +27,7 @@ class DictionaryView {
 
   constructor() {
     this.words = [];
-    this.COUNT_OF_GROUPS = COUNT_OF_GROUPS;
+    this.GROUP_LIST = GROUP_LIST;
     this.page = 0;
     this.group = 0;
     this.isActiveHardWords = false;
@@ -264,13 +264,13 @@ class DictionaryView {
       parent: dictionaryGroups,
     });
 
-    for (let i = 0; i <= this.COUNT_OF_GROUPS; i += 1) {
+    for (let i = 0; i < this.GROUP_LIST.length; i += 1) {
       create({
         tagname: 'li',
         class: 'dictionary__groups_item',
         id: `${i}group`,
         parent: dictionaryGroupsList,
-        text: `${i + 1} уровень`,
+        text: `${GROUP_LIST[i]}`,
       });
     }
     const dictionaryExtentions = create({
@@ -284,20 +284,23 @@ class DictionaryView {
       class: 'dictionary__games',
       parent: dictionaryExtentions,
     });
-    create({
-      tagname: 'div',
+    const sprintLink = create({
+      tagname: 'a',
       class: 'dictionary__sprint',
       id: 'dictionarySprint',
       parent: dictionaryGames,
       text: 'Спринт',
     });
-    create({
-      tagname: 'div',
+    sprintLink.dataset.page = 'sprint';
+
+    const audiocallLink = create({
+      tagname: 'a',
       class: 'dictionary__audio',
       id: 'dictionaryAudio',
       parent: dictionaryGames,
       text: 'Аудиовызов',
     });
+    audiocallLink.dataset.page = 'auiocall';
 
     create({
       tagname: 'div',

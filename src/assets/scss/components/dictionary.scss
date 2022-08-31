@@ -13,11 +13,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 7.5em;
+    width: 7.8em;
     height: 2em;
-    text-transform: uppercase;
+    padding: 0.2em;
+    font-size: 0.8em;
     color: #ffffff;
     border-radius: 0.65em;
+    white-space: nowrap;
     cursor: pointer;
     opacity: 0.5;
     transition: 0.25s;

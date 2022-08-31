@@ -140,7 +140,6 @@ class WordAuth extends Word implements IWordAppForAuthUser {
     const userWord = userWords.find(
       (gettingWord) => gettingWord.wordId === this.word.id,
     );
-    console.log('get word', userWord);
     return userWord;
   }
 
@@ -183,30 +182,43 @@ class WordAuth extends Word implements IWordAppForAuthUser {
       class: 'word__progress',
       parent: wordDescription,
     });
-    const wordSprint = create({
-      tagname: 'div',
-      class: 'word__sprint',
-      parent: wordProgress,
-      text: 'Спринт',
-    });
-    create({
-      tagname: 'div',
-      class: 'word__sprint_score',
-      parent: wordSprint,
-      text: '3/10',
-    });
-    const wordAudio = create({
-      tagname: 'div',
-      class: 'word__sprint',
-      parent: wordProgress,
-      text: 'Аудиовызов',
-    });
-    create({
-      tagname: 'div',
-      class: 'word__sprint_score',
-      parent: wordAudio,
-      text: '17/40',
-    });
+    console.log('word', this.word);
+    if ('userWord' in this.word) {
+      const rightAnswersSprint = this.word.userWord.optional.sprint.rightAnswer;
+      const wrongAnswersSprint = this.word.userWord.optional.sprint.rightAnswer;
+      const totalAnswersSprint = rightAnswersSprint + wrongAnswersSprint;
+
+      const rightAnswersAudio = this.word.userWord.optional.audiocall.rightAnswer;
+      const wrongAnswersAudio = this.word.userWord.optional.audiocall.rightAnswer;
+      const totalAnswersAudio = rightAnswersAudio + wrongAnswersAudio;
+
+      const wordSprint = create({
+        tagname: 'div',
+        class: 'word__sprint',
+        parent: wordProgress,
+        text: 'Спринт',
+      });
+
+      create({
+        tagname: 'div',
+        class: 'word__sprint_score',
+        parent: wordSprint,
+        text: `${rightAnswersSprint}/${totalAnswersSprint}`,
+      });
+
+      const wordAudio = create({
+        tagname: 'div',
+        class: 'word__sprint',
+        parent: wordProgress,
+        text: 'Аудиовызов',
+      });
+      create({
+        tagname: 'div',
+        class: 'word__sprint_score',
+        parent: wordAudio,
+        text: `${rightAnswersAudio}/${totalAnswersAudio}`,
+      });
+    }
   }
 }
 export default WordAuth;

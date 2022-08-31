@@ -9,9 +9,9 @@ class AudioCallView {
 
   TOTAL_WORDS_AUDIOCALL: number;
 
-  player!: HTMLAudioElement;
+  player!: HTMLElement;
 
-  image!: HTMLElement;
+  wordsList!: HTMLElement;
 
   constructor() {
     this.wordsInGame = words;
@@ -38,18 +38,22 @@ class AudioCallView {
   }
 
   viewAnswer() {
-    this.viewImage();
+    // this.viewImage();
+    this.renderAnswer();
     this.changeWords();
   }
 
-  viewImage() {
+  /* viewImage() {
     this.image.classList.add('audiocall__image_open');
     console.log('image');
     this.image.style.backgroundImage = `url(http://127.0.0.1:3000/${this.wordsInGame[1].image})`;
-  }
+  } */
 
   changeWords() {
-
+    const gameWords = [...this.wordsList.children];
+    gameWords.forEach((word) => {
+      word.classList.add('wrong-answer');
+    });
   }
 
   // eslint-disable-next-line max-lines-per-function
@@ -76,31 +80,28 @@ class AudioCallView {
       id: 'audiocallPlay',
       parent: audiocall,
     });
-    const targetWord = create({
+    const audioPlayer = create({
       tagname: 'div',
-      class: 'audiocall__target-word',
+      class: 'audiocall__play',
+      id: 'audiocallPlayer',
       parent: audiocallPlay,
     });
-    this.image = <HTMLElement>create({
-      tagname: 'div',
-      class: 'audiocall__image',
-      parent: targetWord,
-    });
-    const audioPlayer = <HTMLAudioElement>create({
+    this.player = audioPlayer;
+    const audioTrack = <HTMLAudioElement>create({
       tagname: 'audio',
       class: 'audiocall__player',
       id: 'audiocallPlayer',
-      parent: targetWord,
+      parent: audioPlayer,
     });
-    this.player = audioPlayer;
-    this.player.src = 'http://127.0.0.1:3000/files/01_0008.mp3'; // TODO change url
-    this.player.preload = 'auto';
+    audioTrack.src = 'http://127.0.0.1:3000/files/01_0008.mp3'; // TODO change url
+    audioTrack.preload = 'auto';
 
     const wordsList = create({
       tagname: 'div',
       class: 'audiocall__words-list',
       parent: audiocall,
     });
+    this.wordsList = wordsList;
     for (let i = 0; i < this.TOTAL_WORDS_AUDIOCALL; i += 1) {
       create({
         tagname: 'div',
@@ -121,26 +122,21 @@ class AudioCallView {
     return container;
   }
 
-  /* renderAnswer() {
+  renderAnswer() {
     const audiocallPlay = <HTMLElement>document.getElementById('audiocallPlay');
-    // TODO remove elements
 
-    create({
+    const imageAnswer = create({
       tagname: 'div',
       class: 'audiocall__image',
       parent: audiocallPlay,
     });
+    imageAnswer.style.backgroundImage = `url(http://127.0.0.1:3000/${this.wordsInGame[1].image})`;
     const audioAnswer = create({
       tagname: 'div',
       class: 'audiocall__answer',
       parent: audiocallPlay,
     });
-    /* create({
-      tagname: 'div',
-      class: 'audiocall__player',
-      id: 'audiocallPlayerAnswer',
-      parent: audioAnswer,
-    });
+    audioAnswer.appendChild(this.player);
     create({
       tagname: 'div',
       class: 'audiocall__answer_word',
@@ -148,7 +144,6 @@ class AudioCallView {
       text: `${this.wordsInGame[0].word}`, // TODO change to correct answer
     });
   }
-  */
 }
 
 export default AudioCallView;

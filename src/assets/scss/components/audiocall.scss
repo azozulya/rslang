@@ -2,6 +2,16 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-around;
+  box-sizing: border-box;
+  background-color: $secondary-light;
+  max-width: 40em;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 2rem;
+  padding: 2rem;
+  border-radius: 2rem;
+  min-height: 600px;
 
  &__play {
   width: 2.5em;
@@ -22,12 +32,14 @@
  &__words-list{
    display: flex;
    justify-content: space-evenly;
-   gap: 2em;
+   gap: 0.8em;
  }
  &__words-item{
    padding: 0.2em 0.5em;
    border-radius: 0.6em;
    border: 1px solid transparent;
+   white-space: nowrap;
+   user-select: none;
    cursor: pointer;
   transition: 0.25s;
    &:hover {
@@ -42,22 +54,26 @@
   align-items: center;
   width: 6em;
   height: 2em;
+  font-size: 0.8em;
   border-radius: 0.6em;
-  border: 1px solid;
+  border: 1px solid $secondary-main;
   text-transform: uppercase;
   cursor: pointer;
   transition: 0.25s;
  }
 
  &__image {
-   &_open {
-    width: 8em;
-    height: 8em;
-    border-radius: 2em;
+    width: 5em;
+    height: 5em;
+    border-radius: 1em;
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
-   }
+ }
+
+ .wrong-answer {
+   text-decoration: line-through;
+   pointer-events: none;
  }
   
 }
