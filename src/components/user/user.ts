@@ -89,7 +89,6 @@ class User {
     const currentTime = Math.trunc(Date.now() / 1000);
 
     if (expToken <= currentTime) {
-      console.log('token expare', expToken, currentTime);
       this.setStorage('Authenticated', JSON.stringify(false));
       return false;
     }
