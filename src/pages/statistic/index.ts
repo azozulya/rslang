@@ -48,6 +48,9 @@ class Statistic {
     this.audioBestSeries = 0;
     this.audioIncorrectAnswer = 0;
     this.percentRightAnswers = 0;
+    // this.labelsChart = [Date.parse(updateDate())];
+    // this.dataChart1 = [0];
+    // this.dataChart2 = [0];
     this.labelsChart = [];
     this.dataChart1 = [];
     this.dataChart2 = [];
@@ -164,13 +167,13 @@ class Statistic {
           <div class="allTime_statistic-block">
             <div class="title">Изученные слова</div>
             <div class="graph">
-              <canvas id="chart1" width="90%" height="50%"></canvas>
+              <canvas id="chart1"></canvas>
             </div>
           </div>
           <div class="allTime_statistic-block">
             <div class="title">Прогресс изучения</div>
             <div class="graph">
-              <canvas id="chart2" width="90%" height="50%"></canvas>
+              <canvas id="chart2"></canvas>
             </div>
           </div>
         <div>

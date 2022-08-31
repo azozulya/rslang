@@ -13,7 +13,7 @@
   #body_statistic {
     display: flex;
     flex-wrap: wrap;
-    width: 50%;
+    width: 70%;
     align-items: center;
     justify-content: center;
     #body_title {
@@ -23,20 +23,19 @@
       justify-content: center;
       align-items: center;
       font-size: 40px;
+      padding-top: 40px;
       padding-bottom: 20px;
     }
     .today_statistic {
       display: grid;
-      grid-template-columns: repeat(2, minmax(277px, 300px));
-      grid-template-rows: 124px repeat(2, auto);
+      grid-template-columns: repeat(2, minmax(auto, 360px));
+      grid-template-rows: repeat(2, auto);
       grid-gap: 30px;
       .today_statistic-block {
         display: flex;
         flex-wrap: wrap;
         width: 100%;
         height: 100%;
-        // padding: 16px 24px;
-        // border: 1px solid #cdcdcd;
         border: 1px solid #00bcd4;
 
         border-radius: 8px;
@@ -80,7 +79,7 @@
         justify-content: center;
         .number {
           display: flex;
-          height: 100%;
+          height: 100px;
           font-size: 100px;
           font-weight: 700;
           align-items: center;
@@ -92,9 +91,6 @@
           justify-content: center;
           width: 70px;
           padding-left: 10px;
-          // .word1 {
-          //   font-size: 31px;
-          // }
         }
       }
       #percentAnswer {
@@ -103,6 +99,7 @@
         justify-content: center;
         .percent {
           display: flex;
+          height: 100px;
           font-size: 100px;
           font-weight: 900;
           align-items: center;
@@ -134,6 +131,8 @@
           display: flex;
           padding-top: 10px;
           padding-left: 10px;
+          padding-bottom: 10px;
+
           .numbers {
             padding-right: 10px;
           }
@@ -142,18 +141,14 @@
     }
     .allTime_statistic {
       display: grid;
-      grid-template-columns: repeat(2, minmax(350px, 500px));
+      grid-template-columns: repeat(2, minmax(350px, 1fr));
       grid-template-rows: minmax(250px, 350px);
       grid-gap: 30px;
-      // > div {
-      //   padding: 16px;
-      // }
       .allTime_statistic-block {
         display: flex;
         flex-wrap: wrap;
         width: 100%;
         height: 100%;
-        // padding: 16px;
         border: 1px solid #00bcd4;
         border-radius: 8px;
         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.15);

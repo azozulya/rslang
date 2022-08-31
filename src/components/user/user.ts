@@ -219,11 +219,6 @@ class User {
     return this.api.updateUserSettings(this.userId, this.token, body);
   }
 
-  // updateDate(): string {
-  //   const dateNow = new Date();
-  //   return `${dateNow.getFullYear()}-${dateNow.getMonth()}-${dateNow.getDate()}`;
-  // }
-
   async updateWordStatistic() {
     const body = <IUserStatistics>{};
     const currentDate = updateDate();
@@ -259,9 +254,6 @@ class User {
     const currentDate = updateDate();
     const body = <IUserStatistics>{};
     const response = await this.getUserStatistics();
-    // const percent = Math.round(
-    //   (rightAnswers / (rightAnswers + incorrectAnswers)) * 100,
-    // );
     if (!response) {
       const options = <Record<string, unknown>>{};
       (<IStatistic>options[currentDate]) = this.defaultStatistic;
@@ -283,9 +275,6 @@ class User {
         if ((<IStatistic>options[currentDate]).sB < bestSeries) {
           (<IStatistic>options[currentDate]).sB = bestSeries;
         }
-        // const oldPercent = (<IStatistic>options[currentDate]).sP;
-        // const newPercent = Math.round((oldPercent + percent) / 2);
-        // (<IStatistic>options[currentDate]).sP = newPercent;
       } else {
         (<IStatistic>options[currentDate]) = this.defaultStatistic;
         (<IStatistic>options[currentDate]).sL = learnedWords;
@@ -309,9 +298,6 @@ class User {
     const currentDate = updateDate();
     const body = <IUserStatistics>{};
     const response = await this.getUserStatistics();
-    // const percent = Math.round(
-    //   (rightAnswers / (rightAnswers + incorrectAnswers)) * 100,
-    // );
     if (!response) {
       const options = <Record<string, unknown>>{};
       (<IStatistic>options[currentDate]) = this.defaultStatistic;
@@ -333,9 +319,6 @@ class User {
         if ((<IStatistic>options[currentDate]).aB < bestSeries) {
           (<IStatistic>options[currentDate]).aB = bestSeries;
         }
-        // const oldPercent = (<IStatistic>options[currentDate]).sP;
-        // const newPercent = Math.round((oldPercent + percent) / 2);
-        // (<IStatistic>options[currentDate]).sP = newPercent;
       } else {
         (<IStatistic>options[currentDate]) = this.defaultStatistic;
         (<IStatistic>options[currentDate]).aL = learnedWords;
