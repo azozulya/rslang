@@ -98,19 +98,33 @@
     }
   }
 
+  &__sprint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+
+    &-title {
+      margin-bottom: 2rem;
+    }
+  }
+
   &__result {
     height: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
     &-title {
       margin-bottom: 1rem;
     }
 
     &-words {
-      min-height: 250px;
-      height: 50%;
+      height: 250px;
       overflow-y: auto;
       margin-top: 1rem;
       margin-bottom: 1rem;
+      width: 100%;
     }
 
     &-btns {
@@ -120,6 +134,18 @@
     &-btn {
       font-size: 1rem;
       padding: 0.6rem 1rem;
+    }
+  }
+
+  &__statistic {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    &__statistic-text {
+      font-size: 0.9rem;
+      line-height: 1.5rem;
     }
   }
 }
@@ -176,6 +202,9 @@
     align-items: center;
     font-size: 3rem;
     margin-bottom: 2rem;
+    position: absolute;
+    left: 0;
+    top: 0;
 
     &--icon {
       width: 2rem;
@@ -185,12 +214,33 @@
   }
 
   &__score {
-    font-size: 2rem;
+    font-size: 1.8rem;
     margin-bottom: 1rem;
-    background-color: $secondary-dark;
-    color: $light-color;
+    // background-color: $secondary-dark;
+    // color: $light-color;
     border-radius: 0.3rem;
-    padding: 0.5rem 0.3rem;
+    // padding: 0.9rem;
+    text-align: center;
+    width: fit-content;
+    margin: 0 auto 1rem;
+
+    &-wrapper {
+    }
+
+    &-addition {
+    }
+
+    &-points {
+      font-size: 0.8rem;
+      margin-bottom: 0.5rem;
+      color: $text-secondary;
+    }
+
+    &-dots {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
   }
 
   &__word {
@@ -216,6 +266,14 @@
     }
   }
 
+  &__keys {
+    font-size: 2rem;
+    color: $text-secondary;
+    display: flex;
+    width: 10rem;
+    justify-content: space-between;
+  }
+
   &__right-answer .sprint__word--title,
   &__wrong-answer .sprint__word--title {
     animation-timing-function: linear;
@@ -232,33 +290,71 @@
   }
 
   @keyframes blinkRight {
-    0% {
-      background-color: $yes-color;
-      opacity: 0.5;
-    }
     50% {
-      opacity: 1;
-    }
-    100% {
-      background-color: none;
+      background-color: $yes-color;
     }
   }
 
   @keyframes blinkWrong {
-    0% {
-      background-color: $no-color;
-      opacity: 0.1;
-    }
     50% {
-      opacity: 1;
-    }
-    100% {
-      background-color: none;
+      background-color: $no-color;
     }
   }
 
   &__btns {
     display: flex;
     gap: 2rem;
+  }
+}
+
+.progressbar {
+  box-sizing: border-box;
+  position: relative;
+  width: 170px;
+  height: 170px;
+  transform: rotate(-90deg);
+
+  &__svg {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  &__circle {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke-width: 12;
+    stroke-dasharray: 440;
+    stroke: $yes-color;
+    stroke-linecap: round;
+  }
+
+  &__default-circle {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke-width: 10;
+    stroke-dasharray: 440;
+    stroke-dashoffset: 0;
+    stroke: $no-color;
+    stroke-linecap: round;
+  }
+
+  &__text {
+    position: absolute;
+    top: 47%;
+    left: 47%;
+    transform: translate(-50%, -50%) rotate(90deg);
+    text-align: center;
+    font-size: 0.7rem;
+    line-height: 0.8rem;
+  }
+
+  &__progress {
+    font-size: 2rem;
+    line-height: 2.2rem;
+    margin-bottom: 0.5rem;
+    display: block;
   }
 }
