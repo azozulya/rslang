@@ -1,23 +1,23 @@
-import { IWord } from '../../interfaces/interfaces';
-import create from '../../utils/createElement';
-import words from '../../utils/testWord';
+import { IWord } from '../interfaces/interfaces';
+import create from '../utils/createElement';
+import words from '../utils/testWord';
 
-class AudioCallView {
-  wordsInGame:IWord[];
+class AudiocallGame {
+  private wordsInGame:IWord[];
 
-  indexWord: number;
+  private currentWordIndex: number;
 
-  TOTAL_WORDS_AUDIOCALL: number;
+  private TOTAL_WORDS_AUDIOCALL: number;
 
-  wordsList!: HTMLElement;
+  private wordsList!: HTMLElement;
 
-  play!: HTMLElement;
+  private play!: HTMLElement;
 
-  audioTrack!: HTMLAudioElement;
+  private audioTrack!: HTMLAudioElement;
 
   constructor() {
     this.wordsInGame = words;
-    this.indexWord = 0;
+    this.currentWordIndex = 0;
     this.TOTAL_WORDS_AUDIOCALL = 5;
   }
 
@@ -152,4 +152,4 @@ class AudioCallView {
   }
 }
 
-export default AudioCallView;
+export default AudiocallGame;

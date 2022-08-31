@@ -3,6 +3,7 @@ import { IGameStatistic, IGameWord } from '../../interfaces/interfaces';
 import {
   DICTIONARY_KEY,
   GAME_TIMER,
+  GROUP_LIST,
   TOTAL_WORDS,
   URL_FOR_STATIC,
   WORDS_PER_PAGE,
@@ -53,14 +54,15 @@ class GamesView {
   }
 
   private drawLevels() {
-    const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+    const levels = GROUP_LIST;
     const levelsContainer = create({
       tagname: 'div',
       class: 'game__levels',
     });
     const title = create({ tagname: 'h4', text: 'Выбери уровень:' });
 
-    levels.forEach((level, idx) => {
+    levels.forEach((levelName, idx) => {
+      const level = levelName.substring(0, 2);
       const levelLabel = create({
         tagname: 'label',
         class: 'game__level',

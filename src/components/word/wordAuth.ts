@@ -50,6 +50,7 @@ class WordAuth extends Word implements IWordAppForAuthUser {
 
   async updateToHardWords() {
     this.changeWord('hard', true);
+    this.changeIcon();
 
     const word = await this.getUserWord();
     if (!word) this.addToHardWords();
@@ -57,8 +58,6 @@ class WordAuth extends Word implements IWordAppForAuthUser {
       word.optional.hard = true;
       userApi.updateUserWord(this.word.id, word);
     }
-
-    this.changeIcon();
   }
 
   async addToHardWords() {
@@ -70,17 +69,17 @@ class WordAuth extends Word implements IWordAppForAuthUser {
 
   async deleteFromHardWords() {
     this.changeWord('hard', false);
+    this.changeIcon();
 
     const word = await this.getUserWord();
     if (!word) throw new Error('User word were not found');
     word.optional.hard = false;
     userApi.updateUserWord(this.word.id, word);
-
-    this.changeIcon();
   }
 
   async updateToLearnedWords() {
     this.changeWord('learned', true);
+    this.changeIcon();
 
     const word = await this.getUserWord();
     if (!word) this.addToHardWords();
@@ -88,8 +87,6 @@ class WordAuth extends Word implements IWordAppForAuthUser {
       word.optional.learned = true;
       userApi.updateUserWord(this.word.id, word);
     }
-
-    this.changeIcon();
   }
 
   async addToLearnedWords() {
@@ -102,13 +99,12 @@ class WordAuth extends Word implements IWordAppForAuthUser {
   async deleteFromLearnedWords() {
     if ('userWord' in this.word) this.word.userWord.optional.learned = false;
     this.changeWord('learned', false);
+    this.changeIcon();
 
     const word = await this.getUserWord();
     if (!word) throw new Error('User word were not found');
     word.optional.learned = false;
     userApi.updateUserWord(this.word.id, word);
-
-    this.changeIcon();
   }
 
   changeWord(option: 'hard' | 'learned', value: boolean) {
@@ -182,7 +178,7 @@ class WordAuth extends Word implements IWordAppForAuthUser {
       class: 'word__progress',
       parent: wordDescription,
     });
-    console.log('word', this.word);
+
     if ('userWord' in this.word) {
       const rightAnswersSprint = this.word.userWord.optional.sprint.rightAnswer;
       const wrongAnswersSprint = this.word.userWord.optional.sprint.rightAnswer;
