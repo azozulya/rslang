@@ -309,7 +309,10 @@ class DictionaryView {
       class: 'dictionary__pagination',
       parent: dictionary,
     });
-
+    container.insertAdjacentHTML(
+      'beforeend',
+      '<button data-page="sprint">Sprint</button>',
+    );
     return container;
   }
 

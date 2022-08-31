@@ -33,13 +33,15 @@ class Api {
   }
 
   async getWords(group: number, page: number): Promise<IWord[] | undefined> {
-    const response = await fetch(`${this.words}?group=${group}&page=${page}`).catch();
-    return response.status !== 200 ? undefined : <IWord[]>(await response.json());
+    const response = await fetch(
+      `${this.words}?group=${group}&page=${page}`,
+    ).catch();
+    return response.status !== 200 ? undefined : <IWord[]> await response.json();
   }
 
   async getWord(id: string): Promise<IWord | undefined> {
     const response = await fetch(`${this.words}/${id}`).catch();
-    return response.status !== 200 ? undefined : <IWord>(await response.json());
+    return response.status !== 200 ? undefined : <IWord> await response.json();
   }
 
   async getUser(id: string, token: string): Promise<IUser | number> {
@@ -51,7 +53,9 @@ class Api {
         'Content-Type': 'application/json',
       },
     }).catch();
-    return response.status !== 200 ? response.status : <IUser>(await response.json());
+    return response.status !== 200
+      ? response.status
+      : <IUser> await response.json();
   }
 
   async createUser(user: IUser): Promise<IUser | number> {
@@ -80,7 +84,9 @@ class Api {
         'Content-Type': 'application/json',
       },
     }).catch();
-    return response.status !== 200 ? response.status : <IUser>(await response.json());
+    return response.status !== 200
+      ? response.status
+      : <IUser> await response.json();
   }
 
   async deleteUser(id: string, token: string): Promise<string> {
@@ -104,7 +110,7 @@ class Api {
         'Content-Type': 'application/json',
       },
     }).catch();
-    return response.status !== 200 ? undefined : <IToken>(await response.json());
+    return response.status !== 200 ? undefined : <IToken> await response.json();
   }
 
   async loginUser(body: {
@@ -122,7 +128,12 @@ class Api {
     return response;
   }
 
-  async getUserWords(userId: string, token: string): Promise<IUserWord[] | undefined> {
+  async getUserWords(
+    userId: string,
+    token: string,
+  ): Promise<IUserWord[] | undefined> {
+    if (!userId || !token) return [];
+
     const response = await fetch(`${this.users}/${userId}/words`, {
       method: 'GET',
       headers: {
@@ -131,7 +142,9 @@ class Api {
         'Content-Type': 'application/json',
       },
     }).catch();
-    return response.status !== 200 ? undefined : <IUserWord[]>(await response.json());
+    return response.status !== 200
+      ? undefined
+      : <IUserWord[]> await response.json();
   }
 
   async createUserWord(
@@ -147,9 +160,15 @@ class Api {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(word),
-    }).catch();
-    return response.status !== 200 ? undefined : <IUserWord>(await response.json());
+      // body: JSON.stringify(word),
+      body: JSON.stringify({
+        difficulty: word?.difficulty,
+        optional: word?.optional,
+      }),
+    });
+    return response.status !== 200
+      ? undefined
+      : <IUserWord> await response.json();
   }
 
   async getUserWord(
@@ -164,7 +183,9 @@ class Api {
         Accept: 'application/json',
       },
     }).catch();
-    return response.status !== 200 ? undefined : <IUserWord>(await response.json());
+    return response.status !== 200
+      ? undefined
+      : <IUserWord> await response.json();
   }
 
   async updateUserWord(
@@ -180,9 +201,16 @@ class Api {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(word),
-    }).catch();
-    return response.status !== 200 ? undefined : <IUserWord>(await response.json());
+      // body: JSON.stringify(word),
+      body: JSON.stringify({
+        difficulty: word?.difficulty,
+        optional: word?.optional,
+      }),
+    });
+    // return (await response.json()) as IUserWord;
+    return response.status !== 200
+      ? undefined
+      : <IUserWord> await response.json();
   }
 
   async deleteUserWord(
@@ -204,11 +232,11 @@ class Api {
   async getUserAggregatedWords(
     userId: string,
     token: string,
-    group: string,
-    page: string,
-    wordsPerPage: string,
+    group: number,
+    page: number,
+    wordsPerPage: number,
     filter: string,
-  ): Promise<IWord[] | undefined> {
+  ) {
     const response = await fetch(
       `${this.users}/${userId}/AggregatedWords?group=${group}&page=${page}&wordsPerPage=${wordsPerPage}&filter=${filter}`,
       {
@@ -220,7 +248,7 @@ class Api {
         },
       },
     ).catch();
-    return response.status !== 200 ? undefined : <IWord[]>(await response.json());
+    return response.status !== 200 ? undefined : response.json();
   }
 
   async getUserAggregatedWord(
@@ -239,7 +267,7 @@ class Api {
         },
       },
     ).catch();
-    return response.status !== 200 ? undefined : <IWord>(await response.json());
+    return response.status !== 200 ? undefined : <IWord> await response.json();
   }
 
   async getUserStatistics(
@@ -255,7 +283,8 @@ class Api {
       },
     }).catch();
     return response.status !== 200
-      ? undefined : <IUserStatistics>(await response.json());
+      ? undefined
+      : <IUserStatistics> await response.json();
   }
 
   async updateUserStatistics(
@@ -273,7 +302,8 @@ class Api {
       body: JSON.stringify(body),
     }).catch();
     return response.status !== 200
-      ? undefined : <IUserStatistics>(await response.json());
+      ? undefined
+      : <IUserStatistics> await response.json();
   }
 
   async getUserSettings(
@@ -289,7 +319,8 @@ class Api {
       },
     }).catch();
     return response.status !== 200
-      ? undefined : <IUserSettings>(await response.json());
+      ? undefined
+      : <IUserSettings> await response.json();
   }
 
   async updateUserSettings(
@@ -307,7 +338,8 @@ class Api {
       body: JSON.stringify(body),
     }).catch();
     return response.status !== 200
-      ? undefined : <IUserSettings>(await response.json());
+      ? undefined
+      : <IUserSettings> await response.json();
   }
 }
 export default Api;

@@ -1,26 +1,28 @@
-import { TPageHistory } from '../../interfaces/interfaces';
-import { PAGE_KEY } from '../../utils/constants';
-import { getLocalStorage } from '../../utils/localStorage';
-import SprintModel from './model';
-import SprintView from './view';
+import GamesModel from './model';
+import GamesView from './view';
 
-class Sprint {
-  private view: SprintView;
+class Games {
+  private view: GamesView;
 
-  private model: SprintModel;
+  private model: GamesModel;
 
   constructor() {
-    this.view = new SprintView();
-    this.model = new SprintModel();
+    this.view = new GamesView();
+    this.model = new GamesModel();
+
+    this.view.bindGetWords(this.model.getWordsForGame);
+    this.view.bindUpdateUserWord(this.model.updateUserWord);
+    this.view.bindGetGameStatistic(this.model.getGameStatistic);
   }
 
   draw(rootContainer: HTMLElement) {
-    const container = rootContainer;
-    // const isLoadFromDictionary =  rootContainer.dataset.arrivalFrom !== 'menu'
-    const prevPage = getLocalStorage<TPageHistory>(PAGE_KEY)?.prevPage;
+    const isMenuLink = rootContainer.dataset.linkFrom === 'menu';
 
-    container.innerHTML = `<br><br><br><br><br><br>Sprint page<br> Click: ${rootContainer.dataset.arrivalFrom} <br>prevPage: ${prevPage}`;
+    this.model.isMenuLink = isMenuLink;
+    this.view.isMenuLink = isMenuLink;
+
+    rootContainer.append(this.view.draw());
   }
 }
 
-export default Sprint;
+export default Games;

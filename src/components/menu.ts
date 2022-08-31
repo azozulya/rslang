@@ -1,5 +1,3 @@
-import { DEFAULT_PAGE } from '../utils/constants';
-
 class Menu {
   private burgerMenuBtn?: HTMLElement | null;
 
