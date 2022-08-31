@@ -23,12 +23,6 @@ export interface IWord {
   textMeaningTranslate: string;
   textExampleTranslate: string;
 }
-export interface IWordWithUserWord extends IWord {
-  optional?: {
-    learned?: boolean;
-    hard?: boolean;
-  };
-}
 
 export interface IWordApp {
   word: IWord;
@@ -36,7 +30,7 @@ export interface IWordApp {
 }
 
 export interface IWordAppForAuthUser {
-  word: IWordWithUserWord;
+  word: IAggregatedWord | IWord;
   drawForAuthUser(): void;
 }
 
@@ -108,6 +102,18 @@ export type TNavigate = {
   isActiveHardWords: boolean;
 };
 
+export interface IStatistic {
+  L: number;
+  sL: number;
+  sR: number;
+  sI: number;
+  sB: number;
+  aL: number;
+  aR: number;
+  aI: number;
+  aB: number;
+}
+
 export interface IGameWord {
   id: string;
   audio: string;
@@ -127,10 +133,12 @@ export interface IGameStatistic {
   winStreak: number;
 }
 
-export interface IAggregatedWord extends IWord {
+export interface IPathOfAggregatedWord {
   _id: string;
   userWord: {
     difficulty: string;
     optional: IUserWordOption;
   };
 }
+
+export interface IAggregatedWord extends IWord, IPathOfAggregatedWord {}

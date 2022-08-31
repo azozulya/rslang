@@ -8,7 +8,9 @@ import {
   IUserSettings,
   IToken,
   IJwt,
+  IStatistic,
 } from '../../interfaces/interfaces';
+import updateDate from '../../utils/updateDate';
 import Api from '../../api/api';
 
 class User {
@@ -26,10 +28,15 @@ class User {
 
   private name: string;
 
+  private defaultStatistic: IStatistic;
+
   static User: User;
 
   constructor() {
     this.api = Api.getInstance();
+    this.defaultStatistic = {
+      L: 0, sL: 0, sR: 0, sI: 0, sB: 0, aL: 0, aR: 0, aI: 0, aB: 0,
+    };
     const storage = <string>localStorage.getItem('RSLang_Auth');
     if (storage !== null) {
       this.userId = JSON.parse(storage).userId;
@@ -82,8 +89,7 @@ class User {
     const currentTime = Math.trunc(Date.now() / 1000);
 
     if (expToken <= currentTime) {
-      console.log('token expare', expToken, currentTime);
-      this.setStorage('Authenticated', JSON.stringify(true)); /// why true???
+      this.setStorage('Authenticated', JSON.stringify(false));
       return false;
     }
     await this.getUserToken();
@@ -225,6 +231,119 @@ class User {
 
   updateUserSettings(body: IUserSettings): Promise<IUserSettings | undefined> {
     return this.api.updateUserSettings(this.userId, this.token, body);
+  }
+
+  async updateWordStatistic() {
+    const body = <IUserStatistics>{};
+    const currentDate = updateDate();
+    const response = await this.getUserStatistics();
+    if (!response) {
+      const options = <Record<string, unknown>>{};
+      (<IStatistic>options[currentDate]) = this.defaultStatistic;
+      (<IStatistic>options[currentDate]).L = 1;
+      body.learnedWords = 1;
+      body.optional = options;
+      await this.updateUserStatistics(body);
+    } else {
+      const learned = response.learnedWords + 1;
+      const options = <Record<string, unknown>>response.optional;
+      if (options[currentDate]) (<IStatistic>options[currentDate]).L += 1;
+      else {
+        (<IStatistic>options[currentDate]) = this.defaultStatistic;
+        (<IStatistic>options[currentDate]).L = 1;
+      }
+      body.learnedWords = learned;
+      body.optional = options;
+      await this.updateUserStatistics(body);
+    }
+  }
+
+  // eslint-disable-next-line max-lines-per-function
+  async updateSprintStatistic(
+    learnedWords: number,
+    rightAnswers: number,
+    incorrectAnswers: number,
+    bestSeries: number,
+  ) {
+    const currentDate = updateDate();
+    const body = <IUserStatistics>{};
+    const response = await this.getUserStatistics();
+    if (!response) {
+      const options = <Record<string, unknown>>{};
+      (<IStatistic>options[currentDate]) = this.defaultStatistic;
+      (<IStatistic>options[currentDate]).sL = learnedWords;
+      (<IStatistic>options[currentDate]).sR = rightAnswers;
+      (<IStatistic>options[currentDate]).sI = incorrectAnswers;
+      (<IStatistic>options[currentDate]).sB = bestSeries;
+      body.learnedWords = learnedWords;
+      body.optional = options;
+      await this.updateUserStatistics(body);
+    } else {
+      const learned = response.learnedWords + learnedWords;
+      const options = <Record<string, unknown>>response.optional;
+      if (options[currentDate]) {
+        (<IStatistic>options[currentDate]).sL += learnedWords;
+        (<IStatistic>options[currentDate]).sR += rightAnswers;
+        (<IStatistic>options[currentDate]).sI += incorrectAnswers;
+
+        if ((<IStatistic>options[currentDate]).sB < bestSeries) {
+          (<IStatistic>options[currentDate]).sB = bestSeries;
+        }
+      } else {
+        (<IStatistic>options[currentDate]) = this.defaultStatistic;
+        (<IStatistic>options[currentDate]).sL = learnedWords;
+        (<IStatistic>options[currentDate]).sR = rightAnswers;
+        (<IStatistic>options[currentDate]).sI = incorrectAnswers;
+        (<IStatistic>options[currentDate]).sB = bestSeries;
+      }
+      body.learnedWords = learned;
+      body.optional = options;
+      await this.updateUserStatistics(body);
+    }
+  }
+
+  // eslint-disable-next-line max-lines-per-function
+  async updateAudioStatistic(
+    learnedWords: number,
+    rightAnswers: number,
+    incorrectAnswers: number,
+    bestSeries: number,
+  ) {
+    const currentDate = updateDate();
+    const body = <IUserStatistics>{};
+    const response = await this.getUserStatistics();
+    if (!response) {
+      const options = <Record<string, unknown>>{};
+      (<IStatistic>options[currentDate]) = this.defaultStatistic;
+      (<IStatistic>options[currentDate]).aL = learnedWords;
+      (<IStatistic>options[currentDate]).aR = rightAnswers;
+      (<IStatistic>options[currentDate]).aI = incorrectAnswers;
+      (<IStatistic>options[currentDate]).aB = bestSeries;
+      body.learnedWords = learnedWords;
+      body.optional = options;
+      await this.updateUserStatistics(body);
+    } else {
+      const learned = response.learnedWords + learnedWords;
+      const options = <Record<string, unknown>>response.optional;
+      if (options[currentDate]) {
+        (<IStatistic>options[currentDate]).aL += learnedWords;
+        (<IStatistic>options[currentDate]).aR += rightAnswers;
+        (<IStatistic>options[currentDate]).aI += incorrectAnswers;
+
+        if ((<IStatistic>options[currentDate]).aB < bestSeries) {
+          (<IStatistic>options[currentDate]).aB = bestSeries;
+        }
+      } else {
+        (<IStatistic>options[currentDate]) = this.defaultStatistic;
+        (<IStatistic>options[currentDate]).aL = learnedWords;
+        (<IStatistic>options[currentDate]).aR = rightAnswers;
+        (<IStatistic>options[currentDate]).aI = incorrectAnswers;
+        (<IStatistic>options[currentDate]).aB = bestSeries;
+      }
+      body.learnedWords = learned;
+      body.optional = options;
+      await this.updateUserStatistics(body);
+    }
   }
 }
 

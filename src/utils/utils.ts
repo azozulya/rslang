@@ -1,4 +1,4 @@
-import { IUserWord, TPageHistory } from '../interfaces/interfaces';
+import { IPathOfAggregatedWord, IUserWord, TPageHistory } from '../interfaces/interfaces';
 import { DEFAULT_PAGE, DICTIONARY_PAGE, PAGE_KEY } from './constants';
 import create from './createElement';
 import { getLocalStorage } from './localStorage';
@@ -36,6 +36,27 @@ export function createDefaultWord(id: string): IUserWord {
       audiocall: {
         rightAnswer: 0,
         wrongAnswer: 0,
+      },
+    },
+  };
+}
+
+export function createDefaultUserWord(id: string): IPathOfAggregatedWord {
+  return {
+    _id: id,
+    userWord: {
+      difficulty: 'weak',
+      optional: {
+        learned: false,
+        hard: false,
+        sprint: {
+          rightAnswer: 0,
+          wrongAnswer: 0,
+        },
+        audiocall: {
+          rightAnswer: 0,
+          wrongAnswer: 0,
+        },
       },
     },
   };

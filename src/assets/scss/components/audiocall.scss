@@ -1,0 +1,63 @@
+.audiocall {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+ &__play {
+  width: 2.5em;
+  height: 2.5em;
+  background-color: $primary-light;
+  border-radius: 2em;
+  background-image: url(../../assets/img/audio.svg);
+  background-repeat: no-repeat;
+  background-size: 70%;
+  background-position: center;
+  cursor: pointer;
+  transition: 0.25s;
+  &:hover {
+    background-color: $primary-secondary;
+  }
+ } 
+ 
+ &__words-list{
+   display: flex;
+   justify-content: space-evenly;
+   gap: 2em;
+ }
+ &__words-item{
+   padding: 0.2em 0.5em;
+   border-radius: 0.6em;
+   border: 1px solid transparent;
+   cursor: pointer;
+  transition: 0.25s;
+   &:hover {
+    border: 1px solid $primary-light;
+   }
+ }
+
+ &__next{
+  @include button($secondary-main, $light-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 6em;
+  height: 2em;
+  border-radius: 0.6em;
+  border: 1px solid;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: 0.25s;
+ }
+
+ &__image {
+   &_open {
+    width: 8em;
+    height: 8em;
+    border-radius: 2em;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+   }
+ }
+  
+}
