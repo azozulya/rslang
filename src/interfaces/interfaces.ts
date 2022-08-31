@@ -104,13 +104,13 @@ export type TNavigate = {
 
 export interface IStatistic {
   L: number;
-  sL: number;
+  sN: number;
   sR: number;
-  sI: number;
+  sW: number;
   sB: number;
-  aL: number;
+  aN: number;
   aR: number;
-  aI: number;
+  aW: number;
   aB: number;
 }
 
