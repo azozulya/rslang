@@ -102,9 +102,7 @@ export type TNavigate = {
   isActiveHardWords: boolean;
 };
 
-export type IStatistic = {
-  [key: number | string]: number | string;
-
+export interface IStatistic {
   L: number;
   sL: number;
   sR: number;
@@ -114,7 +112,7 @@ export type IStatistic = {
   aR: number;
   aI: number;
   aB: number;
-};
+}
 
 export interface IGameWord {
   id: string;

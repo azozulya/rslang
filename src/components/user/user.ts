@@ -272,7 +272,7 @@ class User {
       const options = <Record<string, unknown>>{};
       (<IStatistic>options[currentDate]) = this.defaultStatistic;
       (<IStatistic>options[currentDate]).sL = learnedWords;
-      (<IStatistic>options[currentDate]).sA = rightAnswers;
+      (<IStatistic>options[currentDate]).sR = rightAnswers;
       (<IStatistic>options[currentDate]).sI = incorrectAnswers;
       (<IStatistic>options[currentDate]).sB = bestSeries;
       body.learnedWords = learnedWords;
@@ -292,7 +292,7 @@ class User {
       } else {
         (<IStatistic>options[currentDate]) = this.defaultStatistic;
         (<IStatistic>options[currentDate]).sL = learnedWords;
-        (<IStatistic>options[currentDate]).sA = rightAnswers;
+        (<IStatistic>options[currentDate]).sR = rightAnswers;
         (<IStatistic>options[currentDate]).sI = incorrectAnswers;
         (<IStatistic>options[currentDate]).sB = bestSeries;
       }
@@ -316,7 +316,7 @@ class User {
       const options = <Record<string, unknown>>{};
       (<IStatistic>options[currentDate]) = this.defaultStatistic;
       (<IStatistic>options[currentDate]).aL = learnedWords;
-      (<IStatistic>options[currentDate]).aA = rightAnswers;
+      (<IStatistic>options[currentDate]).aR = rightAnswers;
       (<IStatistic>options[currentDate]).aI = incorrectAnswers;
       (<IStatistic>options[currentDate]).aB = bestSeries;
       body.learnedWords = learnedWords;
@@ -336,7 +336,7 @@ class User {
       } else {
         (<IStatistic>options[currentDate]) = this.defaultStatistic;
         (<IStatistic>options[currentDate]).aL = learnedWords;
-        (<IStatistic>options[currentDate]).aA = rightAnswers;
+        (<IStatistic>options[currentDate]).aR = rightAnswers;
         (<IStatistic>options[currentDate]).aI = incorrectAnswers;
         (<IStatistic>options[currentDate]).aB = bestSeries;
       }
