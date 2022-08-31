@@ -90,7 +90,7 @@ class User {
 
     if (expToken <= currentTime) {
       console.log('token expare', expToken, currentTime);
-      this.setStorage('Authenticated', JSON.stringify(true)); /// why true???
+      this.setStorage('Authenticated', JSON.stringify(false));
       return false;
     }
     await this.getUserToken();
