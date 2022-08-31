@@ -181,8 +181,8 @@ class GamesModel {
   };
 
   private async getAgreggatedUserWords(
-    group = 3,
-    page = 0,
+    group: number,
+    page: number,
   ): Promise<IGameWord[] | null> {
     const userLearnedWords = await userApi.getUserAggregatedWords(
       group,
@@ -194,7 +194,8 @@ class GamesModel {
         }),
       ),
     );
-
+    console.log(group, page);
+    console.log('userLearnedWords: ', userLearnedWords);
     const learnedWords: IAggregatedWord[] | [] = userLearnedWords
       ? userLearnedWords[0]?.paginatedResults
       : [];
@@ -202,7 +203,7 @@ class GamesModel {
     const wordsList = await this.getWords(group, page);
 
     // console.log('learned: ', learnedWords, userLearnedWords);
-    // console.log('all: ', wordsList);
+    console.log('wordsList: ', wordsList);
 
     if (wordsList && learnedWords.length) {
       const excludeIDs: string[] = learnedWords.map(
@@ -218,7 +219,7 @@ class GamesModel {
 
       return this.formatWords(filteredWords);
     }
-    return null;
+    return this.formatWords(wordsList);
   }
 
   private async getWords(group: number, page: number) {
