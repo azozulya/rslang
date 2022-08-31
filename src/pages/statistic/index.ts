@@ -242,6 +242,7 @@ class Statistic {
             },
             type: 'time',
             time: {
+              tooltipFormat: 'dd.MM.yyyy',
               unit: 'day',
               displayFormats: {
                 quarter: 'MMM YYYY',
@@ -288,6 +289,7 @@ class Statistic {
             },
             type: 'time',
             time: {
+              tooltipFormat: 'dd.MM.yyyy',
               unit: 'day',
               displayFormats: {
                 quarter: 'MMM YYYY',
