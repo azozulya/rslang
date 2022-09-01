@@ -1,4 +1,4 @@
-$font-size: 5.5rem;
+$font-size: 4rem;
 $height: 4.1rem;
 
 #statistic {
@@ -31,7 +31,7 @@ $height: 4.1rem;
     }
     .today_statistic {
       display: grid;
-      width: 60%;
+      // width: 60%;
       grid-template-columns: repeat(6, 1fr);
       grid-template-areas:
         "A A  B B  C C"
@@ -92,70 +92,43 @@ $height: 4.1rem;
           }
         }
       }
-      #learnedWords {
-        grid-area: A;
+      #learnedWords,
+      #newWords,
+      #percentAnswer {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         justify-content: center;
         padding: 10px;
         gap: 10px;
         .number {
           display: flex;
+          width: 100%;
           height: $height;
           font-size: $font-size;
           font-weight: 700;
           align-items: center;
+          justify-content: center;
         }
         .content {
           display: flex;
           flex-wrap: wrap;
           align-items: center;
           justify-content: center;
-          width: 70px;
+          width: 100%;
+          font-size: 14px;
+          text-align: center;
+          line-height: 0.5rem;
         }
+      }
+      #learnedWords {
+        grid-area: A;
       }
       #newWords {
         grid-area: B;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 10px;
-        gap: 10px;
-        .number {
-          display: flex;
-          height: $height;
-          font-size: $font-size;
-          font-weight: 700;
-          align-items: center;
-        }
-        .content {
-          display: flex;
-          flex-wrap: wrap;
-          align-items: center;
-          justify-content: center;
-          width: 70px;
-        }
       }
       #percentAnswer {
         grid-area: C;
-        align-items: center;
-        justify-content: center;
-        padding: 10px;
-        gap: 10px;
-        .percent {
-          display: flex;
-          height: $height;
-          font-size: $font-size;
-          font-weight: 700;
-          align-items: center;
-        }
-        .content {
-          display: flex;
-          flex-wrap: wrap;
-          align-items: center;
-          justify-content: center;
-          width: 70px;
-        }
       }
       #sprint {
         grid-area: D;
@@ -191,7 +164,7 @@ $height: 4.1rem;
     }
     .allTime_statistic {
       display: grid;
-      width: 80%;
+      // width: 80%;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       grid-template-areas: "A B";
       @media (max-width: 1000px) {
