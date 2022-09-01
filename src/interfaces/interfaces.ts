@@ -114,12 +114,21 @@ export interface IStatistic {
   aB: number;
 }
 
-export interface IGameWord {
+interface IGameWordCommon {
   id: string;
   audio: string;
   word: string;
   wordTranslate: string;
+}
+export interface IGameWord extends IGameWordCommon {
   pseudoTranslate: string;
+  isRightAnswer?: boolean;
+}
+
+export interface IAudioCallWord extends IGameWordCommon {
+  image: string;
+  answerIndex: number;
+  optionsTranslate: string [];
   isRightAnswer?: boolean;
 }
 

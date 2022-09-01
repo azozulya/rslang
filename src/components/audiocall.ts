@@ -1,54 +1,92 @@
-import { IWord } from '../interfaces/interfaces';
+import { IAudioCallWord, IGameStatistic } from '../interfaces/interfaces';
+import { URL_FOR_STATIC } from '../utils/constants';
 import create from '../utils/createElement';
-import words from '../utils/testWord';
 
 class AudiocallGame {
-  private wordsInGame:IWord[];
+  private wordsInGame:IAudioCallWord[];
 
   private currentWordIndex: number;
 
-  private TOTAL_WORDS_AUDIOCALL: number;
+  private gameContainer!: HTMLElement;
 
-  private wordsList!: HTMLElement;
+  private wordsOptionsGroup!: HTMLElement;
 
   private play!: HTMLElement;
 
   private audioTrack!: HTMLAudioElement;
 
-  constructor() {
-    this.wordsInGame = words;
+  private currentWord!: IAudioCallWord;
+
+  private isAnswerOpen!: boolean;
+
+  private defaultState = {
+    score: 0,
+    learnedWords: 0,
+    newWords: 0,
+    rightAnswer: 0,
+    wrongAnswer: 0,
+    seriesOfRightAnswer: 0,
+    winStreak: 0,
+  };
+
+  private gameState = { ...this.defaultState };
+
+  constructor(
+    wordsList:IAudioCallWord[],
+    private onStopGameHandler: (
+      state: IGameStatistic,
+      wordsList: IAudioCallWord[]
+    ) => void,
+    private updateWordState?: (wordId: string, isRightAnswer: boolean) => void,
+  ) {
+    this.wordsInGame = wordsList;
     this.currentWordIndex = 0;
-    this.TOTAL_WORDS_AUDIOCALL = 5;
   }
 
   handleEvent(event:Event) {
     const element = <HTMLElement>event.target;
-    if (element.classList.contains('audiocall__play')) this.playWord();
-    if (element.classList.contains('audiocall__words-item')) this.viewAnswer();
-    if (element.classList.contains('audiocall__next')) this.goToNextWord();
+    if (element.classList.contains('audiocall__play')) this.audioTrack.play();
+    if (element.classList.contains('audiocall__words-item')) this.viewAnswer(element);
+
+    if (element.classList.contains('audiocall__next')) {
+      if (this.isAnswerOpen) this.renderGame();
+      else this.viewAnswer(element);
+    }
   }
 
-  goToNextWord() {
-    // statistic?
-    this.renderGame();
-  }
-
-  playWord() {
-    this.audioTrack.play();
-  }
-
-  viewAnswer() {
+  viewAnswer(element: HTMLElement) {
+    this.isAnswerOpen = true;
+    this.checkAnswer(element);
     this.renderAnswer();
-    this.changeWords();
+    this.changeOptionWords(element);
     this.changeButton();
   }
 
-  changeWords() {
-    const gameWords = [...this.wordsList.children];
-    gameWords.forEach((word, index) => {
-      if (index !== 0) word.classList.add('wrong-answer');
-      else word.classList.add('right-answer');
+  checkAnswer(element: HTMLElement) {
+    if (Number(element.id) === this.currentWord.answerIndex) {
+      this.playAnswer(true);
+      this.currentWord.isRightAnswer = true;
+      this.addRightAnswer();
+      this.updateWordState?.(this.currentWord.id, true);
+    } else {
+      this.playAnswer(false);
+      this.currentWord.isRightAnswer = false;
+      this.addWrongAnswer();
+      this.updateWordState?.(this.currentWord.id, false);
+    }
+  }
+
+  changeOptionWords(element: HTMLElement) {
+    const optionWords = [...this.wordsOptionsGroup.children];
+
+    optionWords.forEach((word) => {
+      if (Number(word.id) === this.currentWord.answerIndex) word.classList.add('right-answer');
+      else if (word !== element) word.classList.add('not-answer');
+      else word.classList.add('wrong-answer');
     });
+  }
+
+  playAnswer(isRight: boolean) {
   }
 
   changeButton() {
@@ -56,24 +94,94 @@ class AudiocallGame {
     gameBtn.textContent = 'Дальше';
   }
 
-  // eslint-disable-next-line max-lines-per-function
-  renderGame() {
+  init() {
     const container = create({
       tagname: 'div',
       class: 'container',
     });
+    this.gameContainer = container;
+    this.renderGame();
+    this.gameContainer.addEventListener('click', (e) => this.handleEvent(e));
+    return container;
+  }
+
+  stopGame() {
+    this.onStopGameHandler(this.gameState, this.wordsInGame);
+
+    this.currentWordIndex = 0;
+    this.gameState = { ...this.defaultState };
+    this.gameContainer.innerText = '';
+  }
+
+  private async addRightAnswer() {
+    let {
+      rightAnswer, seriesOfRightAnswer, winStreak,
+    } = this.gameState;
+
+    rightAnswer += 1;
+    seriesOfRightAnswer += 1;
+
+    if (seriesOfRightAnswer > winStreak) {
+      winStreak = seriesOfRightAnswer;
+    }
+
+    this.updateState({
+      rightAnswer,
+      seriesOfRightAnswer,
+      winStreak,
+    });
+  }
+
+  private addWrongAnswer() {
+    let { wrongAnswer, winStreak, seriesOfRightAnswer } = this.gameState;
+
+    wrongAnswer += 1;
+
+    if (seriesOfRightAnswer > winStreak) {
+      winStreak = seriesOfRightAnswer;
+      seriesOfRightAnswer = 0;
+    }
+
+    this.updateState({
+      wrongAnswer,
+      seriesOfRightAnswer,
+      winStreak,
+    });
+  }
+
+  private updateState(params: {
+    rightAnswer?: number;
+    seriesOfRightAnswer: number;
+    score?: number;
+    wrongAnswer?: number;
+    winStreak?: number;
+    learnedWords?: number;
+    newWords?: number;
+  }) {
+    this.gameState = {
+      ...this.gameState,
+      ...params,
+    };
+  }
+
+  // eslint-disable-next-line max-lines-per-function
+  renderGame() {
+    if (this.currentWordIndex === this.wordsInGame.length) {
+      this.stopGame();
+    }
+    while (this.gameContainer.firstChild) {
+      this.gameContainer.removeChild(this.gameContainer.firstChild);
+    }
+
+    this.currentWord = this.wordsInGame[this.currentWordIndex];
+
+    this.isAnswerOpen = false;
+
     const audiocall = create({
       tagname: 'div',
-      class: 'audiocall',
-      parent: container,
+      class: 'audiocall__screen',
+      parent: this.gameContainer,
     });
-    create({
-      tagname: 'h4',
-      class: 'audiocall__name',
-      parent: audiocall,
-      text: 'Аудиовызов',
-    });
-
     const audiocallPlayer = create({
       tagname: 'div',
       class: 'audiocall__player',
@@ -83,7 +191,6 @@ class AudiocallGame {
     const audioPlay = create({
       tagname: 'div',
       class: 'audiocall__play',
-      id: 'audiocallPlayer',
       parent: audiocallPlayer,
     });
     this.play = audioPlay;
@@ -93,24 +200,26 @@ class AudiocallGame {
       id: 'audiocallPlayer',
       parent: audioPlay,
     });
-    audioTrack.src = 'http://127.0.0.1:3000/files/01_0008.mp3'; // TODO change url
+    audioTrack.src = `${URL_FOR_STATIC}${this.currentWord.audio}`;
     audioTrack.preload = 'auto';
     this.audioTrack = audioTrack;
 
-    const wordsList = create({
+    const wordsOptionsGroup = create({
       tagname: 'div',
-      class: 'audiocall__words-list',
+      class: 'audiocall__words-group',
       parent: audiocall,
     });
-    this.wordsList = wordsList;
-    for (let i = 0; i < this.TOTAL_WORDS_AUDIOCALL; i += 1) {
+    this.wordsOptionsGroup = wordsOptionsGroup;
+    this.currentWord.optionsTranslate.forEach((option, index) => {
       create({
         tagname: 'div',
         class: 'audiocall__words-item',
-        parent: wordsList,
-        text: `${i + 1} ${this.wordsInGame[i].wordTranslate}`, // add method for random word
+        parent: wordsOptionsGroup,
+        id: `${index}`,
+        text: `${index + 1} ${option}`,
       });
-    }
+    });
+
     create({
       tagname: 'div',
       class: 'audiocall__next',
@@ -118,9 +227,6 @@ class AudiocallGame {
       parent: audiocall,
       text: 'Не знаю',
     });
-    container.addEventListener('click', (e) => this.handleEvent(e));
-
-    return container;
   }
 
   renderAnswer() {
@@ -134,7 +240,7 @@ class AudiocallGame {
       class: 'audiocall__image',
       parent: audiocallPlayer,
     });
-    imageAnswer.style.backgroundImage = `url(http://127.0.0.1:3000/${this.wordsInGame[1].image})`;
+    imageAnswer.style.backgroundImage = `url(${URL_FOR_STATIC}${this.currentWord.image})`;
     const audioAnswer = create({
       tagname: 'div',
       class: 'audiocall__answer',
@@ -147,8 +253,9 @@ class AudiocallGame {
       tagname: 'div',
       class: 'audiocall__answer_word',
       parent: audioAnswer,
-      text: `${this.wordsInGame[0].word}`, // TODO change to correct answer
+      text: `${this.currentWord.word}`,
     });
+    this.currentWordIndex += 1;
   }
 }
 

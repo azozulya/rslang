@@ -11,7 +11,6 @@ import {
 import create from '../../utils/createElement';
 import { getLocalStorage } from '../../utils/localStorage';
 import {
-  animatedCircleProgressBar,
   generateIndex,
   isFromDictionaryPage,
   isStartPage,
@@ -50,11 +49,7 @@ class GamesView {
     this.isFromDictionary = isFromDictionaryPage();
     this.gameContainer = create({ tagname: 'section', class: 'game' });
 
-    this.gameScreen = create({
-      tagname: 'div',
-      class: 'game__sprint',
-      text: '<h3 class="game__sprint-title">Спринт</h3>',
-    });
+    this.gameScreen = create({ tagname: 'div', class: 'game__sprint' });
     this.resultScreen = create({ tagname: 'div', class: 'game__result' });
   }
 
@@ -113,8 +108,8 @@ class GamesView {
     container.innerHTML = `
       <h3>Спринт</h3>
       <p class="game__description">
-        Спринт - тренировка на скорость.<br> Попробуй угадать как можно больше слов за&nbsp;${GAME_TIMER}&nbsp;секунд.
-      </p>      
+        Спринт - тренировка на скорость.<br> Попробуй угадать как можно больше слов за ${GAME_TIMER} секунд.
+      </p>
     `;
 
     this.startBtn = this.createStartBtn();
@@ -147,7 +142,6 @@ class GamesView {
     this.gameScreen?.append(game.render());
   }
 
-  // eslint-disable-next-line max-lines-per-function
   private stopGame = (state: IGameStatistic, wordsList: IGameWord[]) => {
     this.gameContainer.innerText = '';
 
@@ -168,40 +162,17 @@ class GamesView {
       this.resultScreen.innerText = '';
       this.resultScreen.insertAdjacentHTML(
         'afterbegin',
-        '<h3 class="game__result-title">Результат</h3>',
-      );
-
-      const statContainer = create({
-        tagname: 'div',
-        class: 'game__statistic',
-      });
-
-      const {
-        score,
-        newWords,
-        learnedWords,
-        winStreak,
-        rightAnswer,
-        wrongAnswer,
-      } = totalState;
-
-      const totalAnswers = rightAnswer + wrongAnswer;
-      const rightAnswersInPercent = Math.floor((rightAnswer * 100) / totalAnswers) || 0;
-
-      statContainer.append(animatedCircleProgressBar(rightAnswersInPercent));
-
-      statContainer.insertAdjacentHTML(
-        'beforeend',
-        `<div class="game__statistic-text">
-              Счет: ${score}<br>
-              Новые слова: ${newWords}<br>
-              Изученные слова: ${learnedWords}<br>
-              Серия правильных ответов: ${winStreak}<br>
-            </div>`,
+        `<h3 class="game__result-title">Результат</h3>
+          <div class="game__statistic">
+            Счет: ${totalState.score}<br>
+            Новые слова: ${totalState.newWords}<br>
+            Изученные слова: ${totalState.learnedWords}<br>
+            Серия правильных ответов: ${totalState.winStreak}<br>
+            Всего слов: ${totalState.rightAnswer + totalState.wrongAnswer}
+          </div>`,
       );
 
       this.resultScreen.append(
-        statContainer,
         this.drawWordsResult(wordsList),
         this.drawBtns(),
       );
@@ -305,7 +276,6 @@ class GamesView {
   draw() {
     this.startScreen = this.createStartScreen();
     this.gameContainer.append(this.startScreen);
-
     return this.gameContainer;
   }
 

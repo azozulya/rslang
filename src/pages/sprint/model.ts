@@ -54,7 +54,7 @@ class GamesModel {
     };
   }
 
-  private async updateStatistic(wordStat: IWordStat) {
+  private async updateStatisctic(wordStat: IWordStat) {
     await this.sendStatistic(wordStat);
 
     const date = getDateWithoutTime();
@@ -103,28 +103,25 @@ class GamesModel {
     const { sprint } = userWord.optional;
     let { hard, learned } = userWord.optional;
 
-    if (isRightAnswer) {
-      sprint.rightAnswer += 1;
+    if (isRightAnswer) sprint.rightAnswer += 1;
+    else sprint.wrongAnswer += 1;
 
-      const diff = sprint.rightAnswer - sprint.wrongAnswer;
+    const diff = sprint.rightAnswer - sprint.wrongAnswer;
 
-      if (
-        (hard && diff === POINTS_TO_LEARNED_HARD_WORD)
-        || (!hard && diff === POINTS_TO_LEARNED_WORD)
-      ) {
-        this.gameState.learnedWords += 1;
-        learned = true;
-        hard = false;
-      }
-    } else {
-      sprint.wrongAnswer += 1;
-
-      if (learned) learned = false;
+    if (
+      (hard && diff === POINTS_TO_LEARNED_HARD_WORD)
+      || (!hard && diff === POINTS_TO_LEARNED_WORD)
+    ) {
+      this.gameState.learnedWords += 1;
+      learned = true;
+      hard = false;
     }
 
     await userApi.updateUserWord(userWord.wordId, userWord);
 
-    this.updateStatistic({
+    const date = getDateWithoutTime();
+
+    this.updateStatisctic({
       wordID: userWord.wordId,
       learned,
       new: false,
@@ -146,7 +143,9 @@ class GamesModel {
 
     await userApi.createUserWord(wordID, newUserWord);
 
-    this.updateStatistic({
+    const date = getDateWithoutTime();
+
+    this.updateStatisctic({
       wordID,
       learned: false,
       new: true,

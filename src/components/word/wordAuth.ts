@@ -82,7 +82,7 @@ class WordAuth extends Word implements IWordAppForAuthUser {
     this.changeIcon();
 
     const word = await this.getUserWord();
-    if (!word) this.addToHardWords();
+    if (!word) this.addToLearnedWords();
     else {
       word.optional.learned = true;
       userApi.updateUserWord(this.word.id, word);

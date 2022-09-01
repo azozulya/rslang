@@ -1,11 +1,5 @@
 import { IGameStatistic, IGameWord } from '../interfaces/interfaces';
-import {
-  COUNT_LAST_WORDS,
-  GAME_TIMER,
-  MAX_POINTS_FOR_RIGHT_ANSWER,
-  POINTS_FOR_RIGHT_ANSWER,
-  SERIA_RIGHT_ANSWER,
-} from '../utils/constants';
+import { COUNT_LAST_WORDS, GAME_TIMER } from '../utils/constants';
 import create from '../utils/createElement';
 
 class SprintGame {
@@ -20,12 +14,6 @@ class SprintGame {
   private noBtn?: HTMLButtonElement;
 
   private currentWordIndex = 0;
-
-  private dots?: HTMLElement[];
-
-  private pointsPerRightAnswer = POINTS_FOR_RIGHT_ANSWER;
-
-  private pointsIncreasContainer: HTMLElement;
 
   private defaultState = {
     score: 0,
@@ -56,18 +44,12 @@ class SprintGame {
     ) => Promise<IGameWord[] | null>,
   ) {
     this.gameContainer = create({ tagname: 'div', class: 'sprint' });
-    this.wordContainer = create({ tagname: 'div', class: 'sprint__word' });
     this.scoreElement = create({
       tagname: 'div',
       class: 'sprint__score',
       text: '0',
     });
-    this.pointsIncreasContainer = create({
-      tagname: 'div',
-      class: 'sprint__score-points',
-      text: `+${this.pointsPerRightAnswer} очков за слово`,
-    });
-
+    this.wordContainer = create({ tagname: 'div', class: 'sprint__word' });
     this.init();
   }
 
@@ -81,62 +63,16 @@ class SprintGame {
 
     this.gameContainer.append(
       this.drawTimer(),
-      this.drawScoreContainer(),
+      this.scoreElement,
       this.wordContainer,
       this.drawBtns(),
     );
 
-    this.gameContainer.insertAdjacentHTML(
-      'beforeend',
-      `<div class="sprint__keys">
-          <div>←</div><div>→</div>
-        </div>`,
-    );
-
     this.wordContainer.innerHTML = firstWord;
-
-    document.addEventListener('keydown', (event: KeyboardEvent) => {
-      const { key } = event;
-
-      if (key !== 'ArrowRight' && key !== 'ArrowLeft') return;
-
-      if (key === 'ArrowRight') {
-        this.yesBtn?.click();
-        return;
-      }
-
-      this.noBtn?.click();
-    });
   }
 
   render() {
     return this.gameContainer;
-  }
-
-  private drawScoreContainer() {
-    const scoreWrapper = create({
-      tagname: 'div',
-      class: 'sprint__score-wrapper',
-    });
-
-    const dotsContainer = create({
-      tagname: 'div',
-      class: 'sprint__score-dots',
-    });
-
-    this.dots = Array(SERIA_RIGHT_ANSWER)
-      .fill(0)
-      .map((_) => create({ tagname: 'div', class: 'dot' }));
-
-    dotsContainer.append(...this.dots);
-
-    scoreWrapper.append(
-      this.scoreElement,
-      this.pointsIncreasContainer,
-      dotsContainer,
-    );
-
-    return scoreWrapper;
   }
 
   private stopGame = () => {
@@ -184,12 +120,8 @@ class SprintGame {
   };
 
   private drawTimer() {
-    const timerWrapper = create({
-      tagname: 'div',
-      class: 'sprint__timer',
-    });
-
-    timerWrapper.innerHTML = `
+    const timerContainer = create({ tagname: 'div', class: 'sprint__timer' });
+    timerContainer.innerHTML = `
       <svg class="sprint__timer--icon">
         <use xlink:href="../../assets/img/timer.svg#timer"></use>
       </svg>`;
@@ -212,9 +144,9 @@ class SprintGame {
       timer -= 1;
     }, 1000);
 
-    timerWrapper.append(gameTimer);
+    timerContainer.append(gameTimer);
 
-    return timerWrapper;
+    return timerContainer;
   }
 
   private drawWord(idx: number) {
@@ -269,43 +201,8 @@ class SprintGame {
       this.updateWordState?.(currentWord.id, false);
     }
 
-    setTimeout(() => this.nextWord(), 100);
+    setTimeout(() => this.nextWord(), 500);
   };
-
-  private updatePointsPerWord() {
-    if (this.pointsPerRightAnswer === MAX_POINTS_FOR_RIGHT_ANSWER) return;
-
-    const dotElement = this.dots?.find(
-      (dot) => !dot.classList.contains('active'),
-    );
-
-    if (dotElement) {
-      dotElement.classList.add('active');
-      return;
-    }
-
-    this.dots?.forEach((dot) => dot.classList.remove('active'));
-    this.pointsPerRightAnswer += POINTS_FOR_RIGHT_ANSWER;
-
-    this.updatePontsContainer();
-  }
-
-  private resetPointsPerWord() {
-    this.dots?.forEach((dot) => dot.classList.remove('active'));
-
-    if (this.pointsPerRightAnswer === POINTS_FOR_RIGHT_ANSWER) return;
-
-    if (this.pointsPerRightAnswer > POINTS_FOR_RIGHT_ANSWER) {
-      this.pointsPerRightAnswer -= POINTS_FOR_RIGHT_ANSWER;
-    }
-    this.updatePontsContainer();
-  }
-
-  private updatePontsContainer() {
-    if (this.pointsIncreasContainer) {
-      this.pointsIncreasContainer.innerHTML = `+${this.pointsPerRightAnswer} очков за слово`;
-    }
-  }
 
   private async addRightAnswer() {
     this.wordContainer.classList.add('sprint__right-answer');
@@ -316,7 +213,7 @@ class SprintGame {
 
     rightAnswer += 1;
     seriesOfRightAnswer += 1;
-    score += this.pointsPerRightAnswer;
+    score += 10;
 
     if (seriesOfRightAnswer > winStreak) {
       winStreak = seriesOfRightAnswer;
@@ -329,7 +226,6 @@ class SprintGame {
       score,
     });
 
-    this.updatePointsPerWord();
     this.updateScore();
   }
 
@@ -350,8 +246,6 @@ class SprintGame {
       seriesOfRightAnswer,
       winStreak,
     });
-
-    this.resetPointsPerWord();
   }
 
   private updateState(params: {

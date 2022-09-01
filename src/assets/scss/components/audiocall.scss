@@ -4,7 +4,7 @@
   align-items: center;
   justify-content: space-around;
   box-sizing: border-box;
-  background-color: $secondary-light;
+  background-color: #f8bbd0a1;
   max-width: 40em;
   margin-left: auto;
   margin-right: auto;
@@ -13,8 +13,18 @@
   border-radius: 2rem;
   min-height: 500px;
 
+  &__screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
   &__name {
     margin: 0;
+  }
+
+  &__content{
+    text-align: center;
   }
 
   &__player {
@@ -23,8 +33,8 @@
     justify-content: center;
     align-items: center;
     height: 200px;
-
   }
+
   &__answer {
     display: flex;
     align-items: center;
@@ -46,11 +56,11 @@
     cursor: pointer;
     transition: 0.5s;
     &:hover {
-      background-color: $primary-secondary;
+      background-color: $primary-main;
     }
   } 
   
-  &__words-list{
+  &__words-group{
     display: flex;
     justify-content: space-evenly;
     gap: 0.8em;
@@ -64,7 +74,7 @@
     cursor: pointer;
     transition: 0.25s;
     &:hover {
-      border: 1px solid $primary-light;
+      border: 1px solid $primary-main;
     }
   }
 
@@ -73,9 +83,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 6em;
-    height: 2em;
-    font-size: 0.8em;
+    font-size: 1rem;
+    padding: 0.6rem 1rem;
     border-radius: 0.6em;
     border: 1px solid $secondary-main;
     text-transform: uppercase;
@@ -93,11 +102,15 @@
   }
 
   .wrong-answer {
-    color: $text-disabled;
+    text-decoration: line-through;
     pointer-events: none;
   }
   .right-answer {
     background-color: $yes-color;
+    pointer-events: none;
+  }
+  .not-answer {
+    color: $text-disabled;
     pointer-events: none;
   }
   .play_answer {

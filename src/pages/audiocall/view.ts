@@ -1,154 +1,361 @@
-import { IWord } from '../../interfaces/interfaces';
+import AudiocallGame from '../../components/audiocall';
+import { IAudioCallWord, IGameStatistic, IWord } from '../../interfaces/interfaces';
+import {
+  GROUP_LIST, TOTAL_WORDS, WORDS_PER_PAGE, DICTIONARY_KEY, URL_FOR_STATIC, AUDIOCALL_COUNT_WORDS,
+} from '../../utils/constants';
 import create from '../../utils/createElement';
-import words from '../../utils/testWord';
+import { getLocalStorage } from '../../utils/localStorage';
+import {
+  animatedCircleProgressBar, generateIndex, isFromDictionaryPage, isStartPage,
+} from '../../utils/utils';
 
 class AudioCallView {
-  wordsInGame:IWord[];
+  isMenuLink = true;
 
-  indexWord: number;
+  private gameContainer: HTMLElement;
 
-  TOTAL_WORDS_AUDIOCALL: number;
+  private levels: HTMLInputElement[] = [];
 
-  wordsList!: HTMLElement;
+  private startScreen?: HTMLElement;
 
-  play!: HTMLElement;
+  private resultScreen?: HTMLElement;
 
-  audioTrack!: HTMLAudioElement;
+  private gameScreen?: HTMLElement;
+
+  private startBtn?: HTMLButtonElement;
+
+  private isFromDictionary: boolean;
+
+  private onGetWords?: (
+    level: number,
+    page: number
+  ) => Promise<IAudioCallWord[] | null>;
+
+  private onUpdateUserWord?: (wordId: string, isRightAnswer: boolean) => void;
+
+  private getGameStatistic?: () => {
+    learnedWords: number;
+    newWords: number;
+  };
 
   constructor() {
-    this.wordsInGame = words;
-    this.indexWord = 0;
-    this.TOTAL_WORDS_AUDIOCALL = 5;
-  }
+    this.isFromDictionary = isFromDictionaryPage();
+    this.gameContainer = create({ tagname: 'section', class: 'audiocall' });
 
-  handleEvent(event:Event) {
-    const element = <HTMLElement>event.target;
-    if (element.classList.contains('audiocall__play')) this.playWord();
-    if (element.classList.contains('audiocall__words-item')) this.viewAnswer();
-    if (element.classList.contains('audiocall__next')) this.goToNextWord();
-  }
-
-  goToNextWord() {
-    // statistic?
-    this.renderGame();
-  }
-
-  playWord() {
-    this.audioTrack.play();
-  }
-
-  viewAnswer() {
-    this.renderAnswer();
-    this.changeWords();
-    this.changeButton();
-  }
-
-  changeWords() {
-    const gameWords = [...this.wordsList.children];
-    gameWords.forEach((word, index) => {
-      if (index !== 0) word.classList.add('wrong-answer');
-      else word.classList.add('right-answer');
-    });
-  }
-
-  changeButton() {
-    const gameBtn = <HTMLElement>document.getElementById('audicallNext');
-    gameBtn.textContent = 'Дальше';
-  }
-
-  // eslint-disable-next-line max-lines-per-function
-  renderGame() {
-    const container = create({
+    this.gameScreen = create({
       tagname: 'div',
-      class: 'container',
+      class: 'audiocall__content',
+      text: '<h3 class="audiocall-title">Аудиовызов</h3>',
     });
-    const audiocall = create({
-      tagname: 'div',
-      class: 'audiocall',
-      parent: container,
-    });
-    create({
-      tagname: 'h4',
-      class: 'audiocall__name',
-      parent: audiocall,
-      text: 'Аудиовызов',
-    });
+    this.resultScreen = create({ tagname: 'div', class: 'game__result' });
+  }
 
-    const audiocallPlayer = create({
-      tagname: 'div',
-      class: 'audiocall__player',
-      id: 'audiocallPlayer',
-      parent: audiocall,
-    });
-    const audioPlay = create({
-      tagname: 'div',
-      class: 'audiocall__play',
-      id: 'audiocallPlayer',
-      parent: audiocallPlayer,
-    });
-    this.play = audioPlay;
-    const audioTrack = <HTMLAudioElement>create({
-      tagname: 'audio',
-      class: 'audiocall__track',
-      id: 'audiocallPlayer',
-      parent: audioPlay,
-    });
-    audioTrack.src = 'http://127.0.0.1:3000/files/01_0008.mp3'; // TODO change url
-    audioTrack.preload = 'auto';
-    this.audioTrack = audioTrack;
+  bindGetWords(
+    handler: (level: number, page: number) => Promise<IAudioCallWord[] | null>,
+  ) {
+    this.onGetWords = handler;
+  }
 
-    const wordsList = create({
-      tagname: 'div',
-      class: 'audiocall__words-list',
-      parent: audiocall,
-    });
-    this.wordsList = wordsList;
-    for (let i = 0; i < this.TOTAL_WORDS_AUDIOCALL; i += 1) {
-      create({
-        tagname: 'div',
-        class: 'audiocall__words-item',
-        parent: wordsList,
-        text: `${i + 1} ${this.wordsInGame[i].wordTranslate}`, // add method for random word
-      });
+  bindUpdateUserWord(
+    handler: (wordId: string, isRightAnswer: boolean) => void,
+  ) {
+    this.onUpdateUserWord = handler;
+  }
+
+  bindGetGameStatistic(
+    handler: () => { learnedWords: number; newWords: number },
+  ) {
+    this.getGameStatistic = handler;
+  }
+
+  private createGameScreen(wordsList: IAudioCallWord[]) {
+    if (!wordsList) {
+      this.gameScreen?.insertAdjacentHTML(
+        'afterbegin',
+        'Что-то пошло не так...',
+      );
+      return;
     }
-    create({
-      tagname: 'div',
-      class: 'audiocall__next',
-      id: 'audicallNext',
-      parent: audiocall,
-      text: 'Не знаю',
-    });
-    container.addEventListener('click', (e) => this.handleEvent(e));
+
+    const game = new AudiocallGame(
+      wordsList,
+      this.stopGame,
+      this.onUpdateUserWord,
+    );
+
+    this.gameScreen?.append(game.init());
+  }
+
+  draw() {
+    this.startScreen = this.createStartScreen();
+    this.gameContainer.append(this.startScreen);
+
+    return this.gameContainer;
+  }
+
+  private createStartScreen(): HTMLElement {
+    const container = create({ tagname: 'div', class: 'audiocall__start' });
+
+    container.innerHTML = `
+      <h3>Аудиовызов</h3>
+      <p class="game__description">
+        Тренировка улучшает восприятие речи на слух.
+        <br>
+        Прослушай и угадай значение ${AUDIOCALL_COUNT_WORDS} слов.
+      </p>      
+    `;
+
+    this.startBtn = this.createStartBtn();
+
+    if (this.isMenuLink || isStartPage()) {
+      container.append(this.drawLevels());
+    }
+
+    container.append(this.startBtn);
 
     return container;
   }
 
-  renderAnswer() {
-    const audiocallPlayer = <HTMLElement>document.getElementById('audiocallPlayer');
-    while (audiocallPlayer.firstChild) {
-      audiocallPlayer.removeChild(audiocallPlayer.firstChild);
+  private createStartBtn() {
+    const startBtn = <HTMLButtonElement>(
+      create({ tagname: 'button', class: 'btn' })
+    );
+    startBtn.classList.add('btn--blue', 'game__start-btn');
+    startBtn.disabled = !this.isFromDictionary;
+    startBtn.innerText = 'Начать';
+
+    startBtn.addEventListener('click', this.onStartClickHandler);
+    return startBtn;
+  }
+
+  // eslint-disable-next-line max-lines-per-function
+  private stopGame = (state: IGameStatistic, wordsList: IAudioCallWord[]) => {
+    this.gameContainer.innerText = '';
+
+    const stateGame = this.getGameStatistic?.();
+
+    const totalState = {
+      ...state,
+      ...stateGame,
+      date: Date.now(),
+      name: 'sprint',
+    };
+    if (this.resultScreen) {
+      this.gameContainer.append(this.resultScreen);
+
+      this.resultScreen.innerText = '';
+      this.resultScreen.insertAdjacentHTML(
+        'afterbegin',
+        '<h3 class="game__result-title">Результат</h3>',
+      );
+
+      const statContainer = create({
+        tagname: 'div',
+        class: 'game__statistic',
+      });
+
+      const {
+        newWords,
+        learnedWords,
+        winStreak,
+        rightAnswer,
+        wrongAnswer,
+      } = totalState;
+
+      const totalAnswers = rightAnswer + wrongAnswer;
+      const rightAnswersInPercent = Math.floor((rightAnswer * 100) / totalAnswers) || 0;
+
+      statContainer.append(animatedCircleProgressBar(rightAnswersInPercent));
+
+      statContainer.insertAdjacentHTML(
+        'beforeend',
+        `<div class="game__statistic-text">
+              Новые слова: ${newWords}<br>
+              Изученные слова: ${learnedWords}<br>
+              Серия правильных ответов: ${winStreak}<br>
+            </div>`,
+      );
+
+      this.resultScreen.append(
+        statContainer,
+        this.drawWordsResult(wordsList),
+        this.drawBtns(),
+      );
+    }
+  };
+
+  private drawBtns() {
+    const playAgainBtn = create({
+      tagname: 'button',
+      class: 'btn',
+      text: 'Сыграть еще раз',
+    });
+    playAgainBtn.classList.add('btn--blue', 'game__result-btn');
+    playAgainBtn.addEventListener('click', () => {
+      if (this.startScreen) {
+        this.gameContainer.innerText = '';
+        this.gameContainer.append(this.startScreen);
+      }
+    });
+    const goToDictionaryBtn = create({
+      tagname: 'button',
+      class: 'btn',
+      text: 'Перейти в учебник',
+    });
+    goToDictionaryBtn.classList.add('btn--blue', 'game__result-btn');
+    goToDictionaryBtn.dataset.page = 'dictionary';
+
+    const btnsContainer = create({
+      tagname: 'div',
+      class: 'game__result-btns',
+    });
+    btnsContainer.append(playAgainBtn, goToDictionaryBtn);
+
+    return btnsContainer;
+  }
+
+  private drawWordsResult(wordsList: IAudioCallWord[]) {
+    const wordsResult = create({ tagname: 'div', class: 'game__result-words' });
+
+    const wrongAnswer = wordsList.filter(
+      (word) => Object.prototype.hasOwnProperty.call(word, 'isRightAnswer')
+        && !word.isRightAnswer,
+    );
+    const rightAnswers = wordsList.filter((word) => word.isRightAnswer);
+
+    wordsResult.innerHTML = `Ошибок: <span class="errors-number">${wrongAnswer.length}</span>`;
+    wordsResult.append(this.drawWordsListResult(wrongAnswer));
+
+    wordsResult.insertAdjacentHTML(
+      'beforeend',
+      `Знаю: <span class="right-number">${rightAnswers.length}</span>`,
+    );
+    wordsResult.append(this.drawWordsListResult(rightAnswers));
+
+    return wordsResult;
+  }
+
+  private drawWordsListResult = (wordsList: IAudioCallWord[]) => {
+    const wordsContainer = create({ tagname: 'ul', class: 'words-list' });
+    const audio = new Audio();
+
+    wordsContainer.append(audio);
+
+    wordsList.forEach((word) => {
+      const wordElement = create({ tagname: 'li', class: 'words-list__item' });
+      const audioIcon = this.createAudioIcon(word.audio, audio);
+
+      wordElement.append(audioIcon);
+
+      wordElement.insertAdjacentHTML(
+        'beforeend',
+        `<b>${word.word}</b>&nbsp;—&nbsp;${word.wordTranslate}`,
+      );
+      wordsContainer.append(wordElement);
+    });
+
+    return wordsContainer;
+  };
+
+  private createAudioIcon(audioLink: string, audioElement: HTMLAudioElement) {
+    const audioFragment = document.createDocumentFragment();
+    const svgIcon = document.createElementNS(
+      'http://www.w3.org/2000/svg',
+      'svg',
+    );
+    svgIcon.classList.add('audio-icon');
+    svgIcon.innerHTML = '<use xlink:href="../../assets/img/audio_sprite.svg#audio"></use>';
+
+    svgIcon.addEventListener('click', () => {
+      const audio = audioElement;
+      audio.src = URL_FOR_STATIC + audioLink;
+      audio.play();
+    });
+
+    audioFragment.append(svgIcon);
+
+    return audioFragment;
+  }
+
+  private drawLevels() {
+    const levels = GROUP_LIST;
+    const levelsContainer = create({
+      tagname: 'div',
+      class: 'game__levels',
+    });
+    const title = create({ tagname: 'h4', text: 'Выбери уровень:' });
+
+    levels.forEach((levelName, idx) => {
+      const level = levelName.substring(0, 2);
+      const levelLabel = create({
+        tagname: 'label',
+        class: 'game__level',
+        text: level,
+      });
+      levelLabel.classList.add(`game__level--${level}`);
+      const levelInput = <HTMLInputElement>(
+        create({ tagname: 'input', class: 'game__level--inp' })
+      );
+
+      levelInput.value = idx.toString();
+      levelInput.type = 'radio';
+      levelInput.name = 'gameLevel';
+
+      levelLabel.append(levelInput);
+      levelsContainer.append(levelLabel);
+      this.levels.push(levelInput);
+    });
+
+    levelsContainer.addEventListener('click', this.onLevelClickHandler);
+
+    const levelsSection = document.createDocumentFragment();
+    levelsSection.append(title, levelsContainer);
+
+    return levelsSection;
+  }
+
+  private onStartClickHandler = async () => {
+    this.gameContainer.innerText = '';
+    let group = 0;
+    let pageNum = 0;
+
+    if (this.isMenuLink || isStartPage()) {
+      group = Number(this.startBtn?.dataset.level);
+      pageNum = generateIndex(TOTAL_WORDS / WORDS_PER_PAGE);
+    } else if (isFromDictionaryPage()) {
+      const storageObj = getLocalStorage<{ page: number; group: number }>(
+        DICTIONARY_KEY,
+      );
+      console.log(storageObj);
+
+      if (!storageObj) return;
+
+      group = storageObj.group;
+      pageNum = storageObj.page;
     }
 
-    const imageAnswer = create({
-      tagname: 'div',
-      class: 'audiocall__image',
-      parent: audiocallPlayer,
-    });
-    imageAnswer.style.backgroundImage = `url(http://127.0.0.1:3000/${this.wordsInGame[1].image})`;
-    const audioAnswer = create({
-      tagname: 'div',
-      class: 'audiocall__answer',
-      parent: audiocallPlayer,
-    });
-    const audioPlay = audioAnswer.appendChild(this.play);
-    audioPlay.classList.add('play_answer');
+    const wordsList = await this.onGetWords?.(group, pageNum);
 
-    create({
-      tagname: 'div',
-      class: 'audiocall__answer_word',
-      parent: audioAnswer,
-      text: `${this.wordsInGame[0].word}`, // TODO change to correct answer
-    });
+    if (!wordsList) return;
+
+    this.createGameScreen(wordsList);// , group, pageNum);
+
+    if (this.gameScreen) this.gameContainer.append(this.gameScreen);
+  };
+
+  private onLevelClickHandler = async () => {
+    const currentLevel = this.levels.find((level) => level.checked);
+
+    if (this.startBtn && currentLevel) {
+      this.startBtn.disabled = false;
+      this.startBtn.dataset.level = currentLevel.value;
+      this.setActiveLevel(currentLevel);
+    }
+  };
+
+  private setActiveLevel(current: HTMLInputElement): void {
+    this.levels.forEach((level) => level.parentElement?.classList.remove('game__level--active'));
+    current.parentElement?.classList.add('game__level--active');
   }
 }
 
