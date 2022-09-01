@@ -12,6 +12,7 @@ import {
 } from '../../interfaces/interfaces';
 import updateDate from '../../utils/updateDate';
 import Api from '../../api/api';
+import { AUTH_KEY } from '../../utils/constants';
 
 class User {
   private static instance: User;
@@ -45,7 +46,7 @@ class User {
       aW: 0,
       aB: 0,
     };
-    const storage = <string>localStorage.getItem('RSLang_Auth');
+    const storage = <string>localStorage.getItem(AUTH_KEY);
     if (storage !== null) {
       this.userId = JSON.parse(storage).userId;
       this.token = JSON.parse(storage).token;
@@ -78,7 +79,7 @@ class User {
   }
 
   logout() {
-    localStorage.clear();
+    localStorage.removeItem(AUTH_KEY);
 
     this.userId = '';
     this.token = '';
@@ -150,7 +151,7 @@ class User {
       this.token = response.token;
       this.refreshToken = response.refreshToken;
 
-      this.setStorage('RSLang_Auth', JSON.stringify(result));
+      this.setStorage(AUTH_KEY, JSON.stringify(result));
       this.setStorage('Authenticated', JSON.stringify(true));
     }
     return response;
@@ -161,7 +162,6 @@ class User {
     password: string;
   }): Promise<IAuth | number> {
     const response = await this.api.loginUser(body);
-
     if (response.status === 200) {
       const result = await response.json();
 
@@ -171,7 +171,7 @@ class User {
       this.token = result.token;
       this.refreshToken = result.refreshToken;
 
-      this.setStorage('RSLang_Auth', JSON.stringify(result));
+      this.setStorage(AUTH_KEY, JSON.stringify(result));
       this.setStorage('Authenticated', JSON.stringify(true));
     }
     return response.status;

@@ -1,5 +1,4 @@
-import { PAGE_KEY } from '../../utils/constants';
-import { getLocalStorage } from '../../utils/localStorage';
+import create from '../../utils/createElement';
 import { getCurrentPageName } from '../../utils/utils';
 import userApi from '../user/user';
 
@@ -10,27 +9,38 @@ export default class Auth {
 
   container__class: string;
 
-  constructor() {
+  private logoutBtn: HTMLButtonElement;
+
+  private authBtnContainer: HTMLElement;
+
+  constructor(private reloadPage: () => void) {
     this.container__class = 'login-form';
     this.content = '';
+
+    this.logoutBtn = <HTMLButtonElement>(
+      create({ tagname: 'button', class: 'btn', text: 'Выйти' })
+    );
+    this.logoutBtn.classList.add('btn--orange', 'auth__btn');
+    this.logoutBtn.id = 'main_logout';
+
+    this.authBtnContainer = <HTMLElement>document.getElementById('auth');
+    this.authBtnContainer.addEventListener('click', (e: Event) => this.request(e));
   }
 
-  private logoutBtn = `<button id="main_logout" class="btn btn--orange auth__btn" data-page="${getCurrentPageName()}">Выйти</button>`;
+  // eslint-disable-next-line max-len
+  // private logoutBtn = `<button id="main_logout" class="btn btn--orange auth__btn" data-page="${getCurrentPageName()}">Выйти</button>`;
 
-  async drawButton() {
-    const button = <HTMLElement>document.getElementById('auth');
+  drawButton = async () => {
+    // const button = <HTMLElement>document.getElementById('auth');
     if (await userApi.isAuthenticated()) {
-      button.innerHTML = this.logoutBtn;
+      this.authBtnContainer.append(this.logoutBtn);
       // '<button id="main_logout" class="btn btn--orange auth__btn" data-page="">Выйти</button>';
-      button.dataset.page = getCurrentPageName();
-      button.addEventListener('click', (e: Event) => this.request(e));
+      this.logoutBtn.dataset.page = getCurrentPageName();
     } else {
-      button.innerHTML =
-        '<button id="main_login" class="btn btn--orange auth__btn">Войти</button>';
-      delete button.dataset.page;
-      button.addEventListener('click', (e: Event) => this.request(e));
+      this.authBtnContainer.innerHTML = '<button id="main_login" class="btn btn--orange auth__btn">Войти</button>';
+      // delete button.dataset.page;
     }
-  }
+  };
 
   draw() {
     const container = <HTMLElement>document.createElement('div');
@@ -111,7 +121,8 @@ export default class Auth {
       <div id="error-password" class="error">&nbsp;</div>
     </div class="block">
       <div class="button">
-        <button id="login">ВХОД</button><p><button id="registerLink">Регистрация</button>
+        <button id="login">ВХОД</button>
+        <button id="registerLink">Регистрация</button>
       </div>
   `;
 
@@ -127,8 +138,7 @@ export default class Auth {
     const errorName = <HTMLElement>document.getElementById('error-name');
     inputName.addEventListener('input', () => {
       (<HTMLElement>document.getElementById('title')).innerHTML = '&nbsp;';
-      if (inputName.value.length < 3)
-        errorName.innerText = 'Длинна пароля не менее 3 символов';
+      if (inputName.value.length < 3) errorName.innerText = 'Длинна пароля не менее 3 символов';
       else errorName.innerHTML = '&nbsp;';
     });
   }
@@ -138,8 +148,7 @@ export default class Auth {
     const errorEmail = <HTMLElement>document.getElementById('error-email');
     inputEmail.addEventListener('input', () => {
       (<HTMLElement>document.getElementById('title')).innerHTML = '&nbsp;';
-      if (!this.validateEmail(inputEmail.value))
-        errorEmail.innerText = 'Неверный формат Email-адреса';
+      if (!this.validateEmail(inputEmail.value)) errorEmail.innerText = 'Неверный формат Email-адреса';
       else errorEmail.innerHTML = '&nbsp;';
     });
   }
@@ -151,8 +160,7 @@ export default class Auth {
     );
     inputPassword.addEventListener('input', () => {
       (<HTMLElement>document.getElementById('title')).innerHTML = '&nbsp;';
-      if (inputPassword.value.length < 8)
-        errorPassword.innerText = 'Длинна пароля не менее 8 символов';
+      if (inputPassword.value.length < 8) errorPassword.innerText = 'Длинна пароля не менее 8 символов';
       else errorPassword.innerHTML = '&nbsp;';
     });
   }
@@ -189,16 +197,14 @@ export default class Auth {
     if (target.id === 'login') this.sendLoginData();
     if (target.id === 'register') this.sendRegisterData();
     if (target.id === 'modal-close') this.closeModal();
-    if (target.id === 'input-email' || target.id === 'emailLabel')
-      (<HTMLInputElement>document.getElementById('email')).focus();
-    if (target.id === 'input-password' || target.id === 'passwordLabel')
-      (<HTMLInputElement>document.getElementById('password')).focus();
+    if (target.id === 'input-email' || target.id === 'emailLabel') (<HTMLInputElement>document.getElementById('email')).focus();
+    if (target.id === 'input-password' || target.id === 'passwordLabel') (<HTMLInputElement>document.getElementById('password')).focus();
   }
 
   private logout() {
-    const button = <HTMLElement>document.getElementById('auth');
-    button.innerHTML =
-      '<button id="main_login" class="btn btn--orange auth__btn">Войти</button>';
+    this.logoutBtn.dataset.page = getCurrentPageName();
+
+    this.authBtnContainer.innerHTML = '<button id="main_login" class="btn btn--orange auth__btn">Войти</button>';
     userApi.logout();
   }
 
@@ -215,12 +221,12 @@ export default class Auth {
     const res = await userApi.loginUser({ email, password });
     if (res === 200) {
       this.closeModal();
-      const button = <HTMLElement>document.getElementById('auth');
-      button.innerHTML = this.logoutBtn;
-      // `<button id="main_logout" class="btn btn--orange auth__btn" data-page="${getCurrentPageName()}">Выйти</button>`;
+      this.authBtnContainer.innerText = '';
+      this.authBtnContainer.append(this.logoutBtn);
+      this.logoutBtn.dataset.page = getCurrentPageName();
+      this.reloadPage();
     } else {
-      (<HTMLElement>document.getElementById('title')).innerHTML =
-        'Не верный Email или пароль!!!';
+      (<HTMLElement>document.getElementById('title')).innerHTML = 'Не верный Email или пароль!!!';
       (<HTMLInputElement>document.getElementById('email')).value = '';
       (<HTMLInputElement>document.getElementById('password')).value = '';
     }
@@ -251,16 +257,15 @@ export default class Auth {
 
       if (statusLogin === 200) {
         this.closeModal();
-        const button = <HTMLElement>document.getElementById('auth');
-        button.innerHTML = this.logoutBtn;
-        // `<button id="main_logout" class="btn btn--orange auth__btn" data-page="${getCurrentPageName()}">Выйти</button>`;
+        this.authBtnContainer.innerText = '';
+        this.authBtnContainer.append(this.logoutBtn);
+        this.reloadPage();
       }
     }
   }
 
   private validateEmail(value: string): boolean {
-    const EMAIL_REGEXP =
-      /^(([^<>()[\]\\.,;:\s@\\"]+(\.[^<>()[\]\\.,;:\s@\\"]+)*)|(\\".+\\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const EMAIL_REGEXP = /^(([^<>()[\]\\.,;:\s@\\"]+(\.[^<>()[\]\\.,;:\s@\\"]+)*)|(\\".+\\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return EMAIL_REGEXP.test(value);
   }
 }

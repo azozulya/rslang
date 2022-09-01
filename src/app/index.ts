@@ -22,7 +22,7 @@ class App {
     this.currentPage = storageObj ? storageObj.currentPage : DEFAULT_PAGE;
     this.router = new Router(rootContainer, footerContainer);
     this.menu = new Menu(this.currentPage);
-    this.auth = new Auth();
+    this.auth = new Auth(this.reloadPage);
   }
 
   start() {
@@ -33,6 +33,10 @@ class App {
     this.auth.drawButton();
   }
 
+  private reloadPage = () => {
+    this.router.openPage(this.currentPage, true);
+  };
+
   private onLinkClickHandler = (event: Event) => {
     const linkItem = <HTMLElement>(
       (<HTMLLinkElement>event.target)?.closest('[data-page]')
@@ -42,19 +46,24 @@ class App {
 
     event.preventDefault();
 
-    const pageName = linkItem?.dataset.page;
+    const pageName = linkItem.dataset.page || DEFAULT_PAGE;
     const isMenuLink = Boolean(linkItem.closest('.menu'))
       || Boolean(linkItem.closest('.footer__menu'));
 
-    if (pageName) {
-      if (pageName === this.currentPage) return;
+    const isAuthBtn = linkItem.closest('.auth__btn');
 
-      this.updateLocalStorage(this.currentPage, pageName);
+    if (pageName === this.currentPage && !isAuthBtn) return;
 
-      this.currentPage = pageName;
-      this.router.openPage(pageName, isMenuLink);
-      this.menu.setActive(pageName);
+    if (isAuthBtn) {
+      this.router.openPage(pageName, true);
+      return;
     }
+
+    this.updateLocalStorage(this.currentPage, pageName);
+
+    this.currentPage = pageName;
+    this.router.openPage(pageName, isMenuLink);
+    this.menu.setActive(pageName);
   };
 
   private onPageLoadHandler = () => {
