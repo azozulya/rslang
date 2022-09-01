@@ -73,12 +73,12 @@ class Statistic {
       if (dayStatistic) {
         const rightAnswers = dayStatistic.sR + dayStatistic.aR;
         const allAnswers = rightAnswers + dayStatistic.sW + dayStatistic.aW;
-        this.percentRightAnswers = Math.round((rightAnswers / allAnswers) * 100);
+        this.percentRightAnswers = Math.round((rightAnswers / allAnswers) * 100) || 0;
         this.percentRightSprint = Math.round(
-          (dayStatistic.sR / (dayStatistic.sR + dayStatistic.sW)) * 100,
+          (dayStatistic.sR / (dayStatistic.sR + dayStatistic.sW)) * 100 || 0,
         );
         this.percentRightAudio = Math.round(
-          (dayStatistic.aR / (dayStatistic.aR + dayStatistic.aW)) * 100,
+          (dayStatistic.aR / (dayStatistic.aR + dayStatistic.aW)) * 100 || 0,
         );
 
         this.learnedWordsAll = dayStatistic.L;
@@ -98,6 +98,10 @@ class Statistic {
   }
 
   async draw(rootContainer: HTMLElement) {
+    await userApi.updateWordStatistic(1);
+    // await userApi.updateAudioStatistic(1, 7, 5, 7);
+    // await userApi.updateSprintStatistic(3, 5, 4, 5);
+
     await this.getStatistic();
 
     const container = rootContainer;
@@ -109,10 +113,6 @@ class Statistic {
     `;
     this.drawToday();
     this.drawAllTime();
-
-    // await userApi.updateWordStatistic(-1);
-    // await userApi.updateAudioStatistic(1, 7, 5, 7);
-    // await userApi.updateSprintStatistic(3, 5, 4, 5);
   }
 
   // eslint-disable-next-line max-lines-per-function
@@ -153,7 +153,7 @@ class Statistic {
                 % правильных ответов<br>
                 лучшая серия
                 </div>
-            </div>
+              </div>
           </div>
 
           <div id="audio" class="today_statistic-block">
@@ -186,7 +186,7 @@ class Statistic {
       </div>
         <div class="allTime_statistic">
           <div id="chart_1" class="allTime_statistic-block">
-            <div class="title">Изученные слова</div>
+            <div class="title">Новые слова</div>
             <div class="graph">
               <canvas id="chart1"></canvas>
             </div>
