@@ -2,10 +2,12 @@ import Chart from 'chart.js/auto';
 import 'chartjs-adapter-date-fns';
 import { ru } from 'date-fns/locale';
 import userApi from '../../components/user/user';
-import { IStatistic } from '../../interfaces/interfaces';
+import { IStatistic, IUserStatistics } from '../../interfaces/interfaces';
 import updateDate from '../../utils/updateDate';
 
 class Statistic {
+  private response: IUserStatistics | undefined;
+
   private learnedWordsAll: number;
 
   private newWordsAll: number;
@@ -58,24 +60,25 @@ class Statistic {
     this.labelsChart = [];
     this.dataChart1 = [];
     this.dataChart2 = [];
+    this.response = { learnedWords: 0 };
   }
 
-  async getDayStatistic() {
+  async getStatistic() {
     const currentDate = updateDate();
-    const response = await userApi.getUserStatistics();
+    this.response = await userApi.getUserStatistics();
 
-    if (response) {
-      const options = <Record<string, unknown>>response.optional;
+    if (this.response) {
+      const options = <Record<string, unknown>> this.response.optional;
       const dayStatistic = <IStatistic>options[currentDate];
       if (dayStatistic) {
         const rightAnswers = dayStatistic.sR + dayStatistic.aR;
         const allAnswers = rightAnswers + dayStatistic.sW + dayStatistic.aW;
-        this.percentRightAnswers = Math.round((rightAnswers / allAnswers) * 100);
+        this.percentRightAnswers = Math.round((rightAnswers / allAnswers) * 100) || 0;
         this.percentRightSprint = Math.round(
-          (dayStatistic.sR / (dayStatistic.sR + dayStatistic.sW)) * 100,
+          (dayStatistic.sR / (dayStatistic.sR + dayStatistic.sW)) * 100 || 0,
         );
         this.percentRightAudio = Math.round(
-          (dayStatistic.aR / (dayStatistic.aR + dayStatistic.aW)) * 100,
+          (dayStatistic.aR / (dayStatistic.aR + dayStatistic.aW)) * 100 || 0,
         );
 
         this.learnedWordsAll = dayStatistic.L;
@@ -91,10 +94,15 @@ class Statistic {
         this.audioBestSeries = dayStatistic.aB;
       }
     }
+    this.initCharts();
   }
 
   async draw(rootContainer: HTMLElement) {
-    await this.getDayStatistic();
+    await userApi.updateWordStatistic(1);
+    // await userApi.updateAudioStatistic(1, 7, 5, 7);
+    // await userApi.updateSprintStatistic(3, 5, 4, 5);
+
+    await this.getStatistic();
 
     const container = rootContainer;
     container.innerHTML = `
@@ -105,10 +113,6 @@ class Statistic {
     `;
     this.drawToday();
     this.drawAllTime();
-
-    // await userApi.updateWordStatistic(-1);
-    // await userApi.updateAudioStatistic(1, 7, 5, 7);
-    // await userApi.updateSprintStatistic(3, 5, 4, 5);
   }
 
   // eslint-disable-next-line max-lines-per-function
@@ -149,7 +153,7 @@ class Statistic {
                 % правильных ответов<br>
                 лучшая серия
                 </div>
-            </div>
+              </div>
           </div>
 
           <div id="audio" class="today_statistic-block">
@@ -181,13 +185,13 @@ class Statistic {
         За всё время
       </div>
         <div class="allTime_statistic">
-          <div class="allTime_statistic-block">
-            <div class="title">Изученные слова</div>
+          <div id="chart_1" class="allTime_statistic-block">
+            <div class="title">Новые слова</div>
             <div class="graph">
               <canvas id="chart1"></canvas>
             </div>
           </div>
-          <div class="allTime_statistic-block">
+          <div id="chart_2" class="allTime_statistic-block">
             <div class="title">Прогресс изучения</div>
             <div class="graph">
               <canvas id="chart2"></canvas>
@@ -198,16 +202,13 @@ class Statistic {
     `;
     bodyStatistic.insertAdjacentHTML('beforeend', content);
 
-    await this.initCharts();
-
     this.drawChart1();
     this.drawChart2();
   }
 
-  async initCharts() {
-    const response = await userApi.getUserStatistics();
-    if (response) {
-      const options = <Record<string, unknown>>response.optional;
+  initCharts() {
+    if (this.response) {
+      const options = <Record<string, unknown>> this.response.optional;
       const dataLabels = Object.keys(options);
       let sumLearnedWords = 0;
       for (let i = 0; i < dataLabels.length; i += 1) {
@@ -244,6 +245,7 @@ class Statistic {
       type: 'line',
       data: dataSet,
       options: {
+        maintainAspectRatio: false,
         plugins: {
           legend: {
             display: false,
@@ -291,6 +293,7 @@ class Statistic {
       type: 'line',
       data: dataSet,
       options: {
+        maintainAspectRatio: false,
         plugins: {
           legend: {
             display: false,

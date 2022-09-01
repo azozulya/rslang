@@ -1,4 +1,7 @@
 export default function updateDate(): string {
   const dateNow = new Date();
-  return `${dateNow.getFullYear()}-${dateNow.getMonth()}-${dateNow.getDate()}`;
+  const year = dateNow.getFullYear();
+  const month = String(dateNow.getMonth() + 1).padStart(2, '0');
+  const day = String(dateNow.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }

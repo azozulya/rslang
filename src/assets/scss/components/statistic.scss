@@ -1,3 +1,6 @@
+$font-size: 5.5rem;
+$height: 4.1rem;
+
 #statistic {
   display: flex;
   flex-wrap: wrap;
@@ -28,16 +31,30 @@
     }
     .today_statistic {
       display: grid;
-      width: 80%;
+      width: 60%;
+      grid-template-columns: repeat(6, 1fr);
       grid-template-areas:
         "A A  B B  C C"
         "D D D  E E E";
+      @media (max-width: 1000px) {
+        grid-template-areas:
+          "A A A  B B B"
+          "C C C C C C"
+          "D D D D D D"
+          "E E E E E E";
+      }
+      @media (max-width: 625px) {
+        grid-template-areas:
+          "A A A A A A"
+          "B B B B B B "
+          "C C C C C C"
+          "D D D D D D"
+          "E E E E E E";
+      }
       gap: 30px;
       .today_statistic-block {
         display: flex;
         flex-wrap: wrap;
-        width: 100%;
-        height: 100%;
         border: 1px solid #00bcd4;
 
         border-radius: 8px;
@@ -80,10 +97,12 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        padding: 10px;
+        gap: 10px;
         .number {
           display: flex;
-          height: 100px;
-          font-size: 100px;
+          height: $height;
+          font-size: $font-size;
           font-weight: 700;
           align-items: center;
         }
@@ -93,7 +112,6 @@
           align-items: center;
           justify-content: center;
           width: 70px;
-          padding-left: 10px;
         }
       }
       #newWords {
@@ -101,10 +119,12 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        padding: 10px;
+        gap: 10px;
         .number {
           display: flex;
-          height: 100px;
-          font-size: 100px;
+          height: $height;
+          font-size: $font-size;
           font-weight: 700;
           align-items: center;
         }
@@ -114,19 +134,19 @@
           align-items: center;
           justify-content: center;
           width: 70px;
-          padding-left: 10px;
         }
       }
       #percentAnswer {
         grid-area: C;
-        width: 100%;
         align-items: center;
         justify-content: center;
+        padding: 10px;
+        gap: 10px;
         .percent {
           display: flex;
-          height: 100px;
-          font-size: 100px;
-          font-weight: 900;
+          height: $height;
+          font-size: $font-size;
+          font-weight: 700;
           align-items: center;
         }
         .content {
@@ -135,7 +155,6 @@
           align-items: center;
           justify-content: center;
           width: 70px;
-          padding-left: 10px;
         }
       }
       #sprint {
@@ -172,28 +191,37 @@
     }
     .allTime_statistic {
       display: grid;
-      grid-template-columns: repeat(2, minmax(350px, 1fr));
-      grid-template-rows: minmax(250px, 350px);
+      width: 80%;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-areas: "A B";
+      @media (max-width: 1000px) {
+        grid-template-areas:
+          "A A"
+          "B B";
+      }
+      #chart_1 {
+        grid-area: A;
+      }
+      #chart_2 {
+        grid-area: B;
+      }
       grid-gap: 30px;
       .allTime_statistic-block {
         display: flex;
         flex-wrap: wrap;
-        width: 100%;
-        height: 100%;
         border: 1px solid #00bcd4;
         border-radius: 8px;
         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.15);
+        padding: 10px;
         .title {
           width: 100%;
           height: 25px;
           align-items: flex-start;
           justify-content: center;
-          padding-top: 10px;
         }
         .graph {
           display: flex;
           width: 100%;
-          padding: 0 10px 10px 10px;
         }
       }
     }
