@@ -46,6 +46,8 @@ class WordAuth extends Word implements IWordAppForAuthUser {
     this.changeWord(type, true);
     this.changeIcon();
 
+    if (type === 'learned') userApi.updateWordStatistic(1);
+
     const word = await this.getUserWord();
     if (!word) this.addWords(type);
     else {
@@ -64,6 +66,8 @@ class WordAuth extends Word implements IWordAppForAuthUser {
   async deleteWords(type:'hard' | 'learned') {
     this.changeWord(type, false);
     this.changeIcon();
+
+    if (type === 'learned') userApi.updateWordStatistic(-1);
 
     const word = await this.getUserWord();
     if (!word) throw new Error('User word were not found');
