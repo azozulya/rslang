@@ -20,6 +20,8 @@ class Api {
 
   private constructor() {
     this.baseUrl = 'http://127.0.0.1:3000';
+    // this.baseUrl = 'https://react-rslang-beckend.herokuapp.com';
+
     this.words = `${this.baseUrl}/words`;
     this.users = `${this.baseUrl}/users`;
     this.signin = `${this.baseUrl}/signin`;
