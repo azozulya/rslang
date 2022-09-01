@@ -31,7 +31,13 @@ const baseConfig = {
         test: /\.html$/,
         use: 'html-loader',
       },
-
+      {
+        test: /\.(mp3|wav)$/,
+        loader: 'file-loader',
+        options: {
+          name: 'audio/[path][name].[ext]',
+        },
+      },
       {
         test: /\.tsx?$/,
         use: 'ts-loader',
@@ -73,6 +79,10 @@ const baseConfig = {
         {
           from: './src/assets/img',
           to: './assets/img',
+        },
+        {
+          from: './src/assets/audio/',
+          to: './assets/audio',
         },
       ],
     }),

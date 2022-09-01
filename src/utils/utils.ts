@@ -1,4 +1,8 @@
-import { IPathOfAggregatedWord, IUserWord, TPageHistory } from '../interfaces/interfaces';
+import {
+  IPathOfAggregatedWord,
+  IUserWord,
+  TPageHistory,
+} from '../interfaces/interfaces';
 import { DEFAULT_PAGE, DICTIONARY_PAGE, PAGE_KEY } from './constants';
 import create from './createElement';
 import { getLocalStorage } from './localStorage';
@@ -20,6 +24,14 @@ export const isStartPage = () => {
   }
 
   return false;
+};
+
+export const getCurrentPageName = () => {
+  const storageValue = getLocalStorage<TPageHistory>(PAGE_KEY);
+
+  if (storageValue) return storageValue.currentPage;
+
+  return DEFAULT_PAGE;
 };
 
 export function createDefaultWord(id: string): IUserWord {
@@ -61,12 +73,6 @@ export function createDefaultUserWord(id: string): IPathOfAggregatedWord {
     },
   };
 }
-
-export const getDateWithoutTime = () => {
-  const date = new Date();
-  date.setHours(0, 0, 0, 0);
-  return date.getTime();
-};
 
 function createCircle(className: string) {
   const circle = document.createElementNS(
@@ -114,3 +120,10 @@ export const animatedCircleProgressBar = (value: number) => {
   );
   return container;
 };
+
+export function playAudio(audioElementToPlay: HTMLAudioElement) {
+  const audio = audioElementToPlay;
+  audio.pause();
+  audio.currentTime = 0;
+  audio.play();
+}

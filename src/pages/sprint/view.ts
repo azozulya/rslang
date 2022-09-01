@@ -45,6 +45,12 @@ class GamesView {
     newWords: number;
   };
 
+  private onSendStatistic?: (
+    rightAnswers: number,
+    wrongAnswers: number,
+    bestSeries: number
+  ) => void;
+
   constructor() {
     this.isFromDictionary = isFromDictionaryPage();
     this.gameContainer = create({ tagname: 'section', class: 'game' });
@@ -155,16 +161,21 @@ class GamesView {
   private stopGame = (state: IGameStatistic, wordsList: IGameWord[]) => {
     this.gameContainer.innerText = '';
 
-    const stateGame = this.getGameStatistic?.();
+    const {
+      score,
+      learnedWords,
+      newWords,
+      rightAnswer,
+      wrongAnswer,
+      winStreak,
+    } = { ...state, ...this.getGameStatistic?.() };
 
-    const totalState = {
+    this.onSendStatistic?.(rightAnswer, wrongAnswer, winStreak);
+
+    console.log('stopGame, gameStat: ', {
       ...state,
-      ...stateGame,
-      date: Date.now(),
-      name: 'sprint',
-    };
-
-    console.log('stopGame, gameStat: ', totalState);
+      ...this.getGameStatistic?.(),
+    });
 
     if (this.resultScreen) {
       this.gameContainer.append(this.resultScreen);
@@ -179,15 +190,6 @@ class GamesView {
         tagname: 'div',
         class: 'game__statistic',
       });
-
-      const {
-        score,
-        newWords,
-        learnedWords,
-        winStreak,
-        rightAnswer,
-        wrongAnswer,
-      } = totalState;
 
       const totalAnswers = rightAnswer + wrongAnswer;
       const rightAnswersInPercent = Math.floor((rightAnswer * 100) / totalAnswers) || 0;
@@ -331,6 +333,16 @@ class GamesView {
     this.getGameStatistic = handler;
   }
 
+  bindSendStatistic(
+    handler: (
+      rightAnswers: number,
+      wrongAnswers: number,
+      bestSeries: number
+    ) => void,
+  ) {
+    this.onSendStatistic = handler;
+  }
+
   private onLevelClickHandler = async () => {
     const currentLevel = this.levels.find((level) => level.checked);
 
@@ -358,12 +370,9 @@ class GamesView {
       const storageObj = getLocalStorage<{ page: number; group: number }>(
         DICTIONARY_KEY,
       );
-      console.log(storageObj);
 
-      if (!storageObj) return;
-
-      group = storageObj.group;
-      pageNum = storageObj.page;
+      group = storageObj ? storageObj.group : 0;
+      pageNum = storageObj ? storageObj.page : 0;
     }
 
     const wordsList = await this.onGetWords?.(group, pageNum);

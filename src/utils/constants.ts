@@ -4,6 +4,8 @@ export const DICTIONARY_PAGE = 'dictionary';
 
 export const PAGE_KEY = 'RSLang_page';
 
+export const AUTH_KEY = 'RSLang_Auth';
+
 export const DICTIONARY_KEY = 'wordsNavigate';
 
 export const WORDS_PER_PAGE = 20;
@@ -13,8 +15,6 @@ export const TOTAL_WORDS = 600;
 export const COUNT_OF_GROUPS = 5;
 
 export const GAME_TIMER = 30;
-
-export const SPRINT_WORDS_STATISTIC = 'RSLang_sprint';
 
 export const POINTS_TO_LEARNED_HARD_WORD = 5;
 
@@ -30,4 +30,11 @@ export const SERIA_RIGHT_ANSWER = 3; // 3 dots + 10
 
 export const URL_FOR_STATIC = 'http://localhost:3000/';
 
-export const GROUP_LIST = ['A1 Beginner', 'A2 Elementary', 'B1 Intermediate', 'B2 UpIntermediate', 'C1 Advanced', 'C2 Proficiency'];
+export const GROUP_LIST = [
+  'A1 Beginner',
+  'A2 Elementary',
+  'B1 Intermediate',
+  'B2 UpIntermediate',
+  'C1 Advanced',
+  'C2 Proficiency',
+];

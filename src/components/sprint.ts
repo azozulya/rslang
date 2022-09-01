@@ -7,6 +7,7 @@ import {
   SERIA_RIGHT_ANSWER,
 } from '../utils/constants';
 import create from '../utils/createElement';
+import { playAudio } from '../utils/utils';
 
 class SprintGame {
   private gameContainer: HTMLElement;
@@ -41,6 +42,10 @@ class SprintGame {
 
   private timerId?: NodeJS.Timer;
 
+  private audioRightElement: HTMLAudioElement;
+
+  private audioWrongElement: HTMLAudioElement;
+
   constructor(
     private wordsList: IGameWord[],
     private group: number,
@@ -67,6 +72,9 @@ class SprintGame {
       class: 'sprint__score-points',
       text: `+${this.pointsPerRightAnswer} очков за слово`,
     });
+
+    this.audioRightElement = new Audio('../../assets/audio/rightAnswer.mp3');
+    this.audioWrongElement = new Audio('../../assets/audio/wrongAnswer.mp3');
 
     this.init();
   }
@@ -126,7 +134,7 @@ class SprintGame {
 
     this.dots = Array(SERIA_RIGHT_ANSWER)
       .fill(0)
-      .map((_) => create({ tagname: 'div', class: 'dot' }));
+      .map(() => create({ tagname: 'div', class: 'dot' }));
 
     dotsContainer.append(...this.dots);
 
@@ -170,7 +178,12 @@ class SprintGame {
     this.yesBtn.addEventListener('click', this.onYesBtnClickHandler);
 
     const btnsContainer = create({ tagname: 'div', class: 'sprint__btns' });
-    btnsContainer.append(this.noBtn, this.yesBtn);
+    btnsContainer.append(
+      this.noBtn,
+      this.yesBtn,
+      this.audioRightElement,
+      this.audioWrongElement,
+    );
 
     return btnsContainer;
   }
@@ -261,15 +274,21 @@ class SprintGame {
 
     if (String(wordTranslate === pseudoTranslate) === userAnswer) {
       currentWord.isRightAnswer = true;
+
+      playAudio(this.audioRightElement);
       this.addRightAnswer();
       this.updateWordState?.(currentWord.id, true);
     } else {
       currentWord.isRightAnswer = false;
+
+      playAudio(this.audioWrongElement);
       this.addWrongAnswer();
       this.updateWordState?.(currentWord.id, false);
     }
 
-    setTimeout(() => this.nextWord(), 100);
+    setTimeout(() => {
+      this.nextWord();
+    }, 100);
   };
 
   private updatePointsPerWord() {
