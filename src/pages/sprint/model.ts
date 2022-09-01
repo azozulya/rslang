@@ -42,47 +42,31 @@ class GamesModel {
     this.api = API.getInstance();
   }
 
-  getGameStatistic = () => {
-    console.log('model, getGameStatistic:  ', this.gameState);
-    return this.gameState;
-  };
+  getGameStatistic = () => this.gameState;
 
-  resetGameStatistic() {
+  private resetGameStatistic() {
     this.gameState = {
       learnedWords: 0,
       newWords: 0,
     };
   }
 
-  private async updateStatistic(wordStat: IWordStat) {
-    await this.sendStatistic(wordStat);
-
-    const date = getDateWithoutTime();
-
-    const storageObj = getLocalStorage<{ [x: number]: IWordStat[] }>(
-      SPRINT_WORDS_STATISTIC,
+  sendStatistic = async (
+    rightAnswers: number,
+    wrongAnswers: number,
+    bestSeries: number
+  ) => {
+    await userApi.updateSprintStatistic(
+      this.gameState.newWords,
+      rightAnswers,
+      wrongAnswers,
+      bestSeries
     );
-
-    if (!storageObj) {
-      setLocalStorage(SPRINT_WORDS_STATISTIC, { [date]: [wordStat] });
-      return;
-    }
-
-    const currentStat = storageObj[date];
-    currentStat.push(wordStat);
-
-    setLocalStorage(SPRINT_WORDS_STATISTIC, {
-      [date]: currentStat,
-    });
-  }
-
-  private async sendStatistic(wordStat: IWordStat) {
-    return '';
-  }
+    this.resetGameStatistic();
+  };
 
   updateUserWord = async (wordId: string, isRightAnswer: boolean) => {
     const isUser = await userApi.isAuthenticated();
-    console.log(`model: isUser: ${isUser}, isRightAnswer: ${isRightAnswer}`);
 
     if (!isUser) return;
 
@@ -98,10 +82,14 @@ class GamesModel {
 
   private updateExistWord = async (
     userWord: IUserWord,
-    isRightAnswer: boolean,
+    isRightAnswer: boolean
   ) => {
     const { sprint } = userWord.optional;
     let { hard, learned } = userWord.optional;
+
+    if (sprint.rightAnswer === 0 && sprint.wrongAnswer === 0) {
+      this.gameState.newWords += 1;
+    }
 
     if (isRightAnswer) {
       sprint.rightAnswer += 1;
@@ -109,8 +97,8 @@ class GamesModel {
       const diff = sprint.rightAnswer - sprint.wrongAnswer;
 
       if (
-        (hard && diff === POINTS_TO_LEARNED_HARD_WORD)
-        || (!hard && diff === POINTS_TO_LEARNED_WORD)
+        (hard && diff === POINTS_TO_LEARNED_HARD_WORD) ||
+        (!hard && diff === POINTS_TO_LEARNED_WORD)
       ) {
         this.gameState.learnedWords += 1;
         learned = true;
@@ -123,13 +111,8 @@ class GamesModel {
     }
 
     await userApi.updateUserWord(userWord.wordId, userWord);
-
-    this.updateStatistic({
-      wordID: userWord.wordId,
-      learned,
-      new: false,
-      rightAnswer: isRightAnswer,
-    });
+    console.log('sendStatistic: ', isRightAnswer ? 1 : -1);
+    await userApi.updateWordStatistic(isRightAnswer ? 1 : -1);
 
     console.log('update userWord: ', userWord);
   };
@@ -145,20 +128,14 @@ class GamesModel {
     console.log('create newUserWord: ', newUserWord);
 
     await userApi.createUserWord(wordID, newUserWord);
-
-    this.updateStatistic({
-      wordID,
-      learned: false,
-      new: true,
-      rightAnswer: isRightAnswer,
-    });
+    await userApi.updateWordStatistic(isRightAnswer ? 1 : -1);
   };
 
   getWordsForGame = async (group: number, page: number) => {
     if (
-      (await userApi.isAuthenticated())
-      && isFromDictionaryPage()
-      && !this.isMenuLink
+      (await userApi.isAuthenticated()) &&
+      isFromDictionaryPage() &&
+      !this.isMenuLink
     ) {
       const words = await this.getAgreggatedUserWords(group, page);
 
@@ -168,7 +145,7 @@ class GamesModel {
     }
 
     console.log(
-      `getWords, fromMenuLink || notAuth, page: ${page}, group: ${group}`,
+      `getWords, fromMenuLink || notAuth, page: ${page}, group: ${group}`
     );
 
     const wordList = await this.getWords(group, page);
@@ -182,7 +159,7 @@ class GamesModel {
 
   private async getAgreggatedUserWords(
     group: number,
-    page: number,
+    page: number
   ): Promise<IGameWord[] | null> {
     const userLearnedWords = await userApi.getUserAggregatedWords(
       group,
@@ -191,8 +168,8 @@ class GamesModel {
       encodeURIComponent(
         JSON.stringify({
           $and: [{ 'userWord.optional.learned': true }, { page }],
-        }),
-      ),
+        })
+      )
     );
     console.log(group, page);
     console.log('userLearnedWords: ', userLearnedWords);
@@ -208,12 +185,12 @@ class GamesModel {
     if (wordsList && learnedWords.length) {
       const excludeIDs: string[] = learnedWords.map(
         // eslint-disable-next-line no-underscore-dangle
-        (word: IAggregatedWord) => word._id,
+        (word: IAggregatedWord) => word._id
       );
       // console.log('excludeIDs: ', excludeIDs);
 
       const filteredWords = wordsList.filter(
-        (word: IWord) => !excludeIDs.includes(word.id),
+        (word: IWord) => !excludeIDs.includes(word.id)
       );
       console.log('filteredWords: ', filteredWords);
 
@@ -227,10 +204,9 @@ class GamesModel {
   }
 
   private formatWords(words: IWord[]): IGameWord[] {
-    return words.map(({
-      word, wordTranslate, id, audio,
-    }, idx) => {
-      const randomIndex = Math.random() > 0.5 ? idx : generateIndex(words.length);
+    return words.map(({ word, wordTranslate, id, audio }, idx) => {
+      const randomIndex =
+        Math.random() > 0.5 ? idx : generateIndex(words.length);
       return {
         id,
         audio,
@@ -240,10 +216,6 @@ class GamesModel {
       };
     });
   }
-
-  // bindReadyWords(handler: (words: IGameWord[]) => void) {
-  //   this.onReadyWordsHandler = handler;
-  // }
 }
 
 export default GamesModel;

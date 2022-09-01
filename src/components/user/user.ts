@@ -35,7 +35,15 @@ class User {
   constructor() {
     this.api = Api.getInstance();
     this.defaultStatistic = {
-      L: 0, sN: 0, sR: 0, sW: 0, sB: 0, aN: 0, aR: 0, aW: 0, aB: 0,
+      L: 0,
+      sN: 0,
+      sR: 0,
+      sW: 0,
+      sB: 0,
+      aN: 0,
+      aR: 0,
+      aW: 0,
+      aB: 0,
     };
     const storage = <string>localStorage.getItem('RSLang_Auth');
     if (storage !== null) {
@@ -219,7 +227,7 @@ class User {
     return this.api.getUserStatistics(this.userId, this.token);
   }
 
-  updateUserStatistics(
+  private updateUserStatistics(
     body: IUserStatistics,
   ): Promise<IUserStatistics | undefined> {
     return this.api.updateUserStatistics(this.userId, this.token, body);
