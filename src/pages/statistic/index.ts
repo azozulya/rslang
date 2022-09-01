@@ -98,8 +98,8 @@ class Statistic {
   }
 
   async draw(rootContainer: HTMLElement) {
-    await userApi.updateWordStatistic(1);
-    // await userApi.updateAudioStatistic(1, 7, 5, 7);
+    // await userApi.updateWordStatistic(1);
+    // await userApi.updateAudioStatistic(10, 1, 7, 5, 7);
     // await userApi.updateSprintStatistic(3, 5, 4, 5);
 
     await this.getStatistic();
@@ -127,17 +127,15 @@ class Statistic {
             <div class="number">
               ${this.learnedWordsAll}
             </div>
-            <div class="content">
-            <span class="word1">слов</span><span>изучено</span>
-            </div>
+            <div class="content">слов изучено</div>
           </div>
           <div id="newWords" class="today_statistic-block">
             <div class="number">${this.newWordsAll}</div>
-            <div class="content"><span>новых</span><span>слов</span></div>
+            <div class="content">новых слов</div>
           </div>
           <div id="percentAnswer" class="today_statistic-block">
-            <div class="percent">${this.percentRightAnswers}%</div>
-            <div class="content"><span>верных</span><span>ответов</span></div>
+            <div class="number">${this.percentRightAnswers}%</div>
+            <div class="content">правильных ответов</div>
           </div>
           <div id="sprint" class="today_statistic-block">
             <div class="title">
@@ -145,7 +143,7 @@ class Statistic {
               <div class="nameGame_sprint">Спринт</div>
             </div>  
             <div class="results">
-              <div class="numbers">
+   <!--           <div class="numbers">
                 ${this.sprintNewWords}<br>${this.percentRightSprint}<br>${this.sprintBestSeries}
               </div>
               <div class=text>
@@ -153,7 +151,14 @@ class Statistic {
                 % правильных ответов<br>
                 лучшая серия
                 </div>
-              </div>
+        -->      
+        <div class="a">
+        <div>${this.sprintNewWords}</div><div>% правильных ответов</div>
+        </div>
+</div>
+
+
+
           </div>
 
           <div id="audio" class="today_statistic-block">
