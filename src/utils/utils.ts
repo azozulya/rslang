@@ -26,6 +26,14 @@ export const isStartPage = () => {
   return false;
 };
 
+export const getCurrentPageName = () => {
+  const storageValue = getLocalStorage<TPageHistory>(PAGE_KEY);
+
+  if (storageValue) return storageValue.currentPage;
+
+  return DEFAULT_PAGE;
+};
+
 export function createDefaultWord(id: string): IUserWord {
   return {
     wordId: id,

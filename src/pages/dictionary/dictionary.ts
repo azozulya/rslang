@@ -89,8 +89,6 @@ class DictionaryView {
 
   goToPage = async (page: number) => {
     this.page = page - 1;
-    console.log('group: ', this.group, ' page: ', this.page);
-
     this.onGetWords(this.group, this.page);
     this.saveWordsNavigate();
   };
@@ -338,7 +336,7 @@ class DictionaryView {
     });
     container.insertAdjacentHTML(
       'beforeend',
-      '<button data-page="sprint">Sprint</button>',
+      '<button data-page="sprint2">Sprint</button>',
     );
     return container;
   }

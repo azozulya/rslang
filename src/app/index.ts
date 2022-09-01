@@ -16,10 +16,11 @@ class App {
 
   constructor() {
     const rootContainer = document.getElementById('main') || document.body;
+    const footerContainer = document.getElementById('footer');
     const storageObj = getLocalStorage<TPageHistory>(PAGE_KEY);
 
     this.currentPage = storageObj ? storageObj.currentPage : DEFAULT_PAGE;
-    this.router = new Router(rootContainer);
+    this.router = new Router(rootContainer, footerContainer);
     this.menu = new Menu(this.currentPage);
     this.auth = new Auth();
   }
