@@ -35,7 +35,7 @@ class User {
   constructor() {
     this.api = Api.getInstance();
     this.defaultStatistic = {
-      L: 0, sL: 0, sR: 0, sI: 0, sB: 0, aL: 0, aR: 0, aI: 0, aB: 0,
+      L: 0, sN: 0, sR: 0, sW: 0, sB: 0, aN: 0, aR: 0, aW: 0, aB: 0,
     };
     const storage = <string>localStorage.getItem('RSLang_Auth');
     if (storage !== null) {
@@ -233,26 +233,26 @@ class User {
     return this.api.updateUserSettings(this.userId, this.token, body);
   }
 
-  async updateWordStatistic() {
+  async updateWordStatistic(amount: number) {
     const body = <IUserStatistics>{};
     const currentDate = updateDate();
     const response = await this.getUserStatistics();
     if (!response) {
       const options = <Record<string, unknown>>{};
       (<IStatistic>options[currentDate]) = this.defaultStatistic;
-      (<IStatistic>options[currentDate]).L = 1;
-      body.learnedWords = 1;
+      (<IStatistic>options[currentDate]).L = amount;
       body.optional = options;
       await this.updateUserStatistics(body);
     } else {
-      const learned = response.learnedWords + 1;
       const options = <Record<string, unknown>>response.optional;
-      if (options[currentDate]) (<IStatistic>options[currentDate]).L += 1;
-      else {
+      if (options[currentDate]) {
+        if ((<IStatistic>options[currentDate]).L > 0) {
+          (<IStatistic>options[currentDate]).L += amount;
+        }
+      } else {
         (<IStatistic>options[currentDate]) = this.defaultStatistic;
         (<IStatistic>options[currentDate]).L = 1;
       }
-      body.learnedWords = learned;
       body.optional = options;
       await this.updateUserStatistics(body);
     }
@@ -261,8 +261,9 @@ class User {
   // eslint-disable-next-line max-lines-per-function
   async updateSprintStatistic(
     learnedWords: number,
+    newWords: number,
     rightAnswers: number,
-    incorrectAnswers: number,
+    wrongAnswers: number,
     bestSeries: number,
   ) {
     const currentDate = updateDate();
@@ -271,32 +272,32 @@ class User {
     if (!response) {
       const options = <Record<string, unknown>>{};
       (<IStatistic>options[currentDate]) = this.defaultStatistic;
-      (<IStatistic>options[currentDate]).sL = learnedWords;
+      (<IStatistic>options[currentDate]).L = learnedWords;
+      (<IStatistic>options[currentDate]).sN = newWords;
       (<IStatistic>options[currentDate]).sR = rightAnswers;
-      (<IStatistic>options[currentDate]).sI = incorrectAnswers;
+      (<IStatistic>options[currentDate]).sW = wrongAnswers;
       (<IStatistic>options[currentDate]).sB = bestSeries;
-      body.learnedWords = learnedWords;
       body.optional = options;
       await this.updateUserStatistics(body);
     } else {
-      const learned = response.learnedWords + learnedWords;
       const options = <Record<string, unknown>>response.optional;
       if (options[currentDate]) {
-        (<IStatistic>options[currentDate]).sL += learnedWords;
+        (<IStatistic>options[currentDate]).L += learnedWords;
+        (<IStatistic>options[currentDate]).sN += newWords;
         (<IStatistic>options[currentDate]).sR += rightAnswers;
-        (<IStatistic>options[currentDate]).sI += incorrectAnswers;
+        (<IStatistic>options[currentDate]).sW += wrongAnswers;
 
         if ((<IStatistic>options[currentDate]).sB < bestSeries) {
           (<IStatistic>options[currentDate]).sB = bestSeries;
         }
       } else {
         (<IStatistic>options[currentDate]) = this.defaultStatistic;
-        (<IStatistic>options[currentDate]).sL = learnedWords;
+        (<IStatistic>options[currentDate]).L = learnedWords;
+        (<IStatistic>options[currentDate]).sN = newWords;
         (<IStatistic>options[currentDate]).sR = rightAnswers;
-        (<IStatistic>options[currentDate]).sI = incorrectAnswers;
+        (<IStatistic>options[currentDate]).sW = wrongAnswers;
         (<IStatistic>options[currentDate]).sB = bestSeries;
       }
-      body.learnedWords = learned;
       body.optional = options;
       await this.updateUserStatistics(body);
     }
@@ -305,8 +306,9 @@ class User {
   // eslint-disable-next-line max-lines-per-function
   async updateAudioStatistic(
     learnedWords: number,
+    newWords: number,
     rightAnswers: number,
-    incorrectAnswers: number,
+    wrongAnswers: number,
     bestSeries: number,
   ) {
     const currentDate = updateDate();
@@ -315,32 +317,32 @@ class User {
     if (!response) {
       const options = <Record<string, unknown>>{};
       (<IStatistic>options[currentDate]) = this.defaultStatistic;
-      (<IStatistic>options[currentDate]).aL = learnedWords;
+      (<IStatistic>options[currentDate]).L = learnedWords;
+      (<IStatistic>options[currentDate]).aN = newWords;
       (<IStatistic>options[currentDate]).aR = rightAnswers;
-      (<IStatistic>options[currentDate]).aI = incorrectAnswers;
+      (<IStatistic>options[currentDate]).aW = wrongAnswers;
       (<IStatistic>options[currentDate]).aB = bestSeries;
-      body.learnedWords = learnedWords;
       body.optional = options;
       await this.updateUserStatistics(body);
     } else {
-      const learned = response.learnedWords + learnedWords;
       const options = <Record<string, unknown>>response.optional;
       if (options[currentDate]) {
-        (<IStatistic>options[currentDate]).aL += learnedWords;
+        (<IStatistic>options[currentDate]).L += learnedWords;
+        (<IStatistic>options[currentDate]).aN += newWords;
         (<IStatistic>options[currentDate]).aR += rightAnswers;
-        (<IStatistic>options[currentDate]).aI += incorrectAnswers;
+        (<IStatistic>options[currentDate]).aW += wrongAnswers;
 
         if ((<IStatistic>options[currentDate]).aB < bestSeries) {
           (<IStatistic>options[currentDate]).aB = bestSeries;
         }
       } else {
         (<IStatistic>options[currentDate]) = this.defaultStatistic;
-        (<IStatistic>options[currentDate]).aL = learnedWords;
+        (<IStatistic>options[currentDate]).L = learnedWords;
+        (<IStatistic>options[currentDate]).aN = newWords;
         (<IStatistic>options[currentDate]).aR = rightAnswers;
-        (<IStatistic>options[currentDate]).aI = incorrectAnswers;
+        (<IStatistic>options[currentDate]).aW = wrongAnswers;
         (<IStatistic>options[currentDate]).aB = bestSeries;
       }
-      body.learnedWords = learned;
       body.optional = options;
       await this.updateUserStatistics(body);
     }

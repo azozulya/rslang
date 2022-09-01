@@ -1,33 +1,40 @@
 import Chart from 'chart.js/auto';
-// import { Chart } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import { ru } from 'date-fns/locale';
 import userApi from '../../components/user/user';
-import { IStatistic } from '../../interfaces/interfaces';
+import { IStatistic, IUserStatistics } from '../../interfaces/interfaces';
 import updateDate from '../../utils/updateDate';
 
 class Statistic {
+  private response: IUserStatistics | undefined;
+
   private learnedWordsAll: number;
+
+  private newWordsAll: number;
 
   private learnedWords: number;
 
-  private sprintLearnedWords: number;
+  private sprintNewWords: number;
 
   private sprintRightAnswers: number;
 
-  private sprintIncorrectAnswer: number;
+  private sprintWrongAnswer: number;
 
   private sprintBestSeries: number;
 
-  private audioLearnedWords: number;
+  private audioNewWords: number;
 
   private audioRightAnswers: number;
 
-  private audioIncorrectAnswer: number;
+  private audioWrongAnswer: number;
 
   private audioBestSeries: number;
 
   private percentRightAnswers: number;
+
+  private percentRightSprint: number;
+
+  private percentRightAudio: number;
 
   private labelsChart: number[];
 
@@ -37,52 +44,65 @@ class Statistic {
 
   constructor() {
     this.learnedWordsAll = 0;
+    this.newWordsAll = 0;
     this.learnedWords = 0;
-    this.sprintLearnedWords = 0;
+    this.sprintNewWords = 0;
     this.sprintRightAnswers = 0;
-    this.sprintIncorrectAnswer = 0;
+    this.sprintWrongAnswer = 0;
     this.sprintBestSeries = 0;
-    this.audioLearnedWords = 0;
+    this.audioNewWords = 0;
     this.audioRightAnswers = 0;
-    this.audioIncorrectAnswer = 0;
+    this.audioWrongAnswer = 0;
     this.audioBestSeries = 0;
-    this.audioIncorrectAnswer = 0;
     this.percentRightAnswers = 0;
-    // this.labelsChart = [Date.parse(updateDate())];
-    // this.dataChart1 = [0];
-    // this.dataChart2 = [0];
+    this.percentRightSprint = 0;
+    this.percentRightAudio = 0;
     this.labelsChart = [];
     this.dataChart1 = [];
     this.dataChart2 = [];
+    this.response = { learnedWords: 0 };
   }
 
-  async getDayStatistic() {
+  async getStatistic() {
     const currentDate = updateDate();
-    const response = await userApi.getUserStatistics();
+    this.response = await userApi.getUserStatistics();
 
-    if (response) {
-      const options = <Record<string, unknown>>response.optional;
+    if (this.response) {
+      const options = <Record<string, unknown>> this.response.optional;
       const dayStatistic = <IStatistic>options[currentDate];
       if (dayStatistic) {
         const rightAnswers = dayStatistic.sR + dayStatistic.aR;
-        const allAnswers = rightAnswers + dayStatistic.sI + dayStatistic.aI;
-        this.percentRightAnswers = Math.round((rightAnswers / allAnswers) * 100);
-        this.learnedWordsAll = dayStatistic.L + dayStatistic.sL + dayStatistic.aL;
+        const allAnswers = rightAnswers + dayStatistic.sW + dayStatistic.aW;
+        this.percentRightAnswers = Math.round((rightAnswers / allAnswers) * 100) || 0;
+        this.percentRightSprint = Math.round(
+          (dayStatistic.sR / (dayStatistic.sR + dayStatistic.sW)) * 100 || 0,
+        );
+        this.percentRightAudio = Math.round(
+          (dayStatistic.aR / (dayStatistic.aR + dayStatistic.aW)) * 100 || 0,
+        );
+
+        this.learnedWordsAll = dayStatistic.L;
+        this.newWordsAll = dayStatistic.sN + dayStatistic.aN;
         this.learnedWords = dayStatistic.L;
-        this.sprintLearnedWords = dayStatistic.sL;
+        this.sprintNewWords = dayStatistic.sN;
         this.sprintRightAnswers = dayStatistic.sR;
-        this.sprintIncorrectAnswer = dayStatistic.sI;
+        this.sprintWrongAnswer = dayStatistic.sW;
         this.sprintBestSeries = dayStatistic.sB;
-        this.audioLearnedWords = dayStatistic.aL;
+        this.audioNewWords = dayStatistic.aN;
         this.audioRightAnswers = dayStatistic.aR;
-        this.audioIncorrectAnswer = dayStatistic.aI;
+        this.audioWrongAnswer = dayStatistic.aW;
         this.audioBestSeries = dayStatistic.aB;
       }
     }
+    this.initCharts();
   }
 
   async draw(rootContainer: HTMLElement) {
-    await this.getDayStatistic();
+    // await userApi.updateWordStatistic(1);
+    // await userApi.updateAudioStatistic(10, 1, 7, 5, 7);
+    // await userApi.updateSprintStatistic(3, 5, 4, 5);
+
+    await this.getStatistic();
 
     const container = rootContainer;
     container.innerHTML = `
@@ -93,9 +113,6 @@ class Statistic {
     `;
     this.drawToday();
     this.drawAllTime();
-
-    // await userApi.updateAudioStatistic(10, 10, 5, 7);
-    // await userApi.updateSprintStatistic(15, 15, 4, 5);
   }
 
   // eslint-disable-next-line max-lines-per-function
@@ -110,13 +127,15 @@ class Statistic {
             <div class="number">
               ${this.learnedWordsAll}
             </div>
-            <div class="content">
-            <span class="word1">слов</span><span>изучено</span>
-            </div>
+            <div class="content">слов изучено</div>
+          </div>
+          <div id="newWords" class="today_statistic-block">
+            <div class="number">${this.newWordsAll}</div>
+            <div class="content">новых слов</div>
           </div>
           <div id="percentAnswer" class="today_statistic-block">
-            <div class="percent">${this.percentRightAnswers}%</div>
-            <div class="content"><span>верных</span><span>ответов</span></div>
+            <div class="number">${this.percentRightAnswers}%</div>
+            <div class="content">правильных ответов</div>
           </div>
           <div id="sprint" class="today_statistic-block">
             <div class="title">
@@ -124,15 +143,22 @@ class Statistic {
               <div class="nameGame_sprint">Спринт</div>
             </div>  
             <div class="results">
-              <div class="numbers">
-                ${this.sprintLearnedWords}<br>${this.sprintRightAnswers}<br>${this.sprintBestSeries}
+   <!--           <div class="numbers">
+                ${this.sprintNewWords}<br>${this.percentRightSprint}<br>${this.sprintBestSeries}
               </div>
               <div class=text>
-                изученных слов<br>
-                правильных ответов<br>
+                новых слов<br>
+                % правильных ответов<br>
                 лучшая серия
                 </div>
-            </div>
+        -->      
+        <div class="a">
+        <div>${this.sprintNewWords}</div><div>% правильных ответов</div>
+        </div>
+</div>
+
+
+
           </div>
 
           <div id="audio" class="today_statistic-block">
@@ -142,11 +168,11 @@ class Statistic {
           </div>  
           <div class="results">
             <div class="numbers">
-            ${this.audioLearnedWords}<br>${this.audioRightAnswers}<br>${this.audioBestSeries}
+            ${this.audioNewWords}<br>${this.percentRightAudio}<br>${this.audioBestSeries}
             </div>
             <div class="text">
-              изученных слов<br>
-              правильных ответов<br>
+              новых слов<br>
+              % правильных ответов<br>
               лучшая серия
             </div>
           </div>
@@ -164,13 +190,13 @@ class Statistic {
         За всё время
       </div>
         <div class="allTime_statistic">
-          <div class="allTime_statistic-block">
-            <div class="title">Изученные слова</div>
+          <div id="chart_1" class="allTime_statistic-block">
+            <div class="title">Новые слова</div>
             <div class="graph">
               <canvas id="chart1"></canvas>
             </div>
           </div>
-          <div class="allTime_statistic-block">
+          <div id="chart_2" class="allTime_statistic-block">
             <div class="title">Прогресс изучения</div>
             <div class="graph">
               <canvas id="chart2"></canvas>
@@ -181,25 +207,21 @@ class Statistic {
     `;
     bodyStatistic.insertAdjacentHTML('beforeend', content);
 
-    await this.initCharts();
-
     this.drawChart1();
     this.drawChart2();
   }
 
-  async initCharts() {
-    const response = await userApi.getUserStatistics();
-    if (response) {
-      const options = <Record<string, unknown>>response.optional;
+  initCharts() {
+    if (this.response) {
+      const options = <Record<string, unknown>> this.response.optional;
       const dataLabels = Object.keys(options);
       let sumLearnedWords = 0;
       for (let i = 0; i < dataLabels.length; i += 1) {
         this.labelsChart.push(Date.parse(dataLabels[i]));
-        const allLearnedWords = (<IStatistic>options[dataLabels[i]]).L
-        + (<IStatistic>options[dataLabels[i]]).sL
-        + (<IStatistic>options[dataLabels[i]]).aL;
-        sumLearnedWords += allLearnedWords;
-        this.dataChart1.push(allLearnedWords);
+        const allNewWords = (<IStatistic>options[dataLabels[i]]).sN
+        + (<IStatistic>options[dataLabels[i]]).aN;
+        sumLearnedWords += (<IStatistic>options[dataLabels[i]]).L;
+        this.dataChart1.push(allNewWords);
         this.dataChart2.push(sumLearnedWords);
       }
     }
@@ -228,6 +250,7 @@ class Statistic {
       type: 'line',
       data: dataSet,
       options: {
+        maintainAspectRatio: false,
         plugins: {
           legend: {
             display: false,
@@ -275,6 +298,7 @@ class Statistic {
       type: 'line',
       data: dataSet,
       options: {
+        maintainAspectRatio: false,
         plugins: {
           legend: {
             display: false,

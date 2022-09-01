@@ -128,7 +128,13 @@ class GamesView {
     group: number,
     page: number,
   ) {
-    if (!wordsList) return;
+    if (!wordsList) {
+      this.gameScreen?.insertAdjacentHTML(
+        'afterbegin',
+        'Что-то пошло не так...',
+      );
+      return;
+    }
 
     const game = new SprintGame(
       wordsList,
