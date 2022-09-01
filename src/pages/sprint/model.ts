@@ -47,6 +47,7 @@ class GamesModel {
     bestSeries: number,
   ) => {
     await userApi.updateSprintStatistic(
+      this.gameState.learnedWords,
       this.gameState.newWords,
       rightAnswers,
       wrongAnswers,
