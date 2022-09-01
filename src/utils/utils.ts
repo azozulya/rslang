@@ -1,4 +1,8 @@
-import { IPathOfAggregatedWord, IUserWord, TPageHistory } from '../interfaces/interfaces';
+import {
+  IPathOfAggregatedWord,
+  IUserWord,
+  TPageHistory,
+} from '../interfaces/interfaces';
 import { DEFAULT_PAGE, DICTIONARY_PAGE, PAGE_KEY } from './constants';
 import create from './createElement';
 import { getLocalStorage } from './localStorage';
@@ -62,12 +66,6 @@ export function createDefaultUserWord(id: string): IPathOfAggregatedWord {
   };
 }
 
-export const getDateWithoutTime = () => {
-  const date = new Date();
-  date.setHours(0, 0, 0, 0);
-  return date.getTime();
-};
-
 function createCircle(className: string) {
   const circle = document.createElementNS(
     'http://www.w3.org/2000/svg',
@@ -114,3 +112,10 @@ export const animatedCircleProgressBar = (value: number) => {
   );
   return container;
 };
+
+export function playAudio(audioElementToPlay: HTMLAudioElement) {
+  const audio = audioElementToPlay;
+  audio.pause();
+  audio.currentTime = 0;
+  audio.play();
+}

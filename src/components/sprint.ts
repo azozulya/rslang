@@ -7,6 +7,7 @@ import {
   SERIA_RIGHT_ANSWER,
 } from '../utils/constants';
 import create from '../utils/createElement';
+import { playAudio } from '../utils/utils';
 
 class SprintGame {
   private gameContainer: HTMLElement;
@@ -41,6 +42,10 @@ class SprintGame {
 
   private timerId?: NodeJS.Timer;
 
+  private audioRightElement: HTMLAudioElement;
+
+  private audioWrongElement: HTMLAudioElement;
+
   constructor(
     private wordsList: IGameWord[],
     private group: number,
@@ -53,7 +58,7 @@ class SprintGame {
     private getWords?: (
       level: number,
       page: number
-    ) => Promise<IGameWord[] | null>
+    ) => Promise<IGameWord[] | null>,
   ) {
     this.gameContainer = create({ tagname: 'div', class: 'sprint' });
     this.wordContainer = create({ tagname: 'div', class: 'sprint__word' });
@@ -67,6 +72,9 @@ class SprintGame {
       class: 'sprint__score-points',
       text: `+${this.pointsPerRightAnswer} очков за слово`,
     });
+
+    this.audioRightElement = new Audio('../../assets/audio/rightAnswer3.mp3');
+    this.audioWrongElement = new Audio('../../assets/audio/wrongAnswer.mp3');
 
     this.init();
   }
@@ -83,14 +91,14 @@ class SprintGame {
       this.drawTimer(),
       this.drawScoreContainer(),
       this.wordContainer,
-      this.drawBtns()
+      this.drawBtns(),
     );
 
     this.gameContainer.insertAdjacentHTML(
       'beforeend',
       `<div class="sprint__keys">
           <div>←</div><div>→</div>
-        </div>`
+        </div>`,
     );
 
     this.wordContainer.innerHTML = firstWord;
@@ -126,14 +134,14 @@ class SprintGame {
 
     this.dots = Array(SERIA_RIGHT_ANSWER)
       .fill(0)
-      .map((_) => create({ tagname: 'div', class: 'dot' }));
+      .map(() => create({ tagname: 'div', class: 'dot' }));
 
     dotsContainer.append(...this.dots);
 
     scoreWrapper.append(
       this.scoreElement,
       this.pointsIncreasContainer,
-      dotsContainer
+      dotsContainer,
     );
 
     return scoreWrapper;
@@ -170,7 +178,12 @@ class SprintGame {
     this.yesBtn.addEventListener('click', this.onYesBtnClickHandler);
 
     const btnsContainer = create({ tagname: 'div', class: 'sprint__btns' });
-    btnsContainer.append(this.noBtn, this.yesBtn);
+    btnsContainer.append(
+      this.noBtn,
+      this.yesBtn,
+      this.audioRightElement,
+      this.audioWrongElement,
+    );
 
     return btnsContainer;
   }
@@ -230,7 +243,7 @@ class SprintGame {
   private async nextWord() {
     this.wordContainer.classList.remove(
       'sprint__right-answer',
-      'sprint__wrong-answer'
+      'sprint__wrong-answer',
     );
 
     this.currentWordIndex += 1;
@@ -243,8 +256,8 @@ class SprintGame {
     this.wordContainer.innerHTML = this.drawWord(this.currentWordIndex);
 
     if (
-      this.currentWordIndex > this.wordsList.length - COUNT_LAST_WORDS &&
-      this.page > 0
+      this.currentWordIndex > this.wordsList.length - COUNT_LAST_WORDS
+      && this.page > 0
     ) {
       const additionalWords = await this.getWords?.(this.group, this.page - 1);
       if (additionalWords) {
@@ -261,22 +274,28 @@ class SprintGame {
 
     if (String(wordTranslate === pseudoTranslate) === userAnswer) {
       currentWord.isRightAnswer = true;
+
+      playAudio(this.audioRightElement);
       this.addRightAnswer();
       this.updateWordState?.(currentWord.id, true);
     } else {
       currentWord.isRightAnswer = false;
+
+      playAudio(this.audioWrongElement);
       this.addWrongAnswer();
       this.updateWordState?.(currentWord.id, false);
     }
 
-    setTimeout(() => this.nextWord(), 100);
+    setTimeout(() => {
+      this.nextWord();
+    }, 100);
   };
 
   private updatePointsPerWord() {
     if (this.pointsPerRightAnswer === MAX_POINTS_FOR_RIGHT_ANSWER) return;
 
     const dotElement = this.dots?.find(
-      (dot) => !dot.classList.contains('active')
+      (dot) => !dot.classList.contains('active'),
     );
 
     if (dotElement) {
@@ -310,7 +329,9 @@ class SprintGame {
   private async addRightAnswer() {
     this.wordContainer.classList.add('sprint__right-answer');
 
-    let { rightAnswer, seriesOfRightAnswer, winStreak, score } = this.gameState;
+    let {
+      rightAnswer, seriesOfRightAnswer, winStreak, score,
+    } = this.gameState;
 
     rightAnswer += 1;
     seriesOfRightAnswer += 1;
