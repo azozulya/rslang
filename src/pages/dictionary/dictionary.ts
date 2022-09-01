@@ -53,12 +53,12 @@ class DictionaryView {
       document.getElementById('dictionaryHardWords')
     );
     if (dictionaryHardWords) {
-      dictionaryHardWords.addEventListener('click', callback);
       dictionaryHardWords.addEventListener('click', (e: Event) => this.switchHardWords(e));
+      dictionaryHardWords.addEventListener('click', callback);
     }
   }
 
-  private addHandlersForCheckingWord() {
+  private addHandlersForCheckedWord() {
     const dictionaryWords = <HTMLElement>(
       document.getElementById('dictionaryWords')
     );
@@ -239,6 +239,8 @@ class DictionaryView {
   drawWordsAuth(words: (IWordAppForAuthUser | IWordApp)[]) {
     this.wordsForAuthUser = words;
 
+    console.log(this.isActiveHardWords);
+
     const dictionary = <HTMLElement>document.getElementById('dictionaryWords');
     if (dictionary) {
       while (dictionary.firstChild) {
@@ -248,11 +250,11 @@ class DictionaryView {
     words.forEach((wordInDictionary) => {
       if ('drawForAuthUser' in wordInDictionary) wordInDictionary.drawForAuthUser();
     });
-
-    this.changeViewIfAllLearned();
-
-    this.addHandlersForCheckingWord();
-    this.drawPagination();
+    if (!this.isActiveHardWords) {
+      this.changeViewIfAllLearned();
+      this.drawPagination();
+    }
+    this.addHandlersForCheckedWord();
     this.highlightMenu();
   }
 

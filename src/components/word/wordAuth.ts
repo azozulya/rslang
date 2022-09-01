@@ -23,93 +23,58 @@ class WordAuth extends Word implements IWordAppForAuthUser {
 
     if (element.classList.contains('word__hard')) {
       if ('userWord' in this.word) {
-        if (this.word.userWord.optional.hard) this.deleteFromHardWords();
+        if (this.word.userWord.optional.hard) this.deleteWords('hard');
         else {
-          if (this.word.userWord.optional.learned) this.deleteFromLearnedWords();
-          this.updateToHardWords();
+          if (this.word.userWord.optional.learned) this.deleteWords('learned');
+          this.updateWords('hard');
         }
-      } else this.updateToHardWords();
+      } else this.updateWords('hard');
     }
 
     if (element.classList.contains('word__learned')) {
       if ('userWord' in this.word) {
-        if (this.word.userWord.optional.learned) this.deleteFromLearnedWords();
+        if (this.word.userWord.optional.learned) this.deleteWords('learned');
         else {
-          if (this.word.userWord.optional.hard) this.deleteFromHardWords();
-          this.updateToLearnedWords();
+          if (this.word.userWord.optional.hard) this.deleteWords('hard');
+          this.updateWords('learned');
         }
-      } this.updateToLearnedWords();
+      } else this.updateWords('learned');
     }
   }
 
-  /* bindAddToHardWord(callback) {
-    const wordHard = document.getElementById('wordHard');
-    wordHard?.addEventListener('click', callback);
-  }
-*/
-
-  async updateToHardWords() {
-    this.changeWord('hard', true);
+  async updateWords(type: 'hard' | 'learned') {
+    this.changeWord(type, true);
     this.changeIcon();
 
     const word = await this.getUserWord();
-    if (!word) this.addToHardWords();
+    if (!word) this.addWords(type);
     else {
-      word.optional.hard = true;
+      word.optional[type] = true;
       userApi.updateUserWord(this.word.id, word);
     }
   }
 
-  async addToHardWords() {
+  async addWords(type: 'hard' | 'learned') {
     const newWord:IUserWord = createDefaultWord(this.word.id);
-    newWord.optional.hard = true;
+    newWord.optional[type] = true;
 
     userApi.createUserWord(this.word.id, newWord);
   }
 
-  async deleteFromHardWords() {
-    this.changeWord('hard', false);
+  async deleteWords(type:'hard' | 'learned') {
+    this.changeWord(type, false);
     this.changeIcon();
 
     const word = await this.getUserWord();
     if (!word) throw new Error('User word were not found');
-    word.optional.hard = false;
-    userApi.updateUserWord(this.word.id, word);
-  }
-
-  async updateToLearnedWords() {
-    this.changeWord('learned', true);
-    this.changeIcon();
-
-    const word = await this.getUserWord();
-    if (!word) this.addToLearnedWords();
-    else {
-      word.optional.learned = true;
-      userApi.updateUserWord(this.word.id, word);
-    }
-  }
-
-  async addToLearnedWords() {
-    const newWord:IUserWord = createDefaultWord(this.word.id);
-    newWord.optional.learned = true;
-
-    userApi.createUserWord(this.word.id, newWord);
-  }
-
-  async deleteFromLearnedWords() {
-    if ('userWord' in this.word) this.word.userWord.optional.learned = false;
-    this.changeWord('learned', false);
-    this.changeIcon();
-
-    const word = await this.getUserWord();
-    if (!word) throw new Error('User word were not found');
-    word.optional.learned = false;
+    word.optional[type] = false;
     userApi.updateUserWord(this.word.id, word);
   }
 
   changeWord(option: 'hard' | 'learned', value: boolean) {
-    if ('userWord' in this.word) this.word.userWord.optional[option] = value;
-    else {
+    if ('userWord' in this.word) {
+      this.word.userWord.optional[option] = value;
+    } else {
       const userWord = createDefaultUserWord(this.word.id);
       this.word = { ...this.word, ...userWord };
       if ('userWord' in this.word) this.word.userWord.optional[option] = value;
@@ -117,17 +82,18 @@ class WordAuth extends Word implements IWordAppForAuthUser {
   }
 
   changeIcon() {
+    if (!('userWord' in this.word)) return;
     const word = <HTMLElement>document.getElementById(this.word.id);
-    const wordIconHard = <HTMLElement>word.querySelector('.word__hard');
-    const wordIconLearned = <HTMLElement>word.querySelector('.word__learned');
+    const iconHard = word.querySelector('.word__hard');
+    const iconLearned = word.querySelector('.word__learned');
 
-    if (wordIconHard.classList.contains('word__hard_active')) wordIconHard.classList.remove('word__hard_active');
-    if (wordIconLearned.classList.contains('word__learned_active')) wordIconLearned.classList.remove('word__learned_active');
+    if (this.word.userWord.optional.learned) {
+      iconLearned?.classList.add('word__learned_active');
+    } else iconLearned?.classList.remove('word__learned_active');
 
-    if ('userWord' in this.word) {
-      if (this.word.userWord.optional.hard) wordIconHard.classList.add('word__hard_active');
-      if (this.word.userWord.optional.learned) wordIconLearned.classList.add('word__learned_active');
-    }
+    if (this.word.userWord.optional.hard) {
+      iconHard?.classList.add('word__hard_active');
+    } else iconHard?.classList.remove('word__hard_active');
   }
 
   async getUserWord() {
