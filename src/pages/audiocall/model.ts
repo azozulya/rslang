@@ -31,10 +31,7 @@ class AudioCallModel {
     this.api = Api.getInstance();
   }
 
-  getGameStatistic = () => { // STATISTICS
-    console.log('model, getGameStatistic:  ', this.gameState);
-    return this.gameState;
-  };
+  getGameStatistic = () => this.gameState;
 
   resetGameStatistic() {
     this.gameState = {
@@ -43,36 +40,23 @@ class AudioCallModel {
     };
   }
 
-  /* private async updateStatistic(wordStat: IWordStat) {
-    await this.sendStatistic(wordStat);
-
-    const date = getDateWithoutTime();
-
-    const storageObj = getLocalStorage<{ [x: number]: IWordStat[] }>(
-      SPRINT_WORDS_STATISTIC,
+  sendStatistic = async (
+    rightAnswers: number,
+    wrongAnswers: number,
+    bestSeries: number,
+  ) => {
+    await userApi.updateAudioStatistic(
+      this.gameState.learnedWords,
+      this.gameState.newWords,
+      rightAnswers,
+      wrongAnswers,
+      bestSeries,
     );
+    this.resetGameStatistic();
+  };
 
-    if (!storageObj) {
-      setLocalStorage(SPRINT_WORDS_STATISTIC, { [date]: [wordStat] });
-      return;
-    }
-
-    const currentStat = storageObj[date];
-    currentStat.push(wordStat);
-
-    setLocalStorage(SPRINT_WORDS_STATISTIC, {
-      [date]: currentStat,
-    });
-  }
-
-  private async sendStatistic(wordStat: IWordStat) {
-    return '';
-  }
-  */
-
-  updateUserWord = async (wordId: string, isRightAnswer: boolean) => { // UPDATE
+  updateUserWord = async (wordId: string, isRightAnswer: boolean) => {
     const isUser = await userApi.isAuthenticated();
-    console.log(`model: isUser: ${isUser}, isRightAnswer: ${isRightAnswer}`);
 
     if (!isUser) return;
 
@@ -90,13 +74,17 @@ class AudioCallModel {
     userWord: IUserWord,
     isRightAnswer: boolean,
   ) => {
-    const { sprint } = userWord.optional;
+    const { audiocall } = userWord.optional;
     let { hard, learned } = userWord.optional;
 
-    if (isRightAnswer) {
-      sprint.rightAnswer += 1;
+    if (audiocall.rightAnswer === 0 && audiocall.wrongAnswer === 0) {
+      this.gameState.newWords += 1;
+    }
 
-      const diff = sprint.rightAnswer - sprint.wrongAnswer;
+    if (isRightAnswer) {
+      audiocall.rightAnswer += 1;
+
+      const diff = audiocall.rightAnswer - audiocall.wrongAnswer;
 
       if (
         (hard && diff === POINTS_TO_LEARNED_HARD_WORD)
@@ -107,21 +95,12 @@ class AudioCallModel {
         hard = false;
       }
     } else {
-      sprint.wrongAnswer += 1;
+      audiocall.wrongAnswer += 1;
 
       if (learned) learned = false;
     }
 
     await userApi.updateUserWord(userWord.wordId, userWord);
-
-    /* this.updateStatistic({
-      wordID: userWord.wordId,
-      learned,
-      new: false,
-      rightAnswer: isRightAnswer,
-    });
-    */
-
     console.log('update userWord: ', userWord);
   };
 
@@ -130,20 +109,12 @@ class AudioCallModel {
 
     const newUserWord = createDefaultWord(wordID);
 
-    if (isRightAnswer) newUserWord.optional.sprint.rightAnswer += 1;
-    else newUserWord.optional.sprint.wrongAnswer += 1;
+    if (isRightAnswer) newUserWord.optional.audiocall.rightAnswer += 1;
+    else newUserWord.optional.audiocall.wrongAnswer += 1;
 
     console.log('create newUserWord: ', newUserWord);
 
     await userApi.createUserWord(wordID, newUserWord);
-
-  /*  this.updateStatistic({
-      wordID,
-      learned: false,
-      new: true,
-      rightAnswer: isRightAnswer,
-    });
-    */
   };
 
   getWordsForGame = async (group: number, page: number) => {
@@ -249,36 +220,3 @@ class AudioCallModel {
 }
 
 export default AudioCallModel;
-
-function getDateWithoutTime() {
-  throw new Error('Function not implemented.');
-}
-
-/* function getLocalStorage<T>(SPRINT_WORDS_STATISTIC: any) {
-  throw new Error('Function not implemented.');
-}
-
-function SPRINT_WORDS_STATISTIC<T>(SPRINT_WORDS_STATISTIC: any) {
-  throw new Error('Function not implemented.');
-}
-
-function setLocalStorage(SPRINT_WORDS_STATISTIC: any, arg1: { [x: number]: IWordStat[]; }) {
-  throw new Error('Function not implemented.');
-}
-
-function createDefaultWord(wordID: string) {
-  throw new Error('Function not implemented.');
-}
-
-function isFromDictionaryPage() {
-  throw new Error('Function not implemented.');
-}
-
-function WORDS_PER_PAGE(group: number, page: number, WORDS_PER_PAGE: any, arg3: string) {
-  throw new Error('Function not implemented.');
-}
-
-function generateIndex(length: number) {
-  throw new Error('Function not implemented.');
-}
-*/
