@@ -15,6 +15,7 @@ import {
   isFromDictionaryPage,
   isStartPage,
 } from '../../utils/utils';
+import AudioIcon from '../../assets/img/audio_sprite.svg';
 
 class GamesView {
   isMenuLink = true;
@@ -273,7 +274,7 @@ class GamesView {
       'svg',
     );
     svgIcon.classList.add('audio-icon');
-    svgIcon.innerHTML = '<use xlink:href="../../assets/img/audio_sprite.svg#audio"></use>';
+    svgIcon.innerHTML = `<use xlink:href="${AudioIcon}#audio"></use>`;
 
     svgIcon.addEventListener('click', () => {
       const audio = audioElement;
