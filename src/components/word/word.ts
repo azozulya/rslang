@@ -1,4 +1,5 @@
 import { IWord, IWordApp } from '../../interfaces/interfaces';
+import { URL_FOR_STATIC } from '../../utils/constants';
 import create from '../../utils/createElement';
 import { createDefaultWord } from '../../utils/utils';
 
@@ -54,7 +55,7 @@ class Word implements IWordApp {
       class: 'word__image',
       parent: wordInDictionary,
     });
-    wordImage.style.backgroundImage = `url(http://127.0.0.1:3000/${this.word.image})`; // TODO change url after deploy backend
+    wordImage.style.backgroundImage = `url(${URL_FOR_STATIC}${this.word.image})`;
     const wordDescription = create({
       tagname: 'div',
       class: 'word__description',

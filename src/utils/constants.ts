@@ -28,7 +28,7 @@ export const MAX_POINTS_FOR_RIGHT_ANSWER = 50;
 
 export const SERIA_RIGHT_ANSWER = 3; // 3 dots + 10
 
-export const URL_FOR_STATIC = 'http://localhost:3000/';
+export const URL_FOR_STATIC = 'https://react-rslang-backend.herokuapp.com/'; // 'http://localhost:3000/';
 
 export const GROUP_LIST = [
   'A1 Beginner',
