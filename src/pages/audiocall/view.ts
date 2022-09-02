@@ -93,6 +93,18 @@ class AudioCallView {
     return this.gameContainer;
   }
 
+  private createStartBtn() {
+    const startBtn = <HTMLButtonElement>(
+      create({ tagname: 'button', class: 'btn' })
+    );
+    startBtn.classList.add('btn--blue', 'game__start-btn');
+    startBtn.disabled = !this.isFromDictionary;
+    startBtn.innerText = 'Начать';
+
+    startBtn.addEventListener('click', this.onStartClickHandler);
+    return startBtn;
+  }
+
   private createStartScreen(): HTMLElement {
     const container = create({ tagname: 'div', class: 'audiocall__start' });
 
@@ -114,18 +126,6 @@ class AudioCallView {
     container.append(this.startBtn);
 
     return container;
-  }
-
-  private createStartBtn() {
-    const startBtn = <HTMLButtonElement>(
-      create({ tagname: 'button', class: 'btn' })
-    );
-    startBtn.classList.add('btn--blue', 'game__start-btn');
-    startBtn.disabled = !this.isFromDictionary;
-    startBtn.innerText = 'Начать';
-
-    startBtn.addEventListener('click', this.onStartClickHandler);
-    return startBtn;
   }
 
   // eslint-disable-next-line max-lines-per-function
@@ -193,6 +193,7 @@ class AudioCallView {
     playAgainBtn.classList.add('btn--blue', 'game__result-btn');
     playAgainBtn.addEventListener('click', () => {
       if (this.startScreen) {
+        console.log('clean container');
         this.gameContainer.innerText = '';
         this.gameContainer.append(this.startScreen);
       }
@@ -338,7 +339,7 @@ class AudioCallView {
 
     if (!wordsList) return;
 
-    this.createGameScreen(wordsList);// , group, pageNum);
+    this.createGameScreen(wordsList);
 
     if (this.gameScreen) this.gameContainer.append(this.gameScreen);
   };

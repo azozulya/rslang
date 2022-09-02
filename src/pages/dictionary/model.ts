@@ -9,6 +9,7 @@ import {
 import Word from '../../components/word/word';
 import WordAuth from '../../components/word/wordAuth';
 import userApi from '../../components/user/user';
+import { WORDS_PER_PAGE } from '../../utils/constants';
 
 class DictionaryModel {
   words: IWordApp[];
@@ -39,9 +40,11 @@ class DictionaryModel {
     const words = await this.api.getWords(group, page);
     if (!words) throw new Error('Not found words');
     if (auth) {
-      const wordsForAuthUser: (IAggregatedWord | IWord) [] = await this.getUserWords(
-        words,
-      );
+      // const wordsForAuthUser: (IAggregatedWord | IWord) [] = await this.getUserWords(
+      const aggregatedWords: (IAggregatedWord) [] = await this.getAgreggatedWords(group, page);
+      const wordsForAuthUser:
+      (IWord | IAggregatedWord)[] = this.collectWords(aggregatedWords, words);
+      console.log('words aggregated', wordsForAuthUser);
       this.makeWordsforAuthUser(wordsForAuthUser);
     } else {
       this.makeWords(words);
@@ -72,6 +75,37 @@ class DictionaryModel {
         this.makeWords(fullWords);
       }
     }
+  }
+
+  private async getAgreggatedWords(
+    group: number,
+    page: number,
+  ): Promise<IAggregatedWord[]> {
+    const aggregatedWords = await userApi.getUserAggregatedWords(
+      group,
+      page,
+      WORDS_PER_PAGE,
+      encodeURIComponent(
+        JSON.stringify({
+          $and: [{ page }],
+        }),
+      ),
+    );
+    const userWords: IAggregatedWord[] | [] = aggregatedWords
+      ? aggregatedWords[0]?.paginatedResults
+      : [];
+    return userWords;
+  }
+
+  collectWords(aggregatedWords: IAggregatedWord[], words: IWord[]) {
+    const resultWords: (IWord | IAggregatedWord) [] = [];
+    words.forEach((word) => {
+      const wordIndex = aggregatedWords
+        .findIndex((aggregatedWord) => word.id === aggregatedWord._id);
+      if (wordIndex >= 0) resultWords.push(aggregatedWords[wordIndex]);
+      else resultWords.push(word);
+    });
+    return resultWords;
   }
 
   private async getUserWords(words: (IWord | undefined)[]) {
@@ -114,6 +148,7 @@ class DictionaryModel {
   private async makeWordsforAuthUser(words: Array<IAggregatedWord | IWord>) {
     this.wordsForAuthUser = [];
     words.forEach((word) => {
+      console.log('meke word', word);
       const wordInDictionary = new WordAuth(word);
       this.wordsForAuthUser.push(wordInDictionary);
     });
