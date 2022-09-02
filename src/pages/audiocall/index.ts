@@ -9,17 +9,19 @@ class AudioCall {
   constructor() {
     this.view = new AudioCallView();
     this.model = new AudioCallModel();
+
+    this.view.bindGetWords(this.model.getWordsForGame);
+    this.view.bindUpdateUserWord(this.model.updateUserWord);
+    this.view.bindGetGameStatistic(this.model.getGameStatistic);
   }
 
   draw(rootContainer: HTMLElement) {
-    const container = rootContainer;
-    container.append(this.view.renderGame());
-    // const isLoadFromDictionary = Boolean(
-    //   rootContainer.dataset.arrivalFrom !== 'menu'
-    // );
+    const isMenuLink = rootContainer.dataset.linkFrom === 'menu';
 
-  // container.innerHTML = `<br><br><br><br><br><br>AudioCall page<br>
-  // Click: ${rootContainer.dataset.arrivalFrom}`;
+    this.model.isMenuLink = isMenuLink;
+    this.view.isMenuLink = isMenuLink;
+
+    rootContainer.append(this.view.draw());
   }
 }
 
