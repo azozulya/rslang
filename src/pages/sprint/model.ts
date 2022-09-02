@@ -9,24 +9,14 @@ import {
 import {
   createDefaultWord,
   generateIndex,
-  getDateWithoutTime,
   isFromDictionaryPage,
 } from '../../utils/utils';
 import userApi from '../../components/user/user';
 import {
   POINTS_TO_LEARNED_HARD_WORD,
   POINTS_TO_LEARNED_WORD,
-  SPRINT_WORDS_STATISTIC,
   WORDS_PER_PAGE,
 } from '../../utils/constants';
-import { getLocalStorage, setLocalStorage } from '../../utils/localStorage';
-
-interface IWordStat {
-  wordID: string;
-  learned: boolean;
-  new: boolean;
-  rightAnswer: boolean;
-}
 
 class GamesModel {
   private api?: API;
@@ -42,47 +32,32 @@ class GamesModel {
     this.api = API.getInstance();
   }
 
-  getGameStatistic = () => {
-    console.log('model, getGameStatistic:  ', this.gameState);
-    return this.gameState;
-  };
+  getGameStatistic = () => this.gameState;
 
-  resetGameStatistic() {
+  private resetGameStatistic() {
     this.gameState = {
       learnedWords: 0,
       newWords: 0,
     };
   }
 
-  private async updateStatisctic(wordStat: IWordStat) {
-    await this.sendStatistic(wordStat);
-
-    const date = getDateWithoutTime();
-
-    const storageObj = getLocalStorage<{ [x: number]: IWordStat[] }>(
-      SPRINT_WORDS_STATISTIC,
+  sendStatistic = async (
+    rightAnswers: number,
+    wrongAnswers: number,
+    bestSeries: number,
+  ) => {
+    await userApi.updateSprintStatistic(
+      this.gameState.learnedWords,
+      this.gameState.newWords,
+      rightAnswers,
+      wrongAnswers,
+      bestSeries,
     );
-
-    if (!storageObj) {
-      setLocalStorage(SPRINT_WORDS_STATISTIC, { [date]: [wordStat] });
-      return;
-    }
-
-    const currentStat = storageObj[date];
-    currentStat.push(wordStat);
-
-    setLocalStorage(SPRINT_WORDS_STATISTIC, {
-      [date]: currentStat,
-    });
-  }
-
-  private async sendStatistic(wordStat: IWordStat) {
-    return '';
-  }
+    this.resetGameStatistic();
+  };
 
   updateUserWord = async (wordId: string, isRightAnswer: boolean) => {
     const isUser = await userApi.isAuthenticated();
-    console.log(`model: isUser: ${isUser}, isRightAnswer: ${isRightAnswer}`);
 
     if (!isUser) return;
 
@@ -103,31 +78,30 @@ class GamesModel {
     const { sprint } = userWord.optional;
     let { hard, learned } = userWord.optional;
 
-    if (isRightAnswer) sprint.rightAnswer += 1;
-    else sprint.wrongAnswer += 1;
+    if (sprint.rightAnswer === 0 && sprint.wrongAnswer === 0) {
+      this.gameState.newWords += 1;
+    }
 
-    const diff = sprint.rightAnswer - sprint.wrongAnswer;
+    if (isRightAnswer) {
+      sprint.rightAnswer += 1;
 
-    if (
-      (hard && diff === POINTS_TO_LEARNED_HARD_WORD)
-      || (!hard && diff === POINTS_TO_LEARNED_WORD)
-    ) {
-      this.gameState.learnedWords += 1;
-      learned = true;
-      hard = false;
+      const diff = sprint.rightAnswer - sprint.wrongAnswer;
+
+      if (
+        (hard && diff === POINTS_TO_LEARNED_HARD_WORD)
+        || (!hard && diff === POINTS_TO_LEARNED_WORD)
+      ) {
+        this.gameState.learnedWords += 1;
+        learned = true;
+        hard = false;
+      }
+    } else {
+      sprint.wrongAnswer += 1;
+
+      if (learned) learned = false;
     }
 
     await userApi.updateUserWord(userWord.wordId, userWord);
-
-    const date = getDateWithoutTime();
-
-    this.updateStatisctic({
-      wordID: userWord.wordId,
-      learned,
-      new: false,
-      rightAnswer: isRightAnswer,
-    });
-
     console.log('update userWord: ', userWord);
   };
 
@@ -142,15 +116,6 @@ class GamesModel {
     console.log('create newUserWord: ', newUserWord);
 
     await userApi.createUserWord(wordID, newUserWord);
-
-    const date = getDateWithoutTime();
-
-    this.updateStatisctic({
-      wordID,
-      learned: false,
-      new: true,
-      rightAnswer: isRightAnswer,
-    });
   };
 
   getWordsForGame = async (group: number, page: number) => {
@@ -239,10 +204,6 @@ class GamesModel {
       };
     });
   }
-
-  // bindReadyWords(handler: (words: IGameWord[]) => void) {
-  //   this.onReadyWordsHandler = handler;
-  // }
 }
 
 export default GamesModel;

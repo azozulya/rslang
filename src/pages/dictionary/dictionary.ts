@@ -97,7 +97,6 @@ class DictionaryView {
 
   goToPage = async (page: number) => {
     this.page = page - 1;
-
     this.onGetWords(this.group, this.page);
     this.saveWordsNavigate();
   };

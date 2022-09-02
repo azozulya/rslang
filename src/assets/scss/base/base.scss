@@ -66,6 +66,8 @@ h4 {
 }
 main {
   flex-grow: 1;
+  position: relative;
+  z-index: 5;
 }
 .inner-page {
   padding-top: 8rem;
@@ -138,6 +140,10 @@ main {
     border-color: $text-disabled;
     cursor: default;
   }
+}
+
+.hidden {
+  display: none;
 }
 
 .noscroll {

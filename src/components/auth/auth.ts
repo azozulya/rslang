@@ -1,3 +1,5 @@
+import create from '../../utils/createElement';
+import { getCurrentPageName } from '../../utils/utils';
 import userApi from '../user/user';
 
 export default class Auth {
@@ -7,21 +9,38 @@ export default class Auth {
 
   container__class: string;
 
-  constructor() {
+  private logoutBtn: HTMLButtonElement;
+
+  private authBtnContainer: HTMLElement;
+
+  constructor(private reloadPage: () => void) {
     this.container__class = 'login-form';
     this.content = '';
+
+    this.logoutBtn = <HTMLButtonElement>(
+      create({ tagname: 'button', class: 'btn', text: 'Выйти' })
+    );
+    this.logoutBtn.classList.add('btn--orange', 'auth__btn');
+    this.logoutBtn.id = 'main_logout';
+
+    this.authBtnContainer = <HTMLElement>document.getElementById('auth');
+    this.authBtnContainer.addEventListener('click', (e: Event) => this.request(e));
   }
 
-  async drawButton() {
-    const button = <HTMLElement>document.getElementById('auth');
+  // eslint-disable-next-line max-len
+  // private logoutBtn = `<button id="main_logout" class="btn btn--orange auth__btn" data-page="${getCurrentPageName()}">Выйти</button>`;
+
+  drawButton = async () => {
+    // const button = <HTMLElement>document.getElementById('auth');
     if (await userApi.isAuthenticated()) {
-      button.innerHTML = '<button id="main_logout" class="btn btn--orange auth__btn">Выйти</button>';
-      button.addEventListener('click', (e: Event) => this.request(e));
+      this.authBtnContainer.append(this.logoutBtn);
+      // '<button id="main_logout" class="btn btn--orange auth__btn" data-page="">Выйти</button>';
+      this.logoutBtn.dataset.page = getCurrentPageName();
     } else {
-      button.innerHTML = '<button id="main_login" class="btn btn--orange auth__btn">Войти</button>';
-      button.addEventListener('click', (e: Event) => this.request(e));
+      this.authBtnContainer.innerHTML = '<button id="main_login" class="btn btn--orange auth__btn">Войти</button>';
+      // delete button.dataset.page;
     }
-  }
+  };
 
   draw() {
     const container = <HTMLElement>document.createElement('div');
@@ -102,7 +121,8 @@ export default class Auth {
       <div id="error-password" class="error">&nbsp;</div>
     </div class="block">
       <div class="button">
-        <button id="login">ВХОД</button><p><button id="registerLink">Регистрация</button>
+        <button id="login">ВХОД</button>
+        <button id="registerLink">Регистрация</button>
       </div>
   `;
 
@@ -182,8 +202,9 @@ export default class Auth {
   }
 
   private logout() {
-    const button = <HTMLElement>document.getElementById('auth');
-    button.innerHTML = '<button id="main_login" class="btn btn--orange auth__btn">Войти</button>';
+    this.logoutBtn.dataset.page = getCurrentPageName();
+
+    this.authBtnContainer.innerHTML = '<button id="main_login" class="btn btn--orange auth__btn">Войти</button>';
     userApi.logout();
   }
 
@@ -200,8 +221,10 @@ export default class Auth {
     const res = await userApi.loginUser({ email, password });
     if (res === 200) {
       this.closeModal();
-      const button = <HTMLElement>document.getElementById('auth');
-      button.innerHTML = '<button id="main_logout" class="btn btn--orange auth__btn">Выйти</button>';
+      this.authBtnContainer.innerText = '';
+      this.authBtnContainer.append(this.logoutBtn);
+      this.logoutBtn.dataset.page = getCurrentPageName();
+      this.reloadPage();
     } else {
       (<HTMLElement>document.getElementById('title')).innerHTML = 'Не верный Email или пароль!!!';
       (<HTMLInputElement>document.getElementById('email')).value = '';
@@ -227,13 +250,16 @@ export default class Auth {
       (<HTMLInputElement>document.getElementById('password')).value = '';
     }
     if (statusCreate === 200) {
-      (<HTMLElement>document.getElementById('title')).innerHTML = `${name}, спасибо за регистрацию!`;
+      (<HTMLElement>(
+        document.getElementById('title')
+      )).innerHTML = `${name}, спасибо за регистрацию!`;
       const statusLogin = await userApi.loginUser({ email, password });
 
       if (statusLogin === 200) {
         this.closeModal();
-        const button = <HTMLElement>document.getElementById('auth');
-        button.innerHTML = '<button id="main_logout" class="btn btn--orange auth__btn">Выйти</button>';
+        this.authBtnContainer.innerText = '';
+        this.authBtnContainer.append(this.logoutBtn);
+        this.reloadPage();
       }
     }
   }

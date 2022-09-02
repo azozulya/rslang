@@ -72,8 +72,7 @@ footer {
       flex-direction: row;
     }
 
-    &--link,
-    &--games {
+    &--link {
       font-size: 0.8rem;
       line-height: 1.3rem;
       color: $text-secondary;
@@ -87,11 +86,6 @@ footer {
     &--link:hover {
       color: $text-primary;
     }
-  }
-  &__submenu {
-    margin-top: 0;
-    list-style: none;
-    padding-left: 0.5rem;
   }
 }
 
