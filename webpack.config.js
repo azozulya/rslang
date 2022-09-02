@@ -12,14 +12,6 @@ const baseConfig = {
   ],
   module: {
     rules: [
-      // {
-      //   test: /\.css$/i,
-      //   use: ['style-loader', 'css-loader'],
-      // },
-      // {
-      //   test: /\.scss$/,
-      //   use: ['style-loader', 'css-loader', 'sass-loader'],
-      // },
       {
         test: /\.(png|svg|jpg|jpeg|gif|ico)$/i,
         type: 'asset/resource',
@@ -40,49 +32,47 @@ const baseConfig = {
         use: 'ts-loader',
         exclude: /node_modules/,
       },
-      // {
-      //   test: /\.(woff(2)?|ttf|eot)$/i,
-      //   type: 'asset/resource',
-      //   generator: {
-      //     filename: 'assets/fonts/[name][ext]',
-      //   },
-      // },
-      // {
-      //   test: /\.tsx$/,
-      //   use: 'babel-loader',
-      // },
-      // {
-      //   test: /\.(json)$/i,
-      //   type: 'asset/resource',
-      // },
     ],
   },
   resolve: {
     extensions: ['.ts', '.js'],
   },
   output: {
-    filename: '[hash].bundle.js',
+    filename: '[name].[contenthash].js',
     path: path.resolve(__dirname, './dist'),
-    assetModuleFilename: 'img/[hash][ext]',
+    assetModuleFilename: 'assets/img/[hash][ext]',
   },
+  optimization: {
+    runtimeChunk: 'single',
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all',
+        },
+      },
+    },
+  },
+
   plugins: [
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, './src/index.html'),
       filename: 'index.html',
       inject: 'body',
     }),
-    // new CopyWebpackPlugin({
-    //   patterns: [
-    //     {
-    //       from: './src/assets/img',
-    //       to: './assets/img',
-    //     },
-    //     {
-    //       from: './src/assets/audio/',
-    //       to: './assets/audio',
-    //     },
-    //   ],
-    // }),
+    new CopyWebpackPlugin({
+      patterns: [
+        // {
+        //   from: './src/assets/img',
+        //   to: './assets/img',
+        // },
+        {
+          from: './src/assets/audio/',
+          to: './assets/audio',
+        },
+      ],
+    }),
     new CleanWebpackPlugin(),
   ],
 };
