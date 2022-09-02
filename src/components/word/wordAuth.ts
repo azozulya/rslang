@@ -8,6 +8,7 @@ import userApi from '../user/user';
 import create from '../../utils/createElement';
 import Word from './word';
 import { createDefaultUserWord, createDefaultWord } from '../../utils/utils';
+import DictionaryView from '../../pages/dictionary/dictionary';
 
 class WordAuth extends Word implements IWordAppForAuthUser {
   word: IAggregatedWord | IWord;
@@ -46,7 +47,12 @@ class WordAuth extends Word implements IWordAppForAuthUser {
     this.changeWord(type, true);
     this.changeIcon();
 
-    if (type === 'learned') userApi.updateWordStatistic(1);
+    if (type === 'learned') {
+      DictionaryView.countLearnedWords += 1;
+      userApi.updateWordStatistic(1);
+    }
+
+    if (type === 'hard') DictionaryView.countHardWords += 1;
 
     const word = await this.getUserWord();
     if (!word) this.addWords(type);
@@ -66,6 +72,13 @@ class WordAuth extends Word implements IWordAppForAuthUser {
   async deleteWords(type:'hard' | 'learned') {
     this.changeWord(type, false);
     this.changeIcon();
+
+    if (type === 'learned') {
+      DictionaryView.countLearnedWords -= 1;
+      userApi.updateWordStatistic(-1);
+    }
+
+    if (type === 'hard') DictionaryView.countHardWords -= 1;
 
     if (type === 'learned') userApi.updateWordStatistic(-1);
 

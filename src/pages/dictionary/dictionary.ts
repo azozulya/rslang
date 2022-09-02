@@ -11,6 +11,7 @@ import {
   TOTAL_WORDS,
   WORDS_PER_PAGE,
 } from '../../utils/constants';
+import userApi from '../../components/user/user';
 
 class DictionaryView {
   onGetWords!: (group: number, page: number) => void;
@@ -30,6 +31,10 @@ class DictionaryView {
   private paginationContainer: HTMLElement | undefined;
 
   private wordsForAuthUser: (IWordApp | IWordAppForAuthUser)[];
+
+  static countHardWords = 0;
+
+  static countLearnedWords = 0;
 
   constructor() {
     this.words = [];
@@ -202,24 +207,35 @@ class DictionaryView {
       : '';
   }
 
-  private changeViewIfAllLearned() {
+  disablePage(IsDisable: boolean) {
+    const page = <HTMLElement>document.querySelector('.pagination__label--current');
+
+    if (IsDisable) page.classList.add('pagination__label--current-disable');
+    else page.classList.remove('pagination__label--current-disable');
+  }
+
+  private async changeViewIfAllLearned() {
     const isAllChecked = this.checkWordsOnPage();
     this.disableGameLinks(isAllChecked);
-    this.showTextInfo(isAllChecked); // add disable for pagination
+    this.showTextInfo(isAllChecked);
+    this.disablePage(isAllChecked);
   }
 
   private checkWordsOnPage() {
-    const isLearnedAndHard = this.wordsForAuthUser.every((word) => {
-      if ('userWord' in word.word) {
-        return (
-          word.word.userWord.optional.learned === true
-          || word.word.userWord.optional.hard === true
-        );
+    console.log('hard', DictionaryView.countHardWords);
+    console.log('learned', DictionaryView.countLearnedWords);
+    console.log('length', this.wordsForAuthUser.length);
+    const userWordsOnPage = DictionaryView.countHardWords + DictionaryView.countLearnedWords;
+    return userWordsOnPage === this.wordsForAuthUser.length;
+  }
+
+  countUserWordsOnPage() {
+    this.wordsForAuthUser.forEach((item) => {
+      if ('userWord' in item.word) {
+        if (item.word.userWord.optional.hard) DictionaryView.countHardWords += 1;
+        if (item.word.userWord.optional.learned) DictionaryView.countLearnedWords += 1;
       }
-      return false;
     });
-    const isChecked = isLearnedAndHard;
-    return isChecked;
   }
 
   drawWords(words: IWordApp[]) {
@@ -238,8 +254,10 @@ class DictionaryView {
 
   drawWordsAuth(words: (IWordAppForAuthUser | IWordApp)[]) {
     this.wordsForAuthUser = words;
+    DictionaryView.countHardWords = 0;
+    DictionaryView.countLearnedWords = 0;
 
-    console.log(this.isActiveHardWords);
+    console.log('hard', this.isActiveHardWords);
 
     const dictionary = <HTMLElement>document.getElementById('dictionaryWords');
     if (dictionary) {
@@ -250,12 +268,11 @@ class DictionaryView {
     words.forEach((wordInDictionary) => {
       if ('drawForAuthUser' in wordInDictionary) wordInDictionary.drawForAuthUser();
     });
-    if (!this.isActiveHardWords) {
-      this.changeViewIfAllLearned();
-      this.drawPagination();
-    }
+    this.drawPagination();
     this.addHandlersForCheckedWord();
     this.highlightMenu();
+    this.countUserWordsOnPage();
+    this.changeViewIfAllLearned();
   }
 
   // eslint-disable-next-line max-lines-per-function
