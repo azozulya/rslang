@@ -1,6 +1,6 @@
 import { IWord, IWordApp } from '../../interfaces/interfaces';
+import { URL_FOR_STATIC } from '../../utils/constants';
 import create from '../../utils/createElement';
-import { createDefaultWord } from '../../utils/utils';
 
 class Word implements IWordApp {
   word: IWord;
@@ -20,9 +20,9 @@ class Word implements IWordApp {
 
   playAudio(wordAudio: HTMLElement) {
     const tracks = [
-      `http://127.0.0.1:3000/${this.word.audio}`,
-      `http://127.0.0.1:3000/${this.word.audioMeaning}`,
-      `http://127.0.0.1:3000/${this.word.audioExample}`,
+      `${URL_FOR_STATIC}${this.word.audio}`,
+      `${URL_FOR_STATIC}${this.word.audioMeaning}`,
+      `${URL_FOR_STATIC}${this.word.audioExample}`,
     ];
     const player = <HTMLAudioElement>(
       wordAudio.querySelector('.word__audio_player')
@@ -54,7 +54,7 @@ class Word implements IWordApp {
       class: 'word__image',
       parent: wordInDictionary,
     });
-    wordImage.style.backgroundImage = `url(http://127.0.0.1:3000/${this.word.image})`; // TODO change url after deploy backend
+    wordImage.style.backgroundImage = `url${URL_FOR_STATIC}${this.word.image})`; // TODO change url after deploy backend
     const wordDescription = create({
       tagname: 'div',
       class: 'word__description',

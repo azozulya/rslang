@@ -11,10 +11,11 @@ import {
   TOTAL_WORDS,
   WORDS_PER_PAGE,
 } from '../../utils/constants';
-import userApi from '../../components/user/user';
 
 class DictionaryView {
   onGetWords!: (group: number, page: number) => void;
+
+  onGetHardWords!: () => void;
 
   private GROUP_LIST: string[];
 
@@ -57,6 +58,7 @@ class DictionaryView {
     const dictionaryHardWords = <HTMLElement>(
       document.getElementById('dictionaryHardWords')
     );
+    this.onGetHardWords = callback;
     if (dictionaryHardWords) {
       dictionaryHardWords.addEventListener('click', (e: Event) => this.switchHardWords(e));
       dictionaryHardWords.addEventListener('click', callback);
@@ -73,7 +75,8 @@ class DictionaryView {
         element.classList.contains('word__hard')
         || element.classList.contains('word__learned')
       ) {
-        this.changeViewIfAllLearned();
+        if (this.isActiveHardWords) this.removeWordFromHardList(element);
+        else this.changeViewIfAllLearned();
       }
     });
   }
@@ -94,7 +97,6 @@ class DictionaryView {
 
   goToPage = async (page: number) => {
     this.page = page - 1;
-    console.log('group: ', this.group, ' page: ', this.page);
 
     this.onGetWords(this.group, this.page);
     this.saveWordsNavigate();
@@ -210,8 +212,8 @@ class DictionaryView {
   disablePage(IsDisable: boolean) {
     const page = <HTMLElement>document.querySelector('.pagination__label--current');
 
-    if (IsDisable) page.classList.add('pagination__label--current-disable');
-    else page.classList.remove('pagination__label--current-disable');
+    if (IsDisable) page.classList.add('pagination__label--inactive');
+    else page.classList.remove('pagination__label--inactive');
   }
 
   private async changeViewIfAllLearned() {
@@ -222,9 +224,6 @@ class DictionaryView {
   }
 
   private checkWordsOnPage() {
-    console.log('hard', DictionaryView.countHardWords);
-    console.log('learned', DictionaryView.countLearnedWords);
-    console.log('length', this.wordsForAuthUser.length);
     const userWordsOnPage = DictionaryView.countHardWords + DictionaryView.countLearnedWords;
     return userWordsOnPage === this.wordsForAuthUser.length;
   }
@@ -236,6 +235,12 @@ class DictionaryView {
         if (item.word.userWord.optional.learned) DictionaryView.countLearnedWords += 1;
       }
     });
+    this.changeViewIfAllLearned();
+  }
+
+  removeWordFromHardList(element:HTMLElement) {
+    const wordItem = <HTMLElement>element.closest('.word');
+    wordItem.remove();
   }
 
   drawWords(words: IWordApp[]) {
@@ -257,8 +262,6 @@ class DictionaryView {
     DictionaryView.countHardWords = 0;
     DictionaryView.countLearnedWords = 0;
 
-    console.log('hard', this.isActiveHardWords);
-
     const dictionary = <HTMLElement>document.getElementById('dictionaryWords');
     if (dictionary) {
       while (dictionary.firstChild) {
@@ -268,11 +271,15 @@ class DictionaryView {
     words.forEach((wordInDictionary) => {
       if ('drawForAuthUser' in wordInDictionary) wordInDictionary.drawForAuthUser();
     });
-    this.drawPagination();
+    if (this.paginationContainer) this.paginationContainer.innerHTML = '';
+
     this.addHandlersForCheckedWord();
+
+    if (!this.isActiveHardWords) {
+      this.drawPagination();
+      this.countUserWordsOnPage();
+    }
     this.highlightMenu();
-    this.countUserWordsOnPage();
-    this.changeViewIfAllLearned();
   }
 
   // eslint-disable-next-line max-lines-per-function
@@ -358,10 +365,6 @@ class DictionaryView {
       class: 'dictionary__pagination',
       parent: dictionary,
     });
-    container.insertAdjacentHTML(
-      'beforeend',
-      '<button data-page="sprint">Sprint</button>',
-    );
     return container;
   }
 
