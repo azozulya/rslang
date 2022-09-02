@@ -12,7 +12,9 @@ export const WORDS_PER_PAGE = 20;
 
 export const TOTAL_WORDS = 600;
 
-export const COUNT_OF_GROUPS = 5;
+export const AUDIOCALL_COUNT_OPTIONS = 5;
+
+export const AUDIOCALL_COUNT_WORDS = 5;
 
 export const GAME_TIMER = 30;
 

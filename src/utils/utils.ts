@@ -9,6 +9,13 @@ import { getLocalStorage } from './localStorage';
 
 export const generateIndex = (maxNumber: number) => Math.floor(Math.random() * maxNumber);
 
+export function sortRandom<T>(array: T[]): T[] {
+  return array
+    .map((elem) => [elem, Math.random()] as [T, number])
+    .sort((a, b) => a[1] - b[1])
+    .map((elem) => elem[0]);
+}
+
 export const isFromDictionaryPage = () => {
   const storageValue = getLocalStorage<TPageHistory>(PAGE_KEY);
   const page = storageValue ? storageValue.prevPage : DEFAULT_PAGE;

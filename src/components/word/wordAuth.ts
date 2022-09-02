@@ -8,6 +8,7 @@ import userApi from '../user/user';
 import create from '../../utils/createElement';
 import Word from './word';
 import { createDefaultUserWord, createDefaultWord } from '../../utils/utils';
+import DictionaryView from '../../pages/dictionary/dictionary';
 
 class WordAuth extends Word implements IWordAppForAuthUser {
   word: IAggregatedWord | IWord;
@@ -23,97 +24,74 @@ class WordAuth extends Word implements IWordAppForAuthUser {
 
     if (element.classList.contains('word__hard')) {
       if ('userWord' in this.word) {
-        if (this.word.userWord.optional.hard) this.deleteFromHardWords();
+        if (this.word.userWord.optional.hard) this.deleteWords('hard');
         else {
-          if (this.word.userWord.optional.learned) this.deleteFromLearnedWords();
-          this.updateToHardWords();
+          if (this.word.userWord.optional.learned) this.deleteWords('learned');
+          this.updateWords('hard');
         }
-      } else this.updateToHardWords();
+      } else this.updateWords('hard');
     }
 
     if (element.classList.contains('word__learned')) {
       if ('userWord' in this.word) {
-        if (this.word.userWord.optional.learned) this.deleteFromLearnedWords();
+        if (this.word.userWord.optional.learned) this.deleteWords('learned');
         else {
-          if (this.word.userWord.optional.hard) this.deleteFromHardWords();
-          this.updateToLearnedWords();
+          if (this.word.userWord.optional.hard) this.deleteWords('hard');
+          this.updateWords('learned');
         }
-      } this.updateToLearnedWords();
+      } else this.updateWords('learned');
     }
   }
 
-  /* bindAddToHardWord(callback) {
-    const wordHard = document.getElementById('wordHard');
-    wordHard?.addEventListener('click', callback);
-  }
-*/
+  async updateWords(type: 'hard' | 'learned') {
+    this.changeWord(type, true);
+    this.changeIcon();
 
-  async updateToHardWords() {
-    this.changeWord('hard', true);
+    if (type === 'learned') {
+      DictionaryView.countLearnedWords += 1;
+      userApi.updateWordStatistic(1);
+    }
+
+    if (type === 'hard') DictionaryView.countHardWords += 1;
 
     const word = await this.getUserWord();
-    if (!word) this.addToHardWords();
+    if (!word) this.addWords(type);
     else {
-      word.optional.hard = true;
+      word.optional[type] = true;
       userApi.updateUserWord(this.word.id, word);
     }
-
-    this.changeIcon();
   }
 
-  async addToHardWords() {
+  async addWords(type: 'hard' | 'learned') {
     const newWord:IUserWord = createDefaultWord(this.word.id);
-    newWord.optional.hard = true;
+    newWord.optional[type] = true;
 
     userApi.createUserWord(this.word.id, newWord);
   }
 
-  async deleteFromHardWords() {
-    this.changeWord('hard', false);
-
-    const word = await this.getUserWord();
-    if (!word) throw new Error('User word were not found');
-    word.optional.hard = false;
-    userApi.updateUserWord(this.word.id, word);
-
+  async deleteWords(type:'hard' | 'learned') {
+    this.changeWord(type, false);
     this.changeIcon();
-  }
 
-  async updateToLearnedWords() {
-    this.changeWord('learned', true);
-
-    const word = await this.getUserWord();
-    if (!word) this.addToHardWords();
-    else {
-      word.optional.learned = true;
-      userApi.updateUserWord(this.word.id, word);
+    if (type === 'learned') {
+      DictionaryView.countLearnedWords -= 1;
+      userApi.updateWordStatistic(-1);
     }
 
-    this.changeIcon();
-  }
+    if (type === 'hard') DictionaryView.countHardWords -= 1;
 
-  async addToLearnedWords() {
-    const newWord:IUserWord = createDefaultWord(this.word.id);
-    newWord.optional.learned = true;
-
-    userApi.createUserWord(this.word.id, newWord);
-  }
-
-  async deleteFromLearnedWords() {
-    if ('userWord' in this.word) this.word.userWord.optional.learned = false;
-    this.changeWord('learned', false);
+    if (type === 'learned') userApi.updateWordStatistic(-1);
 
     const word = await this.getUserWord();
     if (!word) throw new Error('User word were not found');
-    word.optional.learned = false;
+    word.optional[type] = false;
     userApi.updateUserWord(this.word.id, word);
-
-    this.changeIcon();
   }
 
   changeWord(option: 'hard' | 'learned', value: boolean) {
-    if ('userWord' in this.word) this.word.userWord.optional[option] = value;
-    else {
+    if ('userWord' in this.word) {
+      this.word.userWord.optional[option] = value;
+    } else {
       const userWord = createDefaultUserWord(this.word.id);
       this.word = { ...this.word, ...userWord };
       if ('userWord' in this.word) this.word.userWord.optional[option] = value;
@@ -121,17 +99,18 @@ class WordAuth extends Word implements IWordAppForAuthUser {
   }
 
   changeIcon() {
+    if (!('userWord' in this.word)) return;
     const word = <HTMLElement>document.getElementById(this.word.id);
-    const wordIconHard = <HTMLElement>word.querySelector('.word__hard');
-    const wordIconLearned = <HTMLElement>word.querySelector('.word__learned');
+    const iconHard = word.querySelector('.word__hard');
+    const iconLearned = word.querySelector('.word__learned');
 
-    if (wordIconHard.classList.contains('word__hard_active')) wordIconHard.classList.remove('word__hard_active');
-    if (wordIconLearned.classList.contains('word__learned_active')) wordIconLearned.classList.remove('word__learned_active');
+    if (this.word.userWord.optional.learned) {
+      iconLearned?.classList.add('word__learned_active');
+    } else iconLearned?.classList.remove('word__learned_active');
 
-    if ('userWord' in this.word) {
-      if (this.word.userWord.optional.hard) wordIconHard.classList.add('word__hard_active');
-      if (this.word.userWord.optional.learned) wordIconLearned.classList.add('word__learned_active');
-    }
+    if (this.word.userWord.optional.hard) {
+      iconHard?.classList.add('word__hard_active');
+    } else iconHard?.classList.remove('word__hard_active');
   }
 
   async getUserWord() {
@@ -140,7 +119,6 @@ class WordAuth extends Word implements IWordAppForAuthUser {
     const userWord = userWords.find(
       (gettingWord) => gettingWord.wordId === this.word.id,
     );
-    console.log('get word', userWord);
     return userWord;
   }
 
@@ -183,30 +161,43 @@ class WordAuth extends Word implements IWordAppForAuthUser {
       class: 'word__progress',
       parent: wordDescription,
     });
-    const wordSprint = create({
-      tagname: 'div',
-      class: 'word__sprint',
-      parent: wordProgress,
-      text: 'Спринт',
-    });
-    create({
-      tagname: 'div',
-      class: 'word__sprint_score',
-      parent: wordSprint,
-      text: '3/10',
-    });
-    const wordAudio = create({
-      tagname: 'div',
-      class: 'word__sprint',
-      parent: wordProgress,
-      text: 'Аудиовызов',
-    });
-    create({
-      tagname: 'div',
-      class: 'word__sprint_score',
-      parent: wordAudio,
-      text: '17/40',
-    });
+
+    if ('userWord' in this.word) {
+      const rightAnswersSprint = this.word.userWord.optional.sprint.rightAnswer;
+      const wrongAnswersSprint = this.word.userWord.optional.sprint.rightAnswer;
+      const totalAnswersSprint = rightAnswersSprint + wrongAnswersSprint;
+
+      const rightAnswersAudio = this.word.userWord.optional.audiocall.rightAnswer;
+      const wrongAnswersAudio = this.word.userWord.optional.audiocall.rightAnswer;
+      const totalAnswersAudio = rightAnswersAudio + wrongAnswersAudio;
+
+      const wordSprint = create({
+        tagname: 'div',
+        class: 'word__sprint',
+        parent: wordProgress,
+        text: 'Спринт',
+      });
+
+      create({
+        tagname: 'div',
+        class: 'word__sprint_score',
+        parent: wordSprint,
+        text: `${rightAnswersSprint}/${totalAnswersSprint}`,
+      });
+
+      const wordAudio = create({
+        tagname: 'div',
+        class: 'word__sprint',
+        parent: wordProgress,
+        text: 'Аудиовызов',
+      });
+      create({
+        tagname: 'div',
+        class: 'word__sprint_score',
+        parent: wordAudio,
+        text: `${rightAnswersAudio}/${totalAnswersAudio}`,
+      });
+    }
   }
 }
 export default WordAuth;

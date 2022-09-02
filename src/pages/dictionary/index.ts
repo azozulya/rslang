@@ -26,14 +26,6 @@ class Dictionary {
     if (isActiveHardWords) this.handleGetHardWords();
     this.handleGetWords(group, page);
     this.addHandlers();
-
-    /* const login = await this.api.loginUser({
-      // remove after class Auth is ready
-      email: 'a@a.com',
-      password: '11111111',
-    });
-
-    console.log('login', login); */
   }
 
   private addHandlers() {
