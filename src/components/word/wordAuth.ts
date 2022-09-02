@@ -16,6 +16,14 @@ class WordAuth extends Word implements IWordAppForAuthUser {
   constructor(word: IAggregatedWord | IWord) {
     super(word);
     this.word = word;
+    this.addPropertyId();
+  }
+
+  addPropertyId() {
+    if ('userWord' in this.word) {
+      // eslint-disable-next-line no-underscore-dangle
+      this.word.id = this.word._id;
+    }
   }
 
   defineTarget(event: Event) {
