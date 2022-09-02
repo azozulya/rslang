@@ -119,67 +119,55 @@ class Statistic {
   drawToday() {
     const bodyStatistic = <HTMLElement>document.getElementById('body_statistic');
     const content = `
-      <div id="body_title">
-        Сегодня
+    <div id="body_title">Сегодня</div>
+    <div class="today_statistic">
+      <div id="learnedWords" class="today_statistic-block">
+        <div class="number">${this.learnedWordsAll}</div>
+        <div class="content">слов изучено</div>
       </div>
-        <div class="today_statistic">
-          <div id="learnedWords" class="today_statistic-block">
-            <div class="number">
-              ${this.learnedWordsAll}
-            </div>
-            <div class="content">слов изучено</div>
-          </div>
-          <div id="newWords" class="today_statistic-block">
-            <div class="number">${this.newWordsAll}</div>
-            <div class="content">новых слов</div>
-          </div>
-          <div id="percentAnswer" class="today_statistic-block">
-            <div class="number">${this.percentRightAnswers}%</div>
-            <div class="content">правильных ответов</div>
-          </div>
-          <div id="sprint" class="today_statistic-block">
-            <div class="title">
-              <div class="imgGame_sprint"></div>
-              <div class="nameGame_sprint">Спринт</div>
-            </div>  
-            <div class="results">
-   <!--           <div class="numbers">
-                ${this.sprintNewWords}<br>${this.percentRightSprint}<br>${this.sprintBestSeries}
-              </div>
-              <div class=text>
-                новых слов<br>
-                % правильных ответов<br>
-                лучшая серия
-                </div>
-        -->      
-        <div class="a">
-        <div>${this.sprintNewWords}</div><div>% правильных ответов</div>
+      <div id="newWords" class="today_statistic-block">
+        <div class="number">${this.newWordsAll}</div>
+        <div class="content">новых слов</div>
+      </div>
+      <div id="percentAnswer" class="today_statistic-block">
+        <div class="number">${this.percentRightAnswers}%</div>
+        <div class="content">правильных ответов</div>
+      </div>
+
+      <div id="sprint" class="today_statistic-block">
+        <div class="title">
+          <div class="title_sprint">Спринт</div>
         </div>
-</div>
-
-
-
-          </div>
-
-          <div id="audio" class="today_statistic-block">
-          <div class="title">
-            <div class="imgGame_audio"></div>
-            <div class="nameGame_sprint">Аудиовызов</div>
-          </div>  
-          <div class="results">
-            <div class="numbers">
-            ${this.audioNewWords}<br>${this.percentRightAudio}<br>${this.audioBestSeries}
-            </div>
-            <div class="text">
-              новых слов<br>
-              % правильных ответов<br>
-              лучшая серия
-            </div>
+        <div class="results">
+          <div class="results_grid">
+            <div>${this.sprintNewWords}</div>
+            <div>новых слов</div>
+            <div>${this.percentRightSprint}%</div>
+            <div>правильных ответов</div>
+            <div>${this.sprintBestSeries}</div>
+            <div>лучшая серия</div>
           </div>
         </div>
-    
       </div>
+
+      <div id="audio" class="today_statistic-block">
+        <div class="title">
+          <div class="title_audio">Аудиовызов</div>
+        </div>
+        <div class="results">
+          <div class="results_grid">
+            <div>${this.audioNewWords}</div>
+            <div>новых слов</div>
+            <div>${this.percentRightAudio}%</div>
+            <div>правильных ответов</div>
+            <div>${this.audioBestSeries}</div>
+            <div>лучшая серия</div>
+          </div>
+        </div>
+      </div>
+    </div>
     `;
+
     bodyStatistic.insertAdjacentHTML('beforeend', content);
   }
 
