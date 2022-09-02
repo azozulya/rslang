@@ -1,11 +1,20 @@
+import HeroImage from '../../assets/img/hero.png';
+import HeroImageForTablet from '../../assets/img/hero_tablet.png';
+import FeatureImg1 from '../../assets/img/feature1.png';
+import FeatureImg2 from '../../assets/img/feature2.png';
+import FeatureImg3 from '../../assets/img/feature3.png';
+import FeatureImg4 from '../../assets/img/feature4.png';
+import AnnaAvatar from '../../assets/img/avatar.jpg';
+
 class Main {
   draw(rootContainer: HTMLElement) {
     const container = rootContainer;
 
-    container.innerHTML = this.addHeroSection() + this.addFeatureSection() + this.addTeamSection();
+    container.innerHTML =
+      this.addHeroSection() + this.addFeatureSection() + this.addTeamSection();
   }
 
-  addHeroSection = () => `
+  private addHeroSection = () => `
     <section class="hero">
       <div class="container hero__container">
         <div class="hero__content">
@@ -14,39 +23,39 @@ class Main {
           <button class="btn btn--blue hero__btn" data-page="dictionary">Начать</button>
         </div>
         <picture class="hero__img">
-          <source srcset="./assets/img/hero_tablet.png" media="(max-width: 900px)">
-          <img src="./assets/img/hero.png" alt="" class="hero__img--img">
+          <source srcset="${HeroImageForTablet}" media="(max-width: 900px)">
+          <img src="${HeroImage}" alt="" class="hero__img--img">
         </picture>
         </div>
         </section>
         `;
 
-  addFeatureSection = () => `<section class="feature">
+  private addFeatureSection = () => `<section class="feature">
       <div class="container feature__container">
         <h3 class="feature__title">Наши преимущества</h3>
         <div class="subtitle">Зарегистрируйтесь, чтобы получить доступ ко всем возможностям</div>
         <ul class="feature__list">
           <li class="feature__item">
             <div class="feature__img">
-              <img src="./assets/img/feature1.png" class="feature__img--img" />
+              <img src="${FeatureImg1}" class="feature__img--img" />
             </div>
             <p class="feature__content"><b>+3600</b>слов</p>
           </li>
           <li class="feature__item">
             <div class="feature__img">
-              <img src="./assets/img/feature4.png" class="feature__img--img" />
+              <img src="${FeatureImg4}" class="feature__img--img" />
             </div>
             <p class="feature__content"><b>9</b> уровней</p>
           </li>
           <li class="feature__item">
             <div class="feature__img">
-              <img src="./assets/img/feature2.png" class="feature__img--img" />
+              <img src="${FeatureImg2}" class="feature__img--img" />
             </div>
             <p class="feature__content"><b>Игры</b></p>
           </li>
           <li class="feature__item">
             <div class="feature__img">
-              <img src="./assets/img/feature3.png" class="feature__img--img" />
+              <img src="${FeatureImg3}" class="feature__img--img" />
             </div>
             <p class="feature__content"><b>$</b>Бесплатно</p>
           </li>
@@ -54,27 +63,27 @@ class Main {
       </div>
     </section>`;
 
-  addTeamSection = () => `
+  private addTeamSection = () => `
    <section class="team">
       <div class="container team__container">
         <h3>Наша команда</h3>
         <ul class="team__list">
           <li class="team__item">
-            <img src="./assets/img/avatar.jpg" alt="" class="team__item--photo">
+            <img src="${AnnaAvatar}" alt="" class="team__item--photo">
             <div class="team__item--name">Наталья
               <a href="https://github.com/sarafashka"><svg class="github-icon team__item--github-icon">
                   <use xlink:href="./assets/img/github_logo.svg#github_logo"></use>
                 </svg></a>
             </div>
           </li>
-          <li class="team__item"><img src="./assets/img/avatar.jpg" alt="" class="team__item--photo">
+          <li class="team__item"><img src="${AnnaAvatar}" alt="" class="team__item--photo">
             <div class="team__item--name">Александр
               <a href="https://github.com/AdvisorGML"><svg class="github-icon team__item--github-icon">
                   <use xlink:href="./assets/img/github_logo.svg#github_logo"></use>
                 </svg></a>
             </div>
           </li>
-          <li class="team__item"><img src="./assets/img/avatar.jpg" alt="" class="team__item--photo">
+          <li class="team__item"><img src="${AnnaAvatar}" alt="" class="team__item--photo">
             <div class="team__item--name">Анна
               <a href="https://github.com/azozulya"><svg class="github-icon team__item--github-icon">
                   <use xlink:href="./assets/img/github_logo.svg#github_logo"></use>

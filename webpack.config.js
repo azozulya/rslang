@@ -6,23 +6,20 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const baseConfig = {
   entry: [
+    path.resolve(__dirname, './src/assets/scss/base/normalize.scss'),
     path.resolve(__dirname, './src/index.ts'),
     path.resolve(__dirname, './src/assets/scss/index.scss'),
   ],
-  mode: 'development',
-  // devServer: {
-  //   historyApiFallback: true,
-  // },
   module: {
     rules: [
-      {
-        test: /\.css$/i,
-        use: ['style-loader', 'css-loader'],
-      },
-      {
-        test: /\.scss$/,
-        use: ['style-loader', 'css-loader', 'sass-loader'],
-      },
+      // {
+      //   test: /\.css$/i,
+      //   use: ['style-loader', 'css-loader'],
+      // },
+      // {
+      //   test: /\.scss$/,
+      //   use: ['style-loader', 'css-loader', 'sass-loader'],
+      // },
       {
         test: /\.(png|svg|jpg|jpeg|gif|ico)$/i,
         type: 'asset/resource',
@@ -39,32 +36,32 @@ const baseConfig = {
         },
       },
       {
-        test: /\.tsx?$/,
+        test: /\.ts(x)?$/,
         use: 'ts-loader',
         exclude: /node_modules/,
       },
-      {
-        test: /\.(woff(2)?|ttf|eot)$/i,
-        type: 'asset/resource',
-        generator: {
-          filename: 'assets/fonts/[name][ext]',
-        },
-      },
-      {
-        test: /\.tsx$/,
-        use: 'babel-loader',
-      },
-      {
-        test: /\.(json)$/i,
-        type: 'asset/resource',
-      },
+      // {
+      //   test: /\.(woff(2)?|ttf|eot)$/i,
+      //   type: 'asset/resource',
+      //   generator: {
+      //     filename: 'assets/fonts/[name][ext]',
+      //   },
+      // },
+      // {
+      //   test: /\.tsx$/,
+      //   use: 'babel-loader',
+      // },
+      // {
+      //   test: /\.(json)$/i,
+      //   type: 'asset/resource',
+      // },
     ],
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js'],
+    extensions: ['.ts', '.js'],
   },
   output: {
-    filename: '[name].js',
+    filename: '[hash].bundle.js',
     path: path.resolve(__dirname, './dist'),
     assetModuleFilename: 'img/[hash][ext]',
   },
@@ -74,18 +71,18 @@ const baseConfig = {
       filename: 'index.html',
       inject: 'body',
     }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: './src/assets/img',
-          to: './assets/img',
-        },
-        {
-          from: './src/assets/audio/',
-          to: './assets/audio',
-        },
-      ],
-    }),
+    // new CopyWebpackPlugin({
+    //   patterns: [
+    //     {
+    //       from: './src/assets/img',
+    //       to: './assets/img',
+    //     },
+    //     {
+    //       from: './src/assets/audio/',
+    //       to: './assets/audio',
+    //     },
+    //   ],
+    // }),
     new CleanWebpackPlugin(),
   ],
 };
