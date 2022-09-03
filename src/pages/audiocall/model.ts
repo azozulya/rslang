@@ -9,12 +9,13 @@ import {
   POINTS_TO_LEARNED_HARD_WORD,
   POINTS_TO_LEARNED_WORD,
 } from '../../utils/constants';
-import wordsList from '../../utils/testWord';
+import wordsList from '../../utils/defaultWord';
 import {
   createDefaultWord,
   isFromDictionaryPage,
   sortRandom,
   generateIndex,
+  isFromHardWords,
 } from '../../utils/utils';
 
 class AudioCallModel {
@@ -117,13 +118,16 @@ class AudioCallModel {
   getWordsForGame = async (group: number, page: number) => {
     const wordList = await this.getWords(group, page);
     console.log(wordList);
+    let words: IAudioCallWord[];
 
     if (
       (await userApi.isAuthenticated())
       && isFromDictionaryPage()
       && !this.isMenuLink
     ) {
-      const words = await this.makeWords(group, page);
+      words = await this.makeWords(group, page);
+      console.log('is hard', isFromHardWords());
+      if (isFromHardWords()) words = await this.makeHardWords();
 
       return words;
     }
@@ -157,14 +161,32 @@ class AudioCallModel {
     return this.formatWords(filterWords);
   }
 
+  private async makeHardWords() {
+    const filterWords: Promise<IWord | undefined>[] = [];
+
+    const userWords = await userApi.getUserWords();
+    const hardWords = userWords?.filter((userWord) => userWord.optional.hard === true);
+    console.log('hard', hardWords);
+    if (!hardWords) return [];
+    // eslint-disable-next-line no-restricted-syntax
+    for (const hardWord of hardWords) {
+      const { wordId } = hardWord;
+      if (wordId) {
+        const word = userApi.getWord(wordId);
+        filterWords.push(word);
+      }
+    }
+    const fullWords = await Promise.all(filterWords) as IWord[]; // TO DO add check type;
+
+    return this.formatWords(fullWords);
+  }
+
   private async getWords(group: number, page: number) {
     return (await this.api?.getWords(group, page)) || [];
   }
 
   private formatWords(words: IWord[]): IAudioCallWord[] {
     const randomWords = sortRandom(words);
-    console.log(words);
-
     return randomWords
       .splice(0, AUDIOCALL_COUNT_WORDS)
       .map(({

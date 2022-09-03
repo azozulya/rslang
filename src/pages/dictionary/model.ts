@@ -73,7 +73,7 @@ class DictionaryModel {
   private async getUserWords(words: (IWord | undefined)[]) {
     const wordsForAuthUser: (IAggregatedWord | IWord)[] = [];
     const userWords = await userApi.getUserWords();
-    console.log('userWords', userWords);
+
     if (!userWords) throw new Error('Not found saved user words');
 
     words.forEach((word) => {
