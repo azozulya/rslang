@@ -118,19 +118,21 @@ class AudioCallModel {
   };
 
   getWordsForGame = async (group: number, page: number) => {
+    const wordList = await this.getWords(group, page);
+
     if (
       (await userApi.isAuthenticated())
       && isFromDictionaryPage()
       && !this.isMenuLink
     ) {
-      const words = await this.getAgreggatedUserWords(group, page);
+      const words = await this.makeWords(group, page); // this.getAgreggatedUserWords(group, page);
 
       console.log('getWOrds, user&&dictionary&&!menuLink, words: ', words);
 
       return words;
     }
 
-    const wordList = await this.getWords(group, page);
+    // const wordList = await this.getWords(group, page);
 
     if (!wordList) return null;
 
@@ -138,6 +140,29 @@ class AudioCallModel {
 
     return null;
   };
+
+  private async makeWords(group: number, page: number) {
+    let filterWords: IWord[] = [];
+    let pageNum = page;
+
+    while (filterWords.length < AUDIOCALL_COUNT_WORDS && pageNum >= 0) {
+      // eslint-disable-next-line no-await-in-loop
+      const words = await userApi.getWords(group, pageNum);
+      // eslint-disable-next-line no-await-in-loop
+      const userWords = await userApi.getUserWords();
+      const learnedWords = userWords?.filter((userWord) => userWord.optional.learned === true);
+
+      if (words && learnedWords?.length) {
+        const excludeIDs: string[] = learnedWords.map((word: IUserWord) => word.wordId);
+        const filtered = words.filter((word: IWord) => !excludeIDs.includes(word.id));
+        filterWords = [...filtered];
+      }
+      pageNum -= 1;
+    }
+
+    console.log('learned', filterWords);
+    return this.formatWords(filterWords);
+  }
 
   private async getAgreggatedUserWords(
     group: number,
@@ -157,23 +182,23 @@ class AudioCallModel {
     const learnedWords: IAggregatedWord[] | [] = userLearnedWords
       ? userLearnedWords[0]?.paginatedResults
       : [];
-
+    console.log('1 words for audiocall learned', learnedWords);
     const wordsList = await this.getWords(group, page);
 
-    // console.log('learned: ', learnedWords, userLearnedWords);
-    console.log('wordlist: ', wordsList);
+    console.log('2 wordlist: ', wordsList);
 
     if (wordsList && learnedWords.length) {
       const excludeIDs: string[] = learnedWords.map(
         // eslint-disable-next-line no-underscore-dangle
         (word: IAggregatedWord) => word._id,
       );
-      // console.log('excludeIDs: ', excludeIDs);
 
       const filteredWords = wordsList.filter(
         (word: IWord) => !excludeIDs.includes(word.id),
       );
-      console.log('filteredWords: ', filteredWords);
+      console.log('3filteredWords: ', filteredWords);
+
+      console.log('4 format words', this.formatWords(filteredWords));
 
       return this.formatWords(filteredWords);
     }

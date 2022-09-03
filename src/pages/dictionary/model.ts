@@ -9,7 +9,6 @@ import {
 import Word from '../../components/word/word';
 import WordAuth from '../../components/word/wordAuth';
 import userApi from '../../components/user/user';
-import { WORDS_PER_PAGE } from '../../utils/constants';
 
 class DictionaryModel {
   words: IWordApp[];
@@ -40,10 +39,9 @@ class DictionaryModel {
     const words = await this.api.getWords(group, page);
     if (!words) throw new Error('Not found words');
     if (auth) {
-      const aggregatedWords: (IAggregatedWord) [] = await this.getAgreggatedWords(group, page);
-      const wordsForAuthUser:
-      (IWord | IAggregatedWord)[] = this.collectWords(aggregatedWords, words);
-
+      const wordsForAuthUser: (IAggregatedWord | IWord) [] = await this.getUserWords(
+        words,
+      );
       this.makeWordsforAuthUser(wordsForAuthUser);
     } else {
       this.makeWords(words);
@@ -51,48 +49,53 @@ class DictionaryModel {
   }
 
   async getHardWords() {
-    const aggregatedWords = await userApi.getUserAggregatedWordsFilter(
-      encodeURIComponent(
-        JSON.stringify({
-          $and: [{ 'userWord.optional.hard': true }],
-        }),
-      ),
+    const userWords = await userApi.getUserWords();
+    if (!userWords) return;
+    const hardWords = userWords.filter((word) => word.optional?.hard === true);
+
+    const words: Promise<IWord | undefined>[] = [];
+    // eslint-disable-next-line no-restricted-syntax
+    for (const userHardWord of hardWords) {
+      const { wordId } = userHardWord;
+      if (wordId) {
+        const wordInDictionary = this.api.getWord(wordId);
+        words.push(wordInDictionary);
+      }
+    }
+    const fullWords = await Promise.all(words);
+
+    const wordsForAuthUser: (IWord | IAggregatedWord)[] = await this.getUserWords(
+      fullWords,
     );
-    const hardWords: IAggregatedWord[] | [] = aggregatedWords
-      ? aggregatedWords[0]?.paginatedResults
-      : [];
-    this.makeWordsforAuthUser(hardWords);
+    this.makeWordsforAuthUser(wordsForAuthUser);
   }
 
-  private async getAgreggatedWords(
-    group: number,
-    page: number,
-  ): Promise<IAggregatedWord[]> {
-    const aggregatedWords = await userApi.getUserAggregatedWords(
-      group,
-      page,
-      WORDS_PER_PAGE,
-      encodeURIComponent(
-        JSON.stringify({
-          $and: [{ page }],
-        }),
-      ),
-    );
-    const userWords: IAggregatedWord[] | [] = aggregatedWords
-      ? aggregatedWords[0]?.paginatedResults
-      : [];
-    return userWords;
-  }
+  private async getUserWords(words: (IWord | undefined)[]) {
+    const wordsForAuthUser: (IAggregatedWord | IWord)[] = [];
+    const userWords = await userApi.getUserWords();
+    console.log('userWords', userWords);
+    if (!userWords) throw new Error('Not found saved user words');
 
-  private collectWords(aggregatedWords: IAggregatedWord[], words: IWord[]) {
-    const resultWords: (IWord | IAggregatedWord) [] = [];
     words.forEach((word) => {
-      const wordIndex = aggregatedWords
-        .findIndex((aggregatedWord) => word.id === aggregatedWord._id);
-      if (wordIndex >= 0) resultWords.push(aggregatedWords[wordIndex]);
-      else resultWords.push(word);
+      if (word) {
+        const found = userWords.find((userWord) => word.id === userWord.wordId);
+        if (found) {
+          const wordAuth: IAggregatedWord = {
+            ...word,
+            _id: found.wordId,
+            userWord: {
+              difficulty: found.difficulty,
+              optional: found.optional,
+            },
+          };
+          wordsForAuthUser.push(wordAuth);
+        } else {
+          wordsForAuthUser.push(word);
+        }
+      }
     });
-    return resultWords;
+
+    return wordsForAuthUser;
   }
 
   private async makeWords(words: Array<IWord | undefined>) {

@@ -129,9 +129,8 @@ class AudiocallGame {
 
   stopGame() {
     this.onStopGameHandler(this.gameState, this.wordsInGame);
-
-    this.currentWordIndex = 0;
     this.gameState = { ...this.defaultState };
+    document.removeEventListener('keydown', (e) => this.handleKeyboardEvent(e));
     this.gameContainer.remove();
   }
 
@@ -188,6 +187,7 @@ class AudiocallGame {
 
   // eslint-disable-next-line max-lines-per-function
   renderGame() {
+    console.log(this.currentWordIndex);
     if (this.currentWordIndex === this.wordsInGame.length) {
       this.stopGame();
     }
@@ -253,6 +253,9 @@ class AudiocallGame {
       parent: audiocall,
       text: 'Не знаю →',
     });
+
+    if (this.currentWordIndex >= this.wordsInGame.length) this.audioTrack.pause();
+    else this.audioTrack.play();
   }
 
   renderAnswer() {

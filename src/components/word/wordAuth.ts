@@ -16,17 +16,17 @@ class WordAuth extends Word implements IWordAppForAuthUser {
   constructor(word: IAggregatedWord | IWord) {
     super(word);
     this.word = word;
-    this.addPropertyId();
+    // this.addPropertyId();
   }
 
   addPropertyId() {
-    if ('userWord' in this.word) {
+    if ('_id' in this.word) {
       // eslint-disable-next-line no-underscore-dangle
       this.word.id = this.word._id;
     }
   }
 
-  defineTarget(event: Event) {
+  async defineTarget(event: Event) {
     const element = <HTMLElement>event.target;
     if (element.classList.contains('word__audio')) this.playAudio(element);
 
@@ -34,8 +34,8 @@ class WordAuth extends Word implements IWordAppForAuthUser {
       if ('userWord' in this.word) {
         if (this.word.userWord.optional.hard) this.deleteWords('hard');
         else {
-          if (this.word.userWord.optional.learned) this.deleteWords('learned');
           this.updateWords('hard');
+          if (this.word.userWord.optional.learned) this.deleteWords('learned');
         }
       } else this.updateWords('hard');
     }
@@ -44,15 +44,18 @@ class WordAuth extends Word implements IWordAppForAuthUser {
       if ('userWord' in this.word) {
         if (this.word.userWord.optional.learned) this.deleteWords('learned');
         else {
-          if (this.word.userWord.optional.hard) this.deleteWords('hard');
           this.updateWords('learned');
+          if (this.word.userWord.optional.hard) this.deleteWords('hard');
         }
       } else this.updateWords('learned');
     }
+
+    console.log('word', await this.getUserWord());
   }
 
   async updateWords(type: 'hard' | 'learned') {
     this.changeWord(type, true);
+    console.log('1 object', this.word);
     this.changeIcon();
 
     if (type === 'learned') {
@@ -62,10 +65,21 @@ class WordAuth extends Word implements IWordAppForAuthUser {
 
     if (type === 'hard') DictionaryView.countHardWords += 1;
 
-    const word = await this.getUserWord();
-    if (!word) this.addWords(type);
+    const userWord = await this.getUserWord();
+    console.log('2 user word', userWord);
+    console.log('2.5 user word api', await userApi.getUserWord(this.word.id));
+    if (!userWord) this.addWords(type);
     else {
+      const word: IUserWord = {
+        wordId: userWord.wordId,
+        difficulty: userWord.difficulty,
+        optional: userWord.optional,
+      };
+
+      console.log('3 word.optional', word.optional[type]);
       word.optional[type] = true;
+      console.log('4 word.optional', word.optional[type]);
+      console.log('5 update', this.word.id, word);
       userApi.updateUserWord(this.word.id, word);
     }
   }
@@ -123,10 +137,14 @@ class WordAuth extends Word implements IWordAppForAuthUser {
 
   async getUserWord() {
     const userWords = await userApi.getUserWords();
+    const oneWord = await userApi.getUserWord(this.word.id);
+    console.log('one word', oneWord);
+    console.log('allwords', userWords);
     if (!userWords) throw new Error('Not found user saved words');
     const userWord = userWords.find(
       (gettingWord) => gettingWord.wordId === this.word.id,
     );
+    console.log('user word', userWord);
     return userWord;
   }
 
@@ -134,6 +152,7 @@ class WordAuth extends Word implements IWordAppForAuthUser {
   drawForAuthUser() {
     this.draw();
     const word = <HTMLElement>document.getElementById(this.word.id);
+    console.log(word.id, this.word);
     const wordHeader = <HTMLElement>word.querySelector('.word__header');
     const wordDescription = <HTMLElement>(
       word.querySelector('.word__description')
@@ -172,11 +191,11 @@ class WordAuth extends Word implements IWordAppForAuthUser {
 
     if ('userWord' in this.word) {
       const rightAnswersSprint = this.word.userWord.optional.sprint.rightAnswer;
-      const wrongAnswersSprint = this.word.userWord.optional.sprint.rightAnswer;
+      const wrongAnswersSprint = this.word.userWord.optional.sprint.wrongAnswer;
       const totalAnswersSprint = rightAnswersSprint + wrongAnswersSprint;
 
       const rightAnswersAudio = this.word.userWord.optional.audiocall.rightAnswer;
-      const wrongAnswersAudio = this.word.userWord.optional.audiocall.rightAnswer;
+      const wrongAnswersAudio = this.word.userWord.optional.audiocall.wrongAnswer;
       const totalAnswersAudio = rightAnswersAudio + wrongAnswersAudio;
 
       const wordSprint = create({

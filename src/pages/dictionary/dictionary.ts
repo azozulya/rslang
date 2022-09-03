@@ -11,6 +11,7 @@ import {
   TOTAL_WORDS,
   WORDS_PER_PAGE,
 } from '../../utils/constants';
+import userApi from '../../components/user/user';
 
 class DictionaryView {
   onGetWords!: (group: number, page: number) => void;
@@ -256,10 +257,12 @@ class DictionaryView {
     this.highlightMenu();
   }
 
-  drawWordsAuth(words: (IWordAppForAuthUser | IWordApp)[]) {
+  async drawWordsAuth(words: (IWordAppForAuthUser | IWordApp)[]) {
     this.wordsForAuthUser = words;
     DictionaryView.countHardWords = 0;
     DictionaryView.countLearnedWords = 0;
+
+    console.log(await userApi.getUserWord('5e9f5ee35eb9e72bc21afa54'));
 
     const dictionary = <HTMLElement>document.getElementById('dictionaryWords');
     if (dictionary) {
@@ -350,7 +353,7 @@ class DictionaryView {
       parent: dictionaryGames,
       text: 'Аудиовызов',
     });
-    audiocallLink.dataset.page = 'auiocall';
+    audiocallLink.dataset.page = 'audio-call';
 
     create({
       tagname: 'div',
