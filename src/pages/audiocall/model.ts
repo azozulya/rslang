@@ -1,15 +1,15 @@
 import Api from '../../api/api';
 import userApi from '../../components/user/user';
 import {
-  IUserWord, IAggregatedWord, IWord, IAudioCallWord,
+  IUserWord, IWord, IAudioCallWord,
 } from '../../interfaces/interfaces';
 import {
   AUDIOCALL_COUNT_OPTIONS,
   AUDIOCALL_COUNT_WORDS,
   POINTS_TO_LEARNED_HARD_WORD,
   POINTS_TO_LEARNED_WORD,
-  WORDS_PER_PAGE,
 } from '../../utils/constants';
+import wordsList from '../../utils/testWord';
 import {
   createDefaultWord,
   isFromDictionaryPage,
@@ -101,7 +101,6 @@ class AudioCallModel {
     }
 
     await userApi.updateUserWord(userWord.wordId, userWord);
-    console.log('update userWord: ', userWord);
   };
 
   private addNewUserWord = async (wordID: string, isRightAnswer: boolean) => {
@@ -112,27 +111,22 @@ class AudioCallModel {
     if (isRightAnswer) newUserWord.optional.audiocall.rightAnswer += 1;
     else newUserWord.optional.audiocall.wrongAnswer += 1;
 
-    console.log('create newUserWord: ', newUserWord);
-
     await userApi.createUserWord(wordID, newUserWord);
   };
 
   getWordsForGame = async (group: number, page: number) => {
     const wordList = await this.getWords(group, page);
+    console.log(wordList);
 
     if (
       (await userApi.isAuthenticated())
       && isFromDictionaryPage()
       && !this.isMenuLink
     ) {
-      const words = await this.makeWords(group, page); // this.getAgreggatedUserWords(group, page);
-
-      console.log('getWOrds, user&&dictionary&&!menuLink, words: ', words);
+      const words = await this.makeWords(group, page);
 
       return words;
     }
-
-    // const wordList = await this.getWords(group, page);
 
     if (!wordList) return null;
 
@@ -144,65 +138,23 @@ class AudioCallModel {
   private async makeWords(group: number, page: number) {
     let filterWords: IWord[] = [];
     let pageNum = page;
+    const userWords = await userApi.getUserWords();
+    const learnedWords = userWords?.filter((userWord) => userWord.optional.learned === true);
 
     while (filterWords.length < AUDIOCALL_COUNT_WORDS && pageNum >= 0) {
       // eslint-disable-next-line no-await-in-loop
       const words = await userApi.getWords(group, pageNum);
-      // eslint-disable-next-line no-await-in-loop
-      const userWords = await userApi.getUserWords();
-      const learnedWords = userWords?.filter((userWord) => userWord.optional.learned === true);
 
       if (words && learnedWords?.length) {
         const excludeIDs: string[] = learnedWords.map((word: IUserWord) => word.wordId);
         const filtered = words.filter((word: IWord) => !excludeIDs.includes(word.id));
-        filterWords = [...filtered];
+
+        filterWords = [...filterWords, ...filtered];
       }
       pageNum -= 1;
     }
 
-    console.log('learned', filterWords);
     return this.formatWords(filterWords);
-  }
-
-  private async getAgreggatedUserWords(
-    group: number,
-    page: number,
-  ): Promise<IAudioCallWord[] | null> {
-    const userLearnedWords = await userApi.getUserAggregatedWords(
-      group,
-      page,
-      WORDS_PER_PAGE,
-      encodeURIComponent(
-        JSON.stringify({
-          $and: [{ 'userWord.optional.learned': true }, { page }],
-        }),
-      ),
-    );
-
-    const learnedWords: IAggregatedWord[] | [] = userLearnedWords
-      ? userLearnedWords[0]?.paginatedResults
-      : [];
-    console.log('1 words for audiocall learned', learnedWords);
-    const wordsList = await this.getWords(group, page);
-
-    console.log('2 wordlist: ', wordsList);
-
-    if (wordsList && learnedWords.length) {
-      const excludeIDs: string[] = learnedWords.map(
-        // eslint-disable-next-line no-underscore-dangle
-        (word: IAggregatedWord) => word._id,
-      );
-
-      const filteredWords = wordsList.filter(
-        (word: IWord) => !excludeIDs.includes(word.id),
-      );
-      console.log('3filteredWords: ', filteredWords);
-
-      console.log('4 format words', this.formatWords(filteredWords));
-
-      return this.formatWords(filteredWords);
-    }
-    return this.formatWords(wordsList);
   }
 
   private async getWords(group: number, page: number) {
@@ -211,6 +163,7 @@ class AudioCallModel {
 
   private formatWords(words: IWord[]): IAudioCallWord[] {
     const randomWords = sortRandom(words);
+    console.log(words);
 
     return randomWords
       .splice(0, AUDIOCALL_COUNT_WORDS)
@@ -235,7 +188,9 @@ class AudioCallModel {
   }
 
   private makeTranslateOptions(words: IWord[], wordPaste:string, index: number): string[] {
-    const randomSorted: string[] = sortRandom(words)
+    const wordsUsed = words.length < AUDIOCALL_COUNT_OPTIONS
+      ? wordsList : words;
+    const randomSorted: string[] = sortRandom(wordsUsed)
       .filter((word) => word.wordTranslate !== wordPaste)
       .map((word) => word.wordTranslate)
       .splice(0, AUDIOCALL_COUNT_OPTIONS - 1);

@@ -262,8 +262,6 @@ class DictionaryView {
     DictionaryView.countHardWords = 0;
     DictionaryView.countLearnedWords = 0;
 
-    console.log(await userApi.getUserWord('5e9f5ee35eb9e72bc21afa54'));
-
     const dictionary = <HTMLElement>document.getElementById('dictionaryWords');
     if (dictionary) {
       while (dictionary.firstChild) {
