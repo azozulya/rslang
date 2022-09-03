@@ -35,7 +35,7 @@ class WordAuth extends Word implements IWordAppForAuthUser {
         if (this.word.userWord.optional.hard) this.deleteWords('hard');
         else {
           this.updateWords('hard');
-          if (this.word.userWord.optional.learned) this.deleteWords('learned');
+          // if (this.word.userWord.optional.learned) this.deleteWords('learned');
         }
       } else this.updateWords('hard');
     }
@@ -45,17 +45,15 @@ class WordAuth extends Word implements IWordAppForAuthUser {
         if (this.word.userWord.optional.learned) this.deleteWords('learned');
         else {
           this.updateWords('learned');
-          if (this.word.userWord.optional.hard) this.deleteWords('hard');
+        //  if (this.word.userWord.optional.hard) this.deleteWords('hard');
         }
       } else this.updateWords('learned');
     }
-
-    console.log('word', await this.getUserWord());
+    console.log('word', this.word);
   }
 
   async updateWords(type: 'hard' | 'learned') {
     this.changeWord(type, true);
-    console.log('1 object', this.word);
     this.changeIcon();
 
     if (type === 'learned') {
@@ -66,8 +64,6 @@ class WordAuth extends Word implements IWordAppForAuthUser {
     if (type === 'hard') DictionaryView.countHardWords += 1;
 
     const userWord = await this.getUserWord();
-    console.log('2 user word', userWord);
-    console.log('2.5 user word api', await userApi.getUserWord(this.word.id));
     if (!userWord) this.addWords(type);
     else {
       const word: IUserWord = {
@@ -76,10 +72,13 @@ class WordAuth extends Word implements IWordAppForAuthUser {
         optional: userWord.optional,
       };
 
-      console.log('3 word.optional', word.optional[type]);
-      word.optional[type] = true;
-      console.log('4 word.optional', word.optional[type]);
-      console.log('5 update', this.word.id, word);
+      if (type === 'hard') {
+        word.optional.hard = true;
+        word.optional.learned = false;
+      } else if (type === 'learned') {
+        word.optional.learned = true;
+        word.optional.hard = false;
+      }
       userApi.updateUserWord(this.word.id, word);
     }
   }
@@ -112,7 +111,17 @@ class WordAuth extends Word implements IWordAppForAuthUser {
 
   changeWord(option: 'hard' | 'learned', value: boolean) {
     if ('userWord' in this.word) {
-      this.word.userWord.optional[option] = value;
+      switch (option) {
+        case 'hard':
+          this.word.userWord.optional.hard = value;
+          this.word.userWord.optional.learned = false;
+          break;
+        case 'learned':
+          this.word.userWord.optional.learned = value;
+          this.word.userWord.optional.hard = false;
+          break;
+        default: throw new Error('Incorrect changing status word');
+      }
     } else {
       const userWord = createDefaultUserWord(this.word.id);
       this.word = { ...this.word, ...userWord };
@@ -137,14 +146,10 @@ class WordAuth extends Word implements IWordAppForAuthUser {
 
   async getUserWord() {
     const userWords = await userApi.getUserWords();
-    const oneWord = await userApi.getUserWord(this.word.id);
-    console.log('one word', oneWord);
-    console.log('allwords', userWords);
     if (!userWords) throw new Error('Not found user saved words');
     const userWord = userWords.find(
       (gettingWord) => gettingWord.wordId === this.word.id,
     );
-    console.log('user word', userWord);
     return userWord;
   }
 
@@ -152,7 +157,6 @@ class WordAuth extends Word implements IWordAppForAuthUser {
   drawForAuthUser() {
     this.draw();
     const word = <HTMLElement>document.getElementById(this.word.id);
-    console.log(word.id, this.word);
     const wordHeader = <HTMLElement>word.querySelector('.word__header');
     const wordDescription = <HTMLElement>(
       word.querySelector('.word__description')
