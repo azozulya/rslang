@@ -224,7 +224,7 @@ class DictionaryView {
   pageDisable(isDisable: boolean) {
     this.disableGameLinks(isDisable);
     this.showTextInfo(isDisable);
-    this.disablePage(isDisable);
+    if (!this.isActiveHardWords) this.disablePage(isDisable);
   }
 
   private checkWordsOnPage() {
