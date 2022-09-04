@@ -1,6 +1,4 @@
 .dictionary {
-  width: 100%;
-
   &__groups_list {
     display: flex;
     flex-wrap: wrap;
@@ -56,26 +54,33 @@
   &__extentions {
     display: flex;
     justify-content: space-between;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
   }
 
   &__hardwords,
   &__sprint,
   &__audio {
     display: flex;
-    justify-content: center;
     align-items: center;
-    width: 12em;
-    height: 3em;
-    color: #000000;
-    background-image: url(../../assets/img/hard_words.svg);
-    background-repeat: no-repeat;
-    background-size: contain;
-    background-position-x: left;
     cursor: pointer;
+    padding: 0.4rem 0.8rem;
+    border-radius: 0.6rem;
     transition: 0.25s;
+
+    &:before {
+      content: '';
+      background-repeat: no-repeat;
+      background-size: contain;
+      width: 2rem;
+      height: 2rem;
+    }
   }
+
   &__hardwords {
-    width: 15em;
+    &::before {
+      background-image: url(../../assets/img/hard_words.svg);
+    }
   }
   &__hardwords_active {
     color: $secondary-main;
@@ -83,16 +88,22 @@
   }
 
   &__sprint {
-    background-image: url(../../assets/img/game_sprint.svg);
+    &:before {
+      background-image: url(../../assets/img/game_sprint.svg);
+    }
   }
   &__audio {
-    background-image: url(../../assets/img/game_audio.svg);
+    &::before {
+      background-image: url(../../assets/img/game_audio.svg);
+    }
   }
+
   &__hardwords:hover,
   &__sprint:hover,
   &__audio:hover {
-    color: $secondary-main;
+    background-color: rgba($accent-light, 0.3);
   }
+
   &__games_disable {
     color: #808080;
     pointer-events: none;
@@ -104,10 +115,19 @@
   }
 
   &__words {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 2em;
+    display: grid;
+
+    @include large-screens {
+      grid-template-columns: repeat(4, 23%);
+      justify-content: space-between;
+    }
+    @include desktop {
+      grid-template-columns: repeat(3, 31%);
+      justify-content: space-between;
+    }
+    @include media(1023px, 640px) {
+      grid-template-columns: repeat(2, 48%);
+      justify-content: space-between;
+    }
   }
 }

@@ -17,10 +17,13 @@
     border-radius: 50%;
     margin: 0 0.2rem;
 
+    @include phone {
+      height: 1.5rem;
+    }
+
     &--current {
       color: $light-color;
       background-color: $accent-main;
-      
     }
 
     &:not(&--disabled):not(&--current):hover {

@@ -1,18 +1,7 @@
 .word {
-  display: flex;
-  gap: 2em;
-  width: 45%;
-  height: 18em;
   border: 2px $word-group-0 solid;
   border-radius: 0.65em;
-  padding: 0.5em;
-
-  @include desktop {
-    width: 40em;
-  }
-  @include tablet {
-    width: 30em;
-  }
+  margin-bottom: 2rem;
 
   &_group-0 {
     border: 2px $word-group-0 solid;
@@ -32,33 +21,42 @@
   &_group-5 {
     border: 2px $word-group-5 solid;
   }
+
+  &__image {
+    height: 10rem;
+    background-image: url(../../assets/img/test.jpeg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    border-top-left-radius: 0.58em;
+    border-top-right-radius: 0.58em;
+    position: relative;
+  }
+
+  &__description {
+    padding: 1em;
+  }
+
+  &__transcription {
+    letter-spacing: 0.08rem;
+  }
 }
-.word__image {
-  width: 16em;
-  flex-shrink: 0;
-  background-image: url(../../assets/img/test.jpeg);
-  background-repeat: no-repeat;
-  background-size: cover;
-  border-radius: 0.65em;
-}
-.word__description {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 40em;
-  padding: 1em 0;
-}
+
 .word__header {
   display: flex;
-  justify-content: space-between;
+  gap: 0.4rem;
 }
 .word__item {
   display: flex;
-  gap: 1em;
+  flex-direction: column;
+  gap: 0.4rem;
 }
 .word__name {
   font-size: 1.5em;
   font-weight: 500;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
 }
 .word__audio {
   width: 1.5em;
@@ -72,8 +70,14 @@
 .word__marks {
   display: flex;
   gap: 1em;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  background-color: $marks-bg;
+  padding: 0.5rem 0.5rem 0.3rem 0.7rem;
+  border-top-left-radius: 0.8rem;
 }
-.word__hard, 
+.word__hard,
 .word__learned {
   width: 1.5em;
   height: 1.5em;
@@ -83,42 +87,44 @@
   cursor: pointer;
   transition: 0.25s;
 }
-.word__hard:hover, 
+.word__hard:hover,
 .word__learned:hover,
 .word__audio:hover,
 .word__hard_active,
 .word__learned_active {
-  filter: invert(67%) sepia(15%) saturate(5650%) hue-rotate(359deg) brightness(101%) contrast(105%);
+  filter: invert(67%) sepia(15%) saturate(5650%) hue-rotate(359deg)
+    brightness(101%) contrast(105%);
 }
 .word__learned {
   background-image: url(../../assets/img/learned_word.svg);
 }
-.word__hard_active{
-  
+.word__hard_active {
 }
 .word__text {
-  color: rgba(0, 0, 0, 0.54);
-  flex-grow: 1;
+  color: $dark-color;
+  margin-bottom: 1rem;
 }
 .word__meaning,
+.word__meaning > i,
 .word__meaning_translate,
 .word__example,
+.word__example > b,
 .word__example_translate {
-  font-size: 0.75em;
+  font-size: 0.75rem;
+  line-height: 1.2rem;
 }
 .word__meaning,
 .word__example {
   margin-top: 1.5em;
+  margin-bottom: 0.4rem;
 }
+
 .word__progress {
   display: flex;
   justify-content: space-between;
 }
-.word__sprint, 
+.word__sprint,
 .word__audio {
-  display: flex;
-  gap: 0.5em;
-  font-size: 0.75em;
 }
 
 /* 

@@ -42,6 +42,13 @@ $bg-color: #b2ebf2;
       max-width: 50%;
       min-width: 16rem;
     }
+
+    @include media(1000px, 769px) {
+      max-width: 60%;
+    }
+
+    @include tablet-phone {
+    }
   }
 
   &__text {
@@ -77,34 +84,42 @@ $bg-color: #b2ebf2;
 
     &--img {
       position: absolute;
-      right: -25%;
 
       @include large-screens {
-        right: -42%;
+        right: -34%;
         border-top-right-radius: 53%;
         border-bottom-right-radius: 10%;
       }
-
-      @include media(1120px, 901px) {
+      @include desktop {
         right: -40%;
+      }
+
+      @include media(1023px, 1001px) {
+        right: -30%;
         top: 3rem;
       }
-      @include media(900px, 769px) {
+
+      @include media(1000px, 769px) {
         right: -2rem;
         top: 5rem;
       }
 
-      @include tablet {
-        right: -6%;
-        top: -7rem;
+      @include media(768px) {
+        right: -2rem;
+        top: -5rem;
       }
+
+      // @include tablet {
+      //   right: -6%;
+      //   top: -7rem;
+      // }
 
       @include media(600px, 501px) {
         top: -4rem;
       }
 
       @include media(500px) {
-        top: -2rem;
+        top: -3rem;
         right: -2rem;
         width: 80%;
       }

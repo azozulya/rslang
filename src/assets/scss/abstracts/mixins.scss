@@ -1,5 +1,5 @@
 @mixin large-screens {
-  @media only screen and (min-width: 1441px) {
+  @media only screen and (min-width: 1301px) {
     @content;
   }
 }
@@ -11,13 +11,13 @@
 }
 
 @mixin desktop {
-  @media only screen and (min-width: 769px) and (max-width: 1440px) {
+  @media only screen and (min-width: 1024px) and (max-width: 1300px) {
     @content;
   }
 }
 
 @mixin tablet {
-  @media only screen and (max-width: 768px) and (min-width: 426px) {
+  @media only screen and (max-width: 1023px) and (min-width: 426px) {
     @content;
   }
 }
