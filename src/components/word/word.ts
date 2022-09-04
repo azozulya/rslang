@@ -54,7 +54,7 @@ class Word implements IWordApp {
       class: 'word__image',
       parent: wordInDictionary,
     });
-    wordImage.style.backgroundImage = `url(${URL_FOR_STATIC}${this.word.image})`; // TODO change url after deploy backend
+    wordImage.style.backgroundImage = `url(${URL_FOR_STATIC}${this.word.image})`;
     const wordDescription = create({
       tagname: 'div',
       class: 'word__description',
