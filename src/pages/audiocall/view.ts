@@ -70,19 +70,19 @@ class AudioCallView {
   }
 
   bindGetWords(
-    handler: (level: number, page: number) => Promise<IAudioCallWord[] | null>
+    handler: (level: number, page: number) => Promise<IAudioCallWord[] | null>,
   ) {
     this.onGetWords = handler;
   }
 
   bindUpdateUserWord(
-    handler: (wordId: string, isRightAnswer: boolean) => void
+    handler: (wordId: string, isRightAnswer: boolean) => void,
   ) {
     this.onUpdateUserWord = handler;
   }
 
   bindGetGameStatistic(
-    handler: () => { learnedWords: number; newWords: number }
+    handler: () => { learnedWords: number; newWords: number },
   ) {
     this.getGameStatistic = handler;
   }
@@ -92,7 +92,7 @@ class AudioCallView {
       rightAnswers: number,
       wrongAnswers: number,
       bestSeries: number
-    ) => void
+    ) => void,
   ) {
     this.onSendStatistic = handler;
   }
@@ -101,7 +101,7 @@ class AudioCallView {
     if (!wordsList) {
       this.gameScreen?.insertAdjacentHTML(
         'afterbegin',
-        'Что-то пошло не так...'
+        'Что-то пошло не так...',
       );
       return;
     }
@@ -109,7 +109,7 @@ class AudioCallView {
     const game = new AudiocallGame(
       wordsList,
       this.stopGame,
-      this.onUpdateUserWord
+      this.onUpdateUserWord,
     );
 
     this.gameScreen?.append(game.init());
@@ -183,19 +183,15 @@ class AudioCallView {
       this.resultScreen.innerText = '';
       this.resultScreen.insertAdjacentHTML(
         'afterbegin',
-        '<h3 class="game__result-title">Результат</h3>'
+        '<h3 class="game__result-title">Результат</h3>',
       );
       const statContainer = create({
         tagname: 'div',
         class: 'game__statistic',
       });
 
-      const { newWords, learnedWords, winStreak, rightAnswer, wrongAnswer } =
-        totalState;
-
       const totalAnswers = rightAnswer + wrongAnswer;
-      const rightAnswersInPercent =
-        Math.floor((rightAnswer * 100) / totalAnswers) || 0;
+      const rightAnswersInPercent = Math.floor((rightAnswer * 100) / totalAnswers) || 0;
 
       statContainer.append(animatedCircleProgressBar(rightAnswersInPercent));
 
@@ -206,13 +202,13 @@ class AudioCallView {
               Новые слова: ${newWords}<br>
               Изученные слова: ${learnedWords}<br>
               Серия правильных ответов: ${winStreak}<br>
-            </div>`
+            </div>`,
       );
 
       this.resultScreen.append(
         statContainer,
         this.drawWordsResult(wordsList),
-        this.drawBtns()
+        this.drawBtns(),
       );
     }
   };
@@ -252,9 +248,8 @@ class AudioCallView {
     const wordsResult = create({ tagname: 'div', class: 'game__result-words' });
 
     const wrongAnswer = wordsList.filter(
-      (word) =>
-        Object.prototype.hasOwnProperty.call(word, 'isRightAnswer') &&
-        !word.isRightAnswer
+      (word) => Object.prototype.hasOwnProperty.call(word, 'isRightAnswer')
+        && !word.isRightAnswer,
     );
     const rightAnswers = wordsList.filter((word) => word.isRightAnswer);
 
@@ -263,7 +258,7 @@ class AudioCallView {
 
     wordsResult.insertAdjacentHTML(
       'beforeend',
-      `Знаю: <span class="right-number">${rightAnswers.length}</span>`
+      `Знаю: <span class="right-number">${rightAnswers.length}</span>`,
     );
     wordsResult.append(this.drawWordsListResult(rightAnswers));
 
@@ -284,7 +279,7 @@ class AudioCallView {
 
       wordElement.insertAdjacentHTML(
         'beforeend',
-        `<b>${word.word}</b>&nbsp;—&nbsp;${word.wordTranslate}`
+        `<b>${word.word}</b>&nbsp;—&nbsp;${word.wordTranslate}`,
       );
       wordsContainer.append(wordElement);
     });
@@ -296,7 +291,7 @@ class AudioCallView {
     const audioFragment = document.createDocumentFragment();
     const svgIcon = document.createElementNS(
       'http://www.w3.org/2000/svg',
-      'svg'
+      'svg',
     );
     svgIcon.classList.add('audio-icon');
     svgIcon.innerHTML = `<use xlink:href="${AudioIcon}#audio"></use>`;
@@ -359,7 +354,7 @@ class AudioCallView {
       pageNum = generateIndex(TOTAL_WORDS / WORDS_PER_PAGE);
     } else if (isFromDictionaryPage()) {
       const storageObj = getLocalStorage<{ page: number; group: number }>(
-        DICTIONARY_KEY
+        DICTIONARY_KEY,
       );
 
       group = storageObj ? storageObj.group : 0;
@@ -386,9 +381,7 @@ class AudioCallView {
   };
 
   private setActiveLevel(current: HTMLInputElement): void {
-    this.levels.forEach((level) =>
-      level.parentElement?.classList.remove('game__level--active')
-    );
+    this.levels.forEach((level) => level.parentElement?.classList.remove('game__level--active'));
     current.parentElement?.classList.add('game__level--active');
   }
 }
