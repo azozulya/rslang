@@ -11,7 +11,6 @@ import {
   TOTAL_WORDS,
   WORDS_PER_PAGE,
 } from '../../utils/constants';
-import userApi from '../../components/user/user';
 
 class DictionaryView {
   onGetWords!: (group: number, page: number) => void;
@@ -103,6 +102,7 @@ class DictionaryView {
   };
 
   async updateGroup(event: Event) {
+    this.page = 0;
     this.switchHardWords(event);
     this.switchWordsGroup(event);
     this.highlightGroupBtn();
@@ -218,9 +218,13 @@ class DictionaryView {
 
   private async changeViewIfAllLearned() {
     const isAllChecked = this.checkWordsOnPage();
-    this.disableGameLinks(isAllChecked);
-    this.showTextInfo(isAllChecked);
-    this.disablePage(isAllChecked);
+    this.pageDisable(isAllChecked);
+  }
+
+  pageDisable(isDisable: boolean) {
+    this.disableGameLinks(isDisable);
+    this.showTextInfo(isDisable);
+    if (!this.isActiveHardWords) this.disablePage(isDisable);
   }
 
   private checkWordsOnPage() {
@@ -278,7 +282,8 @@ class DictionaryView {
     if (!this.isActiveHardWords) {
       this.drawPagination();
       this.countUserWordsOnPage();
-    }
+    } else this.pageDisable(false);
+
     this.highlightMenu();
   }
 
@@ -388,6 +393,7 @@ class DictionaryView {
       class: 'dictionary__info',
       id: 'dictionaryInfo',
       parent: dictionaryGroups,
+
     });
     return container;
   }

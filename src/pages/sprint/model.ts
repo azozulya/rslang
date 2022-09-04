@@ -202,7 +202,7 @@ class GamesModel {
 
     const wordsList = await this.getWords(group, page);
 
-    console.log('learned: ', learnedWords, userLearnedWords);
+    // console.log('learned: ', learnedWords, userLearnedWords);
     console.log('wordsList: ', wordsList);
 
     if (wordsList && learnedWords.length) {
