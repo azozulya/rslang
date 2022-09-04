@@ -95,6 +95,11 @@ h1 {
 
     @include tablet-phone {
       right: -13rem;
+      top: -11.5rem;
+    }
+
+    @include media(330px) {
+      right: -16rem;
       top: -12rem;
     }
   }
@@ -102,5 +107,13 @@ h1 {
   &__btn {
     position: relative;
     z-index: 2;
+
+    @include media(330px) {
+      font-size: 0;
+      background-image: url(../img/logout.svg);
+      background-size: 1.5rem;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
   }
 }

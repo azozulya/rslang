@@ -63,13 +63,13 @@ class WordAuth extends Word implements IWordAppForAuthUser {
   }
 
   async addWords(type: 'hard' | 'learned') {
-    const newWord:IUserWord = createDefaultWord(this.word.id);
+    const newWord: IUserWord = createDefaultWord(this.word.id);
     newWord.optional[type] = true;
 
     userApi.createUserWord(this.word.id, newWord);
   }
 
-  async deleteWords(type:'hard' | 'learned') {
+  async deleteWords(type: 'hard' | 'learned') {
     this.changeWord(type, false);
     this.changeIcon();
 
@@ -126,14 +126,14 @@ class WordAuth extends Word implements IWordAppForAuthUser {
   drawForAuthUser() {
     this.draw();
     const word = <HTMLElement>document.getElementById(this.word.id);
-    const wordHeader = <HTMLElement>word.querySelector('.word__header');
+    const wordImage = <HTMLElement>word.querySelector('.word__image');
     const wordDescription = <HTMLElement>(
       word.querySelector('.word__description')
     );
     const wordMarks = create({
       tagname: 'div',
       class: 'word__marks',
-      parent: wordHeader,
+      parent: wordImage,
     });
     const wordHard = <HTMLElement>create({
       tagname: 'div',

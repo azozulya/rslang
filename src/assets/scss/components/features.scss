@@ -28,6 +28,8 @@
     list-style: none;
     gap: 4rem;
     flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
 
     @include media(780px) {
       flex-direction: column;
@@ -41,6 +43,10 @@
 
     @include media($min-width: 826px) {
       width: 17.8rem;
+    }
+
+    @include phone {
+      width: 100%;
     }
 
     &::after {
@@ -57,6 +63,11 @@
   }
   &__img {
     width: 10rem;
+    margin-right: 0.5rem;
+
+    @include phone {
+      width: 8rem;
+    }
 
     &--img {
       position: relative;
@@ -79,6 +90,10 @@
       display: block;
       color: $text-primary;
       margin-bottom: 1rem;
+
+      @include phone {
+        font-size: 1.9rem;
+      }
     }
   }
 }

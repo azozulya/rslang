@@ -80,12 +80,12 @@ $bg-color: #b2ebf2;
       right: -25%;
 
       @include large-screens {
-        right: -42%;
+        right: -34%;
         border-top-right-radius: 53%;
         border-bottom-right-radius: 10%;
       }
 
-      @include media(1120px, 901px) {
+      @include media(768px) {
         right: -40%;
         top: 3rem;
       }
