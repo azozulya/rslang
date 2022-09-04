@@ -117,7 +117,6 @@ class AudioCallModel {
 
   getWordsForGame = async (group: number, page: number) => {
     const wordList = await this.getWords(group, page);
-    console.log(wordList);
     let words: IAudioCallWord[];
 
     if (
@@ -126,7 +125,6 @@ class AudioCallModel {
       && !this.isMenuLink
     ) {
       words = await this.makeWords(group, page);
-      console.log('is hard', isFromHardWords());
       if (isFromHardWords()) words = await this.makeHardWords();
 
       return words;

@@ -49,25 +49,23 @@ class DictionaryModel {
   }
 
   async getHardWords() {
-    const userWords = await userApi.getUserWords();
-    if (!userWords) return;
-    const hardWords = userWords.filter((word) => word.optional?.hard === true);
-
-    const words: Promise<IWord | undefined>[] = [];
-    // eslint-disable-next-line no-restricted-syntax
-    for (const userHardWord of hardWords) {
-      const { wordId } = userHardWord;
-      if (wordId) {
-        const wordInDictionary = this.api.getWord(wordId);
-        words.push(wordInDictionary);
-      }
-    }
-    const fullWords = await Promise.all(words);
-
-    const wordsForAuthUser: (IWord | IAggregatedWord)[] = await this.getUserWords(
-      fullWords,
+    const aggregatedWords = await userApi.getUserAggregatedWordsFilter(
+      encodeURIComponent(
+        JSON.stringify({
+          $and: [{ 'userWord.optional.hard': true }],
+        }),
+      ),
     );
-    this.makeWordsforAuthUser(wordsForAuthUser);
+
+    const hardWords: IAggregatedWord[] | [] = aggregatedWords
+      ? aggregatedWords[0]?.paginatedResults
+      : [];
+    const hardWordsAddId = hardWords.map((word) => {
+      const wordAddId = { ...word };
+      wordAddId.id = word._id;
+      return wordAddId;
+    });
+    this.makeWordsforAuthUser(hardWordsAddId);
   }
 
   private async getUserWords(words: (IWord | undefined)[]) {
@@ -110,6 +108,7 @@ class DictionaryModel {
   }
 
   private async makeWordsforAuthUser(words: Array<IAggregatedWord | IWord>) {
+    console.log(words);
     this.wordsForAuthUser = [];
     words.forEach((word) => {
       const wordInDictionary = new WordAuth(word);

@@ -54,7 +54,6 @@
   &__extentions {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 2rem;
     flex-wrap: wrap;
   }
 
@@ -112,6 +111,11 @@
 
   &__games {
     display: flex;
+  }
+  &__info {
+    height: 2rem;
+    text-align: center;
+    font-size: 1.5em;
   }
 
   &__words {
