@@ -1,14 +1,13 @@
 const path = require('path');
 const { merge } = require('webpack-merge');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const baseConfig = {
   entry: [
     path.resolve(__dirname, './src/assets/scss/base/normalize.scss'),
-    path.resolve(__dirname, './src/index.ts'),
     path.resolve(__dirname, './src/assets/scss/index.scss'),
+    path.resolve(__dirname, './src/index.ts'),
   ],
   module: {
     rules: [
@@ -24,7 +23,7 @@ const baseConfig = {
         test: /\.(mp3|wav)$/,
         loader: 'file-loader',
         options: {
-          name: 'audio/[path][name].[ext]',
+          name: '/assets/audio/[hash][ext]',
         },
       },
       {
@@ -42,18 +41,18 @@ const baseConfig = {
     path: path.resolve(__dirname, './dist'),
     assetModuleFilename: 'assets/img/[hash][ext]',
   },
-  optimization: {
-    runtimeChunk: 'single',
-    splitChunks: {
-      cacheGroups: {
-        vendor: {
-          test: /[\\/]node_modules[\\/]/,
-          name: 'vendors',
-          chunks: 'all',
-        },
-      },
-    },
-  },
+  // optimization: {
+  //   runtimeChunk: 'single',
+  //   splitChunks: {
+  //     cacheGroups: {
+  //       vendor: {
+  //         test: /[\\/]node_modules[\\/]/,
+  //         name: 'vendors',
+  //         chunks: 'all',
+  //       },
+  //     },
+  //   },
+  // },
 
   plugins: [
     new HtmlWebpackPlugin({
@@ -61,18 +60,7 @@ const baseConfig = {
       filename: 'index.html',
       inject: 'body',
     }),
-    new CopyWebpackPlugin({
-      patterns: [
-        // {
-        //   from: './src/assets/img',
-        //   to: './assets/img',
-        // },
-        {
-          from: './src/assets/audio/',
-          to: './assets/audio',
-        },
-      ],
-    }),
+
     new CleanWebpackPlugin(),
   ],
 };

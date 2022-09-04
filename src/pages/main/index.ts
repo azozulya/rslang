@@ -5,13 +5,13 @@ import FeatureImg2 from '../../assets/img/feature2.png';
 import FeatureImg3 from '../../assets/img/feature3.png';
 import FeatureImg4 from '../../assets/img/feature4.png';
 import AnnaAvatar from '../../assets/img/avatar.jpg';
+import GitHubLogo from '../../assets/img/github_logo.svg';
 
 class Main {
   draw(rootContainer: HTMLElement) {
     const container = rootContainer;
 
-    container.innerHTML =
-      this.addHeroSection() + this.addFeatureSection() + this.addTeamSection();
+    container.innerHTML = this.addHeroSection() + this.addFeatureSection() + this.addTeamSection();
   }
 
   private addHeroSection = () => `
@@ -23,8 +23,8 @@ class Main {
           <button class="btn btn--blue hero__btn" data-page="dictionary">Начать</button>
         </div>
         <picture class="hero__img">
-          <source srcset="./assets/img/hero_tablet.png" media="(max-width: 1000px)">
-          <img src="./assets/img/hero.png" alt="" class="hero__img--img">
+          <source srcset="${HeroImageForTablet}" media="(max-width: 1000px)">
+          <img src="${HeroImage}" alt="" class="hero__img--img">
         </picture>
         </div>
         </section>
@@ -72,21 +72,21 @@ class Main {
             <img src="${AnnaAvatar}" alt="" class="team__item--photo">
             <div class="team__item--name">Наталья
               <a href="https://github.com/sarafashka"><svg class="github-icon team__item--github-icon">
-                  <use xlink:href="./assets/img/github_logo.svg#github_logo"></use>
+                  <use xlink:href="${GitHubLogo}#github_logo"></use>
                 </svg></a>
             </div>
           </li>
           <li class="team__item"><img src="${AnnaAvatar}" alt="" class="team__item--photo">
             <div class="team__item--name">Александр
               <a href="https://github.com/AdvisorGML"><svg class="github-icon team__item--github-icon">
-                  <use xlink:href="./assets/img/github_logo.svg#github_logo"></use>
+                  <use xlink:href="${GitHubLogo}#github_logo"></use>
                 </svg></a>
             </div>
           </li>
           <li class="team__item"><img src="${AnnaAvatar}" alt="" class="team__item--photo">
             <div class="team__item--name">Анна
               <a href="https://github.com/azozulya"><svg class="github-icon team__item--github-icon">
-                  <use xlink:href="./assets/img/github_logo.svg#github_logo"></use>
+                  <use xlink:href="${GitHubLogo}#github_logo"></use>
                 </svg></a>
             </div>
           </li>
