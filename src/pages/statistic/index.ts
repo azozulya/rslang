@@ -1,6 +1,5 @@
 import Chart from 'chart.js/auto';
-import 'chartjs-adapter-date-fns';
-import { ru } from 'date-fns/locale';
+import 'chartjs-adapter-luxon';
 import userApi from '../../components/user/user';
 import { IStatistic, IUserStatistics } from '../../interfaces/interfaces';
 import updateDate from '../../utils/updateDate';
@@ -98,10 +97,6 @@ class Statistic {
   }
 
   async draw(rootContainer: HTMLElement) {
-    // await userApi.updateWordStatistic(1);
-    // await userApi.updateAudioStatistic(10, 1, 7, 5, 7);
-    // await userApi.updateSprintStatistic(3, 5, 4, 5);
-
     await this.getStatistic();
 
     const container = rootContainer;
@@ -204,8 +199,9 @@ class Statistic {
       const options = <Record<string, unknown>> this.response.optional;
       const dataLabels = Object.keys(options);
       let sumLearnedWords = 0;
+      const timeNow = new Date();
       for (let i = 0; i < dataLabels.length; i += 1) {
-        this.labelsChart.push(Date.parse(dataLabels[i]));
+        this.labelsChart.push(Date.parse(dataLabels[i]) + timeNow.getTimezoneOffset() * 60000);
         const allNewWords = (<IStatistic>options[dataLabels[i]]).sN
         + (<IStatistic>options[dataLabels[i]]).aN;
         sumLearnedWords += (<IStatistic>options[dataLabels[i]]).L;
@@ -246,11 +242,6 @@ class Statistic {
         },
         scales: {
           x: {
-            adapters: {
-              date: {
-                locale: ru,
-              },
-            },
             type: 'time',
             time: {
               tooltipFormat: 'dd.MM.yyyy',
@@ -294,11 +285,6 @@ class Statistic {
         },
         scales: {
           x: {
-            adapters: {
-              date: {
-                locale: ru,
-              },
-            },
             type: 'time',
             time: {
               tooltipFormat: 'dd.MM.yyyy',
