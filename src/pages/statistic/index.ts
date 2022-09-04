@@ -67,18 +67,17 @@ class Statistic {
     this.response = await userApi.getUserStatistics();
 
     if (this.response) {
-      const options = <Record<string, unknown>>this.response.optional;
+      const options = <Record<string, unknown>> this.response.optional;
       const dayStatistic = <IStatistic>options[currentDate];
       if (dayStatistic) {
         const rightAnswers = dayStatistic.sR + dayStatistic.aR;
         const allAnswers = rightAnswers + dayStatistic.sW + dayStatistic.aW;
-        this.percentRightAnswers =
-          Math.round((rightAnswers / allAnswers) * 100) || 0;
+        this.percentRightAnswers = Math.round((rightAnswers / allAnswers) * 100) || 0;
         this.percentRightSprint = Math.round(
-          (dayStatistic.sR / (dayStatistic.sR + dayStatistic.sW)) * 100 || 0
+          (dayStatistic.sR / (dayStatistic.sR + dayStatistic.sW)) * 100 || 0,
         );
         this.percentRightAudio = Math.round(
-          (dayStatistic.aR / (dayStatistic.aR + dayStatistic.aW)) * 100 || 0
+          (dayStatistic.aR / (dayStatistic.aR + dayStatistic.aW)) * 100 || 0,
         );
 
         this.learnedWordsAll = dayStatistic.L;
@@ -216,17 +215,16 @@ class Statistic {
 
   initCharts() {
     if (this.response) {
-      const options = <Record<string, unknown>>this.response.optional;
+      const options = <Record<string, unknown>> this.response.optional;
       const dataLabels = Object.keys(options);
       let sumLearnedWords = 0;
       const timeNow = new Date();
       for (let i = 0; i < dataLabels.length; i += 1) {
         this.labelsChart.push(
-          Date.parse(dataLabels[i]) + timeNow.getTimezoneOffset() * 60000
+          Date.parse(dataLabels[i]) + timeNow.getTimezoneOffset() * 60000,
         );
-        const allNewWords =
-          (<IStatistic>options[dataLabels[i]]).sN +
-          (<IStatistic>options[dataLabels[i]]).aN;
+        const allNewWords = (<IStatistic>options[dataLabels[i]]).sN
+          + (<IStatistic>options[dataLabels[i]]).aN;
         sumLearnedWords += (<IStatistic>options[dataLabels[i]]).L;
         this.dataChart1.push(allNewWords);
         this.dataChart2.push(sumLearnedWords);
@@ -284,7 +282,7 @@ class Statistic {
             },
           },
         },
-      }
+      },
     );
   }
 
@@ -336,7 +334,7 @@ class Statistic {
             },
           },
         },
-      }
+      },
     );
   }
 }

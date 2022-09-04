@@ -57,23 +57,8 @@ class GamesModel {
         wrongAnswers,
         bestSeries,
       );
-      console.log(
-        'user auth, send statistic: ',
-        `learnedWords: ${this.gameState.learnedWords}`,
-        `newWords: ${this.gameState.newWords}`,
-        `right: ${rightAnswers}`,
-        `wrong: ${wrongAnswers}`,
-        `strike: ${bestSeries}`,
-      );
     }
-    console.log(
-      'user not auth, send statistic: ',
-      `learnedWords: ${this.gameState.learnedWords}`,
-      `newWords: ${this.gameState.newWords}`,
-      `right: ${rightAnswers}`,
-      `wrong: ${wrongAnswers}`,
-      `strike: ${bestSeries}`,
-    );
+
     this.resetGameStatistic();
   };
 
@@ -187,7 +172,6 @@ class GamesModel {
           $and: [{ 'userWord.optional.hard': true }],
         }),
       ),
-      3600,
     );
     const hardWords: IAggregatedWord[] | [] = aggregateHardWords
       ? aggregateHardWords[0]?.paginatedResults

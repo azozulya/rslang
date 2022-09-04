@@ -367,7 +367,7 @@ class GamesView {
     let pageNum = 0;
 
     if (this.isMenuLink || isStartPage()) {
-      group = Number(this.startBtn?.dataset.level);
+      group = Number(this.startBtn?.dataset.level) || 0;
       pageNum = generateIndex(TOTAL_WORDS / WORDS_PER_PAGE);
       console.log('menuLink or startPage: ', group, pageNum);
     } else if (isFromDictionaryPage()) {

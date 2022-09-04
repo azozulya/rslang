@@ -7,7 +7,11 @@ import {
   SERIA_RIGHT_ANSWER,
 } from '../utils/constants';
 import create from '../utils/createElement';
-import { isFromHardWords, playAudio } from '../utils/utils';
+import {
+  isFromDictionaryPage,
+  isFromHardWords,
+  playAudio,
+} from '../utils/utils';
 import TimerIcon from '../assets/img/timer.svg';
 import RightAnswerSound from '../assets/audio/rightAnswer.mp3';
 import WrongAnswerSound from '../assets/audio/wrongAnswer.mp3';
@@ -252,7 +256,11 @@ class SprintGame {
 
     this.currentWordIndex += 1;
 
-    if (this.currentWordIndex === this.wordsList.length) {
+    // if (this.currentWordIndex === this.wordsList.length) {
+    if (
+      (this.page <= 0 && this.currentWordIndex === this.wordsList.length)
+      || (isFromHardWords() && this.currentWordIndex === this.wordsList.length)
+    ) {
       this.stopGame();
       return;
     }
@@ -260,15 +268,17 @@ class SprintGame {
     this.wordContainer.innerHTML = this.drawWord(this.currentWordIndex);
 
     if (
-      this.currentWordIndex > this.wordsList.length - COUNT_LAST_WORDS
+      this.currentWordIndex >= this.wordsList.length - COUNT_LAST_WORDS
       && this.page > 0
-      && !isFromHardWords
+      && !isFromHardWords()
     ) {
-      const additionalWords = await this.getWords?.(this.group, this.page - 1);
+      this.page -= 1;
+      const additionalWords = await this.getWords?.(this.group, this.page);
+
       if (additionalWords) {
         this.wordsList.push(...additionalWords);
       }
-      console.log('additionalWords: ', additionalWords);
+      console.log('additionalWords: ', additionalWords, this.group, this.page);
     }
   }
 
@@ -385,7 +395,6 @@ class SprintGame {
     learnedWords?: number;
     newWords?: number;
   }) {
-    console.log('update game state: ', params);
     this.gameState = {
       ...this.gameState,
       ...params,
