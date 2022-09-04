@@ -97,17 +97,32 @@ class Statistic {
   }
 
   async draw(rootContainer: HTMLElement) {
-    await this.getStatistic();
+    // const isAuthenticated = JSON.parse(userApi.getStorage('Authenticated'));
+    const isAuthenticated = await userApi.isAuthenticated();
 
-    const container = rootContainer;
-    container.innerHTML = `
+    if (isAuthenticated) {
+      await this.getStatistic();
+
+      const container = rootContainer;
+      container.innerHTML = `
     <div id="statistic">
       <div id="body_statistic">
       </div>
     </div>
     `;
-    this.drawToday();
-    this.drawAllTime();
+      this.drawToday();
+      this.drawAllTime();
+    } else {
+      // this.drawModal();
+      const container = rootContainer;
+      container.innerHTML = `
+    <div id="statistic">
+      <div id="body_statistic">
+      Для просмотра статистики необходима успешная аворизация.
+      </div>
+    </div>
+    `;
+    }
   }
 
   // eslint-disable-next-line max-lines-per-function
@@ -251,6 +266,12 @@ class Statistic {
               },
             },
           },
+          y: {
+            title: {
+              display: true,
+              text: 'Новые слова',
+            },
+          },
         },
       },
     });
@@ -292,6 +313,12 @@ class Statistic {
               displayFormats: {
                 quarter: 'MMM YYYY',
               },
+            },
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Изученные слова',
             },
           },
         },
