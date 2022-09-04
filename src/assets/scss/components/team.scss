@@ -8,6 +8,59 @@
     align-items: center;
     flex-direction: column;
   }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-areas: "A  B  C";
+    @media (max-width: 621px) {
+      grid-template-areas:
+      "A A A"
+      "B B B"
+      "C C C";
+    }
+    gap: 30px;
+    #Natasha {
+      grid-area: A;
+    }
+    #Alex {
+      grid-area: B;
+    }
+    #Anna {
+      grid-area: C;
+    }
+    &--container {
+      border: 1px solid #00bcd4;
+      border-radius: 8px;
+      padding: 0px 10px 10px;
+    }
+    &--photo {
+      display: flex;
+      justify-content: center;
+    }
+    &--name {
+      display: flex;
+      justify-content: center;
+      padding-bottom: 10px;
+    }
+    &--content {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      column-gap: 10px;
+      row-gap: 5px;
+      div {
+        display: flex;
+        flex-wrap: wrap;
+        align-content: center;
+        font-size: 0.8rem;
+        line-height: 0.8rem;
+      }
+
+    }
+
+  }
+
+
   &__list {
     list-style: none;
     padding: 0;
@@ -47,6 +100,13 @@
       align-content: center;
       font-size: 1.3rem;
     }
+    &--content {
+      color: $text-primary;
+      display: flex;
+      flex-wrap: wrap;
+      text-align: left;
+      font-size: 0.8rem;
+    }
     &--github-icon {
       margin-left: 0.3rem;
       display: block;
@@ -57,6 +117,7 @@
     }
   }
 }
+
 .github-icon {
   width: 1rem;
   height: 1rem;
