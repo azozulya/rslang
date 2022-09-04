@@ -13,10 +13,11 @@
     margin-top: 2rem;
   }
 
-  @include tablet-phone {
+  @include media(600px) {
     margin-left: 1rem;
     margin-right: 1rem;
     margin-top: 0;
+    padding: 1rem;
   }
 
   &__start {
@@ -62,10 +63,9 @@
     justify-content: center;
     margin: 0 0.5rem;
 
-    // &--active {
-    //   background-color: $accent-dark;
-    //   color: $light-color;
-    // }
+    @include phone {
+      margin: 0 0.2rem 0 0;
+    }
 
     @each $name, $color in $levels {
       &--#{$name}:hover,
@@ -120,16 +120,24 @@
     }
 
     &-words {
-      height: 250px;
-      overflow-y: auto;
       margin-top: 1rem;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
       width: 100%;
+
+      @include media($min-width: 501px) {
+        height: 200px;
+        overflow-y: auto;
+      }
     }
 
     &-btns {
       display: flex;
       gap: 2rem;
+
+      @include phone {
+        flex-direction: column;
+        gap: 1rem;
+      }
     }
     &-btn {
       font-size: 1rem;
@@ -143,9 +151,20 @@
     align-items: center;
     margin-bottom: 1rem;
 
-    &__statistic-text {
+    @include media($max-width: 500px) {
+      flex-direction: column;
+    }
+
+    &-text {
       font-size: 0.9rem;
       line-height: 1.5rem;
+    }
+    &-overflow {
+      @include media(500px) {
+        overflow-y: auto;
+        width: 100%;
+        margin-bottom: 2rem;
+      }
     }
   }
 }
@@ -176,7 +195,15 @@
     display: flex;
     align-items: center;
     margin-bottom: 0.5rem;
+
+    @include phone {
+      flex-wrap: wrap;
+    }
   }
+}
+
+.words-list:last-child {
+  margin-bottom: 0;
 }
 
 .audio-icon {
@@ -205,6 +232,10 @@
     position: absolute;
     left: 0;
     top: 0;
+
+    @include phone {
+      top: 4rem;
+    }
 
     &--icon {
       width: 2rem;
@@ -245,11 +276,9 @@
 
   &__word {
     background-color: $secondary-light;
-    padding: 2rem;
+    padding: 2rem 0;
     box-sizing: border-box;
     border-radius: 1rem;
-    // transition-property: all;
-    // transition-duration: 1000ms;
 
     &--title {
       text-align: center;

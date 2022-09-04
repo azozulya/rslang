@@ -32,6 +32,8 @@ export const SERIA_RIGHT_ANSWER = 3; // 3 dots + 10
 
 export const URL_FOR_STATIC = 'http://localhost:3000/';
 
+// 'https://react-rslang-backend.herokuapp.com/';
+
 export const GROUP_LIST = [
   'A1 Beginner',
   'A2 Elementary',
