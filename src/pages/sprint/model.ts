@@ -10,13 +10,16 @@ import {
   createDefaultWord,
   generateIndex,
   isFromDictionaryPage,
+  isFromHardWords,
 } from '../../utils/utils';
 import userApi from '../../components/user/user';
 import {
+  DICTIONARY_KEY,
   POINTS_TO_LEARNED_HARD_WORD,
   POINTS_TO_LEARNED_WORD,
   WORDS_PER_PAGE,
 } from '../../utils/constants';
+import { getLocalStorage } from '../../utils/localStorage';
 
 class GamesModel {
   private api?: API;
@@ -46,13 +49,16 @@ class GamesModel {
     wrongAnswers: number,
     bestSeries: number,
   ) => {
-    await userApi.updateSprintStatistic(
-      this.gameState.learnedWords,
-      this.gameState.newWords,
-      rightAnswers,
-      wrongAnswers,
-      bestSeries,
-    );
+    if (await userApi.isAuthenticated()) {
+      await userApi.updateSprintStatistic(
+        this.gameState.learnedWords,
+        this.gameState.newWords,
+        rightAnswers,
+        wrongAnswers,
+        bestSeries,
+      );
+    }
+
     this.resetGameStatistic();
   };
 
@@ -86,10 +92,10 @@ class GamesModel {
       sprint.rightAnswer += 1;
 
       const diff = sprint.rightAnswer - sprint.wrongAnswer;
-
+      console.log(hard, diff, POINTS_TO_LEARNED_WORD);
       if (
-        (hard && diff === POINTS_TO_LEARNED_HARD_WORD)
-        || (!hard && diff === POINTS_TO_LEARNED_WORD)
+        (hard && diff >= POINTS_TO_LEARNED_HARD_WORD)
+        || (!hard && diff >= POINTS_TO_LEARNED_WORD)
       ) {
         this.gameState.learnedWords += 1;
         learned = true;
@@ -101,8 +107,15 @@ class GamesModel {
       if (learned) learned = false;
     }
 
-    await userApi.updateUserWord(userWord.wordId, userWord);
-    console.log('update userWord: ', userWord);
+    await userApi.updateUserWord(userWord.wordId, {
+      ...userWord,
+      optional: {
+        ...userWord.optional,
+        learned,
+        hard,
+        sprint,
+      },
+    });
   };
 
   private addNewUserWord = async (wordID: string, isRightAnswer: boolean) => {
@@ -119,6 +132,14 @@ class GamesModel {
   };
 
   getWordsForGame = async (group: number, page: number) => {
+    if (isFromHardWords()) {
+      const hardWords = await this.getAgreggatedHardWords();
+      if (!hardWords) return null;
+      console.log('hardWords: ', hardWords);
+      console.log(this.formatWords(hardWords));
+      return this.formatWords(hardWords);
+    }
+
     if (
       (await userApi.isAuthenticated())
       && isFromDictionaryPage()
@@ -144,13 +165,27 @@ class GamesModel {
     return null;
   };
 
+  private async getAgreggatedHardWords() {
+    const aggregateHardWords = await userApi.getUserAggregatedWordsFilter(
+      encodeURIComponent(
+        JSON.stringify({
+          $and: [{ 'userWord.optional.hard': true }],
+        }),
+      ),
+    );
+    const hardWords: IAggregatedWord[] | [] = aggregateHardWords
+      ? aggregateHardWords[0]?.paginatedResults
+      : [];
+
+    return hardWords;
+  }
+
   private async getAgreggatedUserWords(
     group: number,
     page: number,
   ): Promise<IGameWord[] | null> {
     const userLearnedWords = await userApi.getUserAggregatedWords(
       group,
-      page,
       WORDS_PER_PAGE,
       encodeURIComponent(
         JSON.stringify({
@@ -158,8 +193,9 @@ class GamesModel {
         }),
       ),
     );
-    console.log(group, page);
-    // console.log('userLearnedWords: ', userLearnedWords);
+
+    console.log('group: ', group, 'page: ', page);
+    console.log('userLearnedWords: ', userLearnedWords);
     const learnedWords: IAggregatedWord[] | [] = userLearnedWords
       ? userLearnedWords[0]?.paginatedResults
       : [];
@@ -190,13 +226,13 @@ class GamesModel {
     return (await this.api?.getWords(group, page)) || [];
   }
 
-  private formatWords(words: IWord[]): IGameWord[] {
-    return words.map(({
-      word, wordTranslate, id, audio,
-    }, idx) => {
+  private formatWords(words: IWord[] | IAggregatedWord[]): IGameWord[] {
+    return words.map((wordItem, idx) => {
       const randomIndex = Math.random() > 0.5 ? idx : generateIndex(words.length);
+      const { word, wordTranslate, audio } = wordItem;
       return {
-        id,
+        // eslint-disable-next-line no-underscore-dangle
+        id: wordItem.id || (<IAggregatedWord>wordItem)._id,
         audio,
         word,
         wordTranslate,

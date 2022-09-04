@@ -118,7 +118,7 @@ class Statistic {
       container.innerHTML = `
     <div id="statistic">
       <div id="body_statistic">
-      Для просмотра статистики необходима успешная аворизация.
+      Для просмотра статистики необходима успешная авторизация.
       </div>
     </div>
     `;
@@ -127,7 +127,9 @@ class Statistic {
 
   // eslint-disable-next-line max-lines-per-function
   drawToday() {
-    const bodyStatistic = <HTMLElement>document.getElementById('body_statistic');
+    const bodyStatistic = <HTMLElement>(
+      document.getElementById('body_statistic')
+    );
     const content = `
     <div id="body_title">Сегодня</div>
     <div class="today_statistic">
@@ -182,7 +184,9 @@ class Statistic {
   }
 
   async drawAllTime() {
-    const bodyStatistic = <HTMLElement>document.getElementById('body_statistic');
+    const bodyStatistic = <HTMLElement>(
+      document.getElementById('body_statistic')
+    );
     const content = `
       <div id="body_title">
         За всё время
@@ -216,9 +220,11 @@ class Statistic {
       let sumLearnedWords = 0;
       const timeNow = new Date();
       for (let i = 0; i < dataLabels.length; i += 1) {
-        this.labelsChart.push(Date.parse(dataLabels[i]) + timeNow.getTimezoneOffset() * 60000);
+        this.labelsChart.push(
+          Date.parse(dataLabels[i]) + timeNow.getTimezoneOffset() * 60000,
+        );
         const allNewWords = (<IStatistic>options[dataLabels[i]]).sN
-        + (<IStatistic>options[dataLabels[i]]).aN;
+          + (<IStatistic>options[dataLabels[i]]).aN;
         sumLearnedWords += (<IStatistic>options[dataLabels[i]]).L;
         this.dataChart1.push(allNewWords);
         this.dataChart2.push(sumLearnedWords);
@@ -245,36 +251,39 @@ class Statistic {
     };
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const chart = new Chart(<HTMLCanvasElement>document.getElementById('chart1'), {
-      type: 'line',
-      data: dataSet,
-      options: {
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false,
-          },
-        },
-        scales: {
-          x: {
-            type: 'time',
-            time: {
-              tooltipFormat: 'dd.MM.yyyy',
-              unit: 'day',
-              displayFormats: {
-                quarter: 'MMM YYYY',
-              },
+    const chart = new Chart(
+      <HTMLCanvasElement>document.getElementById('chart1'),
+      {
+        type: 'line',
+        data: dataSet,
+        options: {
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false,
             },
           },
-          y: {
-            title: {
-              display: true,
-              text: 'Новые слова',
+          scales: {
+            x: {
+              type: 'time',
+              time: {
+                tooltipFormat: 'dd.MM.yyyy',
+                unit: 'day',
+                displayFormats: {
+                  quarter: 'MMM YYYY',
+                },
+              },
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Новые слова',
+              },
             },
           },
         },
       },
-    });
+    );
   }
 
   // eslint-disable-next-line max-lines-per-function
@@ -294,36 +303,39 @@ class Statistic {
     };
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const chart = new Chart(<HTMLCanvasElement>document.getElementById('chart2'), {
-      type: 'line',
-      data: dataSet,
-      options: {
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false,
-          },
-        },
-        scales: {
-          x: {
-            type: 'time',
-            time: {
-              tooltipFormat: 'dd.MM.yyyy',
-              unit: 'day',
-              displayFormats: {
-                quarter: 'MMM YYYY',
-              },
+    const chart = new Chart(
+      <HTMLCanvasElement>document.getElementById('chart2'),
+      {
+        type: 'line',
+        data: dataSet,
+        options: {
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false,
             },
           },
-          y: {
-            title: {
-              display: true,
-              text: 'Изученные слова',
+          scales: {
+            x: {
+              type: 'time',
+              time: {
+                tooltipFormat: 'dd.MM.yyyy',
+                unit: 'day',
+                displayFormats: {
+                  quarter: 'MMM YYYY',
+                },
+              },
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Изученные слова',
+              },
             },
           },
         },
       },
-    });
+    );
   }
 }
 

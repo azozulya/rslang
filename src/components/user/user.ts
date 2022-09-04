@@ -203,26 +203,22 @@ class User {
     return this.api.deleteUserWord(this.userId, this.token, wordId);
   }
 
-  getUserAggregatedWords(
+  async getUserAggregatedWords(
     group: number,
-    page: number,
     wordsPerPage: number,
     filter: string,
   ) {
-    return this.api.getUserAggregatedWords(
+    const words = await this.api.getUserAggregatedWords(
       this.userId,
       this.token,
       group,
-      page,
       wordsPerPage,
       filter,
     );
+    return words;
   }
 
-  getUserAggregatedWordsFilter(
-    filter: string,
-    wordsPerPage?: number,
-  ) {
+  getUserAggregatedWordsFilter(filter: string, wordsPerPage?: number) {
     return this.api.getUserAggregatedWordsFilter(
       this.userId,
       this.token,

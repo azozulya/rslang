@@ -19,13 +19,13 @@ const baseConfig = {
         test: /\.html$/,
         use: 'html-loader',
       },
-      {
-        test: /\.(mp3|wav)$/,
-        loader: 'file-loader',
-        options: {
-          name: '/assets/audio/[hash][ext]',
-        },
-      },
+      // {
+      //   test: /\.(mp3|wav)$/,
+      //   loader: 'file-loader',
+      //   options: {
+      //     name: '/assets/audio/[hash][ext]',
+      //   },
+      // },
       {
         test: /\.ts(x)?$/,
         use: 'ts-loader',
