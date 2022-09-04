@@ -11,7 +11,6 @@ import {
   TOTAL_WORDS,
   WORDS_PER_PAGE,
 } from '../../utils/constants';
-import userApi from '../../components/user/user';
 
 class DictionaryView {
   onGetWords!: (group: number, page: number) => void;
@@ -103,6 +102,7 @@ class DictionaryView {
   };
 
   async updateGroup(event: Event) {
+    this.page = 0;
     this.switchHardWords(event);
     this.switchWordsGroup(event);
     this.highlightGroupBtn();
@@ -393,6 +393,7 @@ class DictionaryView {
       class: 'dictionary__info',
       id: 'dictionaryInfo',
       parent: dictionaryGroups,
+
     });
     return container;
   }
