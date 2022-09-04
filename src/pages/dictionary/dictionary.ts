@@ -218,9 +218,13 @@ class DictionaryView {
 
   private async changeViewIfAllLearned() {
     const isAllChecked = this.checkWordsOnPage();
-    this.disableGameLinks(isAllChecked);
-    this.showTextInfo(isAllChecked);
-    this.disablePage(isAllChecked);
+    this.pageDisable(isAllChecked);
+  }
+
+  pageDisable(isDisable: boolean) {
+    this.disableGameLinks(isDisable);
+    this.showTextInfo(isDisable);
+    this.disablePage(isDisable);
   }
 
   private checkWordsOnPage() {
@@ -278,7 +282,8 @@ class DictionaryView {
     if (!this.isActiveHardWords) {
       this.drawPagination();
       this.countUserWordsOnPage();
-    }
+    } else this.pageDisable(false);
+
     this.highlightMenu();
   }
 
