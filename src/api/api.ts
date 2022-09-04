@@ -257,9 +257,10 @@ class Api {
     userId: string,
     token: string,
     filter: string,
+    wordsPerPage = 3600,
   ) {
     const response = await fetch(
-      `${this.users}/${userId}/AggregatedWords?filter=${filter}`,
+      `${this.users}/${userId}/AggregatedWords?wordsPerPage=${wordsPerPage}&filter=${filter}`,
       {
         method: 'GET',
         headers: {
