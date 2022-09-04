@@ -2,7 +2,8 @@ class Main {
   draw(rootContainer: HTMLElement) {
     const container = rootContainer;
 
-    container.innerHTML = this.addHeroSection() + this.addFeatureSection() + this.addTeamSection();
+    container.innerHTML =
+      this.addHeroSection() + this.addFeatureSection() + this.addTeamSection();
   }
 
   addHeroSection = () => `
@@ -14,7 +15,7 @@ class Main {
           <button class="btn btn--blue hero__btn" data-page="dictionary">Начать</button>
         </div>
         <picture class="hero__img">
-          <source srcset="./assets/img/hero_tablet.png" media="(max-width: 900px)">
+          <source srcset="./assets/img/hero_tablet.png" media="(max-width: 1000px)">
           <img src="./assets/img/hero.png" alt="" class="hero__img--img">
         </picture>
         </div>

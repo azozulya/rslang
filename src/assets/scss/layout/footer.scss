@@ -77,6 +77,7 @@ footer {
     @include phone {
       flex-direction: row;
       flex-wrap: wrap;
+      margin-right: 3rem;
     }
 
     &--link {
