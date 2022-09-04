@@ -46,7 +46,7 @@ class AudiocallGame {
       wordsList: IAudioCallWord[]
     ) => void,
 
-    private updateWordState?: (wordId: string, isRightAnswer: boolean) => void
+    private updateWordState?: (wordId: string, isRightAnswer: boolean) => void,
   ) {
     this.gameContainer = create({ tagname: 'div', class: 'container' });
     this.gameContainer.addEventListener('click', (e) => this.handleEvent(e));
@@ -64,8 +64,7 @@ class AudiocallGame {
   private handleEvent(event: Event) {
     const element = <HTMLElement>event.target;
     if (element.classList.contains('audiocall__play')) this.audioTrack.play();
-    if (element.classList.contains('audiocall__words-item'))
-      this.viewAnswer(Number(element.id));
+    if (element.classList.contains('audiocall__words-item')) this.viewAnswer(Number(element.id));
 
     if (element.classList.contains('audiocall__next')) {
       if (this.isAnswerOpen) this.renderGame();
@@ -115,8 +114,7 @@ class AudiocallGame {
     const optionWords = [...this.wordsOptionsGroup.children];
 
     optionWords.forEach((word) => {
-      if (Number(word.id) === this.currentWord.answerIndex)
-        word.classList.add('right-answer');
+      if (Number(word.id) === this.currentWord.answerIndex) word.classList.add('right-answer');
       else if (Number(word.id) !== id) word.classList.add('not-answer');
       else word.classList.add('wrong-answer');
     });
@@ -245,7 +243,7 @@ class AudiocallGame {
     });
     this.wordsOptionsGroup.append(
       this.audioRightElement,
-      this.audioWrongElement
+      this.audioWrongElement,
     );
 
     create({
@@ -256,8 +254,7 @@ class AudiocallGame {
       text: 'Не знаю →',
     });
 
-    if (this.currentWordIndex >= this.wordsInGame.length)
-      this.audioTrack.pause();
+    if (this.currentWordIndex >= this.wordsInGame.length) this.audioTrack.pause();
     else this.audioTrack.play();
   }
 

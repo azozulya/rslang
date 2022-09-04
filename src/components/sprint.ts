@@ -7,10 +7,11 @@ import {
   SERIA_RIGHT_ANSWER,
 } from '../utils/constants';
 import create from '../utils/createElement';
-import { playAudio } from '../utils/utils';
+import { isFromHardWords, playAudio } from '../utils/utils';
 import TimerIcon from '../assets/img/timer.svg';
 import RightAnswerSound from '../assets/audio/rightAnswer.mp3';
 import WrongAnswerSound from '../assets/audio/wrongAnswer.mp3';
+import userApi from './user/user';
 
 class SprintGame {
   private gameContainer: HTMLElement;
@@ -61,7 +62,7 @@ class SprintGame {
     private getWords?: (
       level: number,
       page: number
-    ) => Promise<IGameWord[] | null>
+    ) => Promise<IGameWord[] | null>,
   ) {
     this.gameContainer = create({ tagname: 'div', class: 'sprint' });
     this.wordContainer = create({ tagname: 'div', class: 'sprint__word' });
@@ -94,14 +95,14 @@ class SprintGame {
       this.drawTimer(),
       this.drawScoreContainer(),
       this.wordContainer,
-      this.drawBtns()
+      this.drawBtns(),
     );
 
     this.gameContainer.insertAdjacentHTML(
       'beforeend',
       `<div class="sprint__keys">
           <div>←</div><div>→</div>
-        </div>`
+        </div>`,
     );
 
     this.wordContainer.innerHTML = firstWord;
@@ -144,7 +145,7 @@ class SprintGame {
     scoreWrapper.append(
       this.scoreElement,
       this.pointsIncreasContainer,
-      dotsContainer
+      dotsContainer,
     );
 
     return scoreWrapper;
@@ -185,7 +186,7 @@ class SprintGame {
       this.noBtn,
       this.yesBtn,
       this.audioRightElement,
-      this.audioWrongElement
+      this.audioWrongElement,
     );
 
     return btnsContainer;
@@ -246,7 +247,7 @@ class SprintGame {
   private async nextWord() {
     this.wordContainer.classList.remove(
       'sprint__right-answer',
-      'sprint__wrong-answer'
+      'sprint__wrong-answer',
     );
 
     this.currentWordIndex += 1;
@@ -259,8 +260,9 @@ class SprintGame {
     this.wordContainer.innerHTML = this.drawWord(this.currentWordIndex);
 
     if (
-      this.currentWordIndex > this.wordsList.length - COUNT_LAST_WORDS &&
-      this.page > 0
+      this.currentWordIndex > this.wordsList.length - COUNT_LAST_WORDS
+      && this.page > 0
+      && !isFromHardWords
     ) {
       const additionalWords = await this.getWords?.(this.group, this.page - 1);
       if (additionalWords) {
@@ -298,7 +300,7 @@ class SprintGame {
     if (this.pointsPerRightAnswer === MAX_POINTS_FOR_RIGHT_ANSWER) return;
 
     const dotElement = this.dots?.find(
-      (dot) => !dot.classList.contains('active')
+      (dot) => !dot.classList.contains('active'),
     );
 
     if (dotElement) {
@@ -315,11 +317,8 @@ class SprintGame {
   private resetPointsPerWord() {
     this.dots?.forEach((dot) => dot.classList.remove('active'));
 
-    if (this.pointsPerRightAnswer === POINTS_FOR_RIGHT_ANSWER) return;
+    this.pointsPerRightAnswer = POINTS_FOR_RIGHT_ANSWER;
 
-    if (this.pointsPerRightAnswer > POINTS_FOR_RIGHT_ANSWER) {
-      this.pointsPerRightAnswer -= POINTS_FOR_RIGHT_ANSWER;
-    }
     this.updatePontsContainer();
   }
 
@@ -332,7 +331,9 @@ class SprintGame {
   private async addRightAnswer() {
     this.wordContainer.classList.add('sprint__right-answer');
 
-    let { rightAnswer, seriesOfRightAnswer, winStreak, score } = this.gameState;
+    let {
+      rightAnswer, seriesOfRightAnswer, winStreak, score,
+    } = this.gameState;
 
     rightAnswer += 1;
     seriesOfRightAnswer += 1;
@@ -362,8 +363,9 @@ class SprintGame {
 
     if (seriesOfRightAnswer > winStreak) {
       winStreak = seriesOfRightAnswer;
-      seriesOfRightAnswer = 0;
     }
+
+    seriesOfRightAnswer = 0;
 
     this.updateState({
       wrongAnswer,
@@ -383,6 +385,7 @@ class SprintGame {
     learnedWords?: number;
     newWords?: number;
   }) {
+    console.log('update game state: ', params);
     this.gameState = {
       ...this.gameState,
       ...params,
