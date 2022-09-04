@@ -159,14 +159,14 @@ class GamesModel {
       ),
     );
     console.log(group, page);
-    console.log('userLearnedWords: ', userLearnedWords);
+    //console.log('userLearnedWords: ', userLearnedWords);
     const learnedWords: IAggregatedWord[] | [] = userLearnedWords
       ? userLearnedWords[0]?.paginatedResults
       : [];
 
     const wordsList = await this.getWords(group, page);
 
-    // console.log('learned: ', learnedWords, userLearnedWords);
+    console.log('learned: ', learnedWords, userLearnedWords);
     console.log('wordsList: ', wordsList);
 
     if (wordsList && learnedWords.length) {

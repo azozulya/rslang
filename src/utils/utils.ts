@@ -1,9 +1,15 @@
 import {
   IPathOfAggregatedWord,
   IUserWord,
+  TNavigate,
   TPageHistory,
 } from '../interfaces/interfaces';
-import { DEFAULT_PAGE, DICTIONARY_PAGE, PAGE_KEY } from './constants';
+import {
+  DEFAULT_PAGE,
+  DICTIONARY_KEY,
+  DICTIONARY_PAGE,
+  PAGE_KEY,
+} from './constants';
 import create from './createElement';
 import { getLocalStorage } from './localStorage';
 
@@ -21,6 +27,15 @@ export const isFromDictionaryPage = () => {
   const page = storageValue ? storageValue.prevPage : DEFAULT_PAGE;
 
   return page === DICTIONARY_PAGE;
+};
+
+export const isFromHardWords = () => {
+  const storageValue = getLocalStorage<TNavigate>(DICTIONARY_KEY);
+  if (storageValue) {
+    return storageValue.isActiveHardWords;
+  }
+
+  return false;
 };
 
 export const isStartPage = () => {

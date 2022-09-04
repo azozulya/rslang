@@ -48,7 +48,7 @@ class Dictionary {
   };
 
   handleGetHardWords = async () => {
-    this.model.getHardWords(await this.checkUserAuth());
+    this.model.getHardWords();
   };
 
   handleGetWords = async (group: number, page: number) => {
