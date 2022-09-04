@@ -219,6 +219,18 @@ class User {
     );
   }
 
+  getUserAggregatedWordsFilter(
+    filter: string,
+    wordsPerPage?: number,
+  ) {
+    return this.api.getUserAggregatedWordsFilter(
+      this.userId,
+      this.token,
+      filter,
+      wordsPerPage,
+    );
+  }
+
   getUserAggregatedWord(wordId: string): Promise<IWord | undefined> {
     return this.api.getUserAggregatedWord(this.userId, this.token, wordId);
   }

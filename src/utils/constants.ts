@@ -14,7 +14,7 @@ export const TOTAL_WORDS = 600;
 
 export const AUDIOCALL_COUNT_OPTIONS = 5;
 
-export const AUDIOCALL_COUNT_WORDS = 5;
+export const AUDIOCALL_COUNT_WORDS = 10;
 
 export const GAME_TIMER = 30;
 

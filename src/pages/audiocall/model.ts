@@ -1,20 +1,21 @@
 import Api from '../../api/api';
 import userApi from '../../components/user/user';
 import {
-  IUserWord, IAggregatedWord, IWord, IAudioCallWord,
+  IUserWord, IWord, IAudioCallWord,
 } from '../../interfaces/interfaces';
 import {
   AUDIOCALL_COUNT_OPTIONS,
   AUDIOCALL_COUNT_WORDS,
   POINTS_TO_LEARNED_HARD_WORD,
   POINTS_TO_LEARNED_WORD,
-  WORDS_PER_PAGE,
 } from '../../utils/constants';
+import wordsList from '../../utils/defaultWord';
 import {
   createDefaultWord,
   isFromDictionaryPage,
   sortRandom,
   generateIndex,
+  isFromHardWords,
 } from '../../utils/utils';
 
 class AudioCallModel {
@@ -31,10 +32,7 @@ class AudioCallModel {
     this.api = Api.getInstance();
   }
 
-  getGameStatistic = () => { // STATISTICS
-    console.log('model, getGameStatistic:  ', this.gameState);
-    return this.gameState;
-  };
+  getGameStatistic = () => this.gameState;
 
   resetGameStatistic() {
     this.gameState = {
@@ -43,36 +41,23 @@ class AudioCallModel {
     };
   }
 
-  /* private async updateStatistic(wordStat: IWordStat) {
-    await this.sendStatistic(wordStat);
-
-    const date = getDateWithoutTime();
-
-    const storageObj = getLocalStorage<{ [x: number]: IWordStat[] }>(
-      SPRINT_WORDS_STATISTIC,
+  sendStatistic = async (
+    rightAnswers: number,
+    wrongAnswers: number,
+    bestSeries: number,
+  ) => {
+    await userApi.updateAudioStatistic(
+      this.gameState.learnedWords,
+      this.gameState.newWords,
+      rightAnswers,
+      wrongAnswers,
+      bestSeries,
     );
+    this.resetGameStatistic();
+  };
 
-    if (!storageObj) {
-      setLocalStorage(SPRINT_WORDS_STATISTIC, { [date]: [wordStat] });
-      return;
-    }
-
-    const currentStat = storageObj[date];
-    currentStat.push(wordStat);
-
-    setLocalStorage(SPRINT_WORDS_STATISTIC, {
-      [date]: currentStat,
-    });
-  }
-
-  private async sendStatistic(wordStat: IWordStat) {
-    return '';
-  }
-  */
-
-  updateUserWord = async (wordId: string, isRightAnswer: boolean) => { // UPDATE
+  updateUserWord = async (wordId: string, isRightAnswer: boolean) => {
     const isUser = await userApi.isAuthenticated();
-    console.log(`model: isUser: ${isUser}, isRightAnswer: ${isRightAnswer}`);
 
     if (!isUser) return;
 
@@ -90,13 +75,17 @@ class AudioCallModel {
     userWord: IUserWord,
     isRightAnswer: boolean,
   ) => {
-    const { sprint } = userWord.optional;
+    const { audiocall } = userWord.optional;
     let { hard, learned } = userWord.optional;
 
-    if (isRightAnswer) {
-      sprint.rightAnswer += 1;
+    if (audiocall.rightAnswer === 0 && audiocall.wrongAnswer === 0) {
+      this.gameState.newWords += 1;
+    }
 
-      const diff = sprint.rightAnswer - sprint.wrongAnswer;
+    if (isRightAnswer) {
+      audiocall.rightAnswer += 1;
+
+      const diff = audiocall.rightAnswer - audiocall.wrongAnswer;
 
       if (
         (hard && diff === POINTS_TO_LEARNED_HARD_WORD)
@@ -107,22 +96,12 @@ class AudioCallModel {
         hard = false;
       }
     } else {
-      sprint.wrongAnswer += 1;
+      audiocall.wrongAnswer += 1;
 
       if (learned) learned = false;
     }
 
     await userApi.updateUserWord(userWord.wordId, userWord);
-
-    /* this.updateStatistic({
-      wordID: userWord.wordId,
-      learned,
-      new: false,
-      rightAnswer: isRightAnswer,
-    });
-    */
-
-    console.log('update userWord: ', userWord);
   };
 
   private addNewUserWord = async (wordID: string, isRightAnswer: boolean) => {
@@ -130,36 +109,28 @@ class AudioCallModel {
 
     const newUserWord = createDefaultWord(wordID);
 
-    if (isRightAnswer) newUserWord.optional.sprint.rightAnswer += 1;
-    else newUserWord.optional.sprint.wrongAnswer += 1;
-
-    console.log('create newUserWord: ', newUserWord);
+    if (isRightAnswer) newUserWord.optional.audiocall.rightAnswer += 1;
+    else newUserWord.optional.audiocall.wrongAnswer += 1;
 
     await userApi.createUserWord(wordID, newUserWord);
-
-  /*  this.updateStatistic({
-      wordID,
-      learned: false,
-      new: true,
-      rightAnswer: isRightAnswer,
-    });
-    */
   };
 
   getWordsForGame = async (group: number, page: number) => {
+    const wordList = await this.getWords(group, page);
+    console.log(wordList);
+    let words: IAudioCallWord[];
+
     if (
       (await userApi.isAuthenticated())
       && isFromDictionaryPage()
       && !this.isMenuLink
     ) {
-      const words = await this.getAgreggatedUserWords(group, page);
-
-      console.log('getWOrds, user&&dictionary&&!menuLink, words: ', words);
+      words = await this.makeWords(group, page);
+      console.log('is hard', isFromHardWords());
+      if (isFromHardWords()) words = await this.makeHardWords();
 
       return words;
     }
-
-    const wordList = await this.getWords(group, page);
 
     if (!wordList) return null;
 
@@ -168,45 +139,46 @@ class AudioCallModel {
     return null;
   };
 
-  private async getAgreggatedUserWords(
-    group: number,
-    page: number,
-  ): Promise<IAudioCallWord[] | null> {
-    const userLearnedWords = await userApi.getUserAggregatedWords(
-      group,
-      page,
-      WORDS_PER_PAGE,
-      encodeURIComponent(
-        JSON.stringify({
-          $and: [{ 'userWord.optional.learned': true }, { page }],
-        }),
-      ),
-    );
+  private async makeWords(group: number, page: number) {
+    let filterWords: IWord[] = [];
+    let pageNum = page;
+    const userWords = await userApi.getUserWords();
+    const learnedWords = userWords?.filter((userWord) => userWord.optional.learned === true);
 
-    const learnedWords: IAggregatedWord[] | [] = userLearnedWords
-      ? userLearnedWords[0]?.paginatedResults
-      : [];
+    while (filterWords.length < AUDIOCALL_COUNT_WORDS && pageNum >= 0) {
+      // eslint-disable-next-line no-await-in-loop
+      const words = await userApi.getWords(group, pageNum);
 
-    const wordsList = await this.getWords(group, page);
+      if (words && learnedWords?.length) {
+        const excludeIDs: string[] = learnedWords.map((word: IUserWord) => word.wordId);
+        const filtered = words.filter((word: IWord) => !excludeIDs.includes(word.id));
 
-    // console.log('learned: ', learnedWords, userLearnedWords);
-    console.log('wordlist: ', wordsList);
-
-    if (wordsList && learnedWords.length) {
-      const excludeIDs: string[] = learnedWords.map(
-        // eslint-disable-next-line no-underscore-dangle
-        (word: IAggregatedWord) => word._id,
-      );
-      // console.log('excludeIDs: ', excludeIDs);
-
-      const filteredWords = wordsList.filter(
-        (word: IWord) => !excludeIDs.includes(word.id),
-      );
-      console.log('filteredWords: ', filteredWords);
-
-      return this.formatWords(filteredWords);
+        filterWords = [...filterWords, ...filtered];
+      }
+      pageNum -= 1;
     }
-    return this.formatWords(wordsList);
+
+    return this.formatWords(filterWords);
+  }
+
+  private async makeHardWords() {
+    const filterWords: Promise<IWord | undefined>[] = [];
+
+    const userWords = await userApi.getUserWords();
+    const hardWords = userWords?.filter((userWord) => userWord.optional.hard === true);
+    console.log('hard', hardWords);
+    if (!hardWords) return [];
+    // eslint-disable-next-line no-restricted-syntax
+    for (const hardWord of hardWords) {
+      const { wordId } = hardWord;
+      if (wordId) {
+        const word = userApi.getWord(wordId);
+        filterWords.push(word);
+      }
+    }
+    const fullWords = await Promise.all(filterWords) as IWord[]; // TO DO add check type;
+
+    return this.formatWords(fullWords);
   }
 
   private async getWords(group: number, page: number) {
@@ -215,7 +187,6 @@ class AudioCallModel {
 
   private formatWords(words: IWord[]): IAudioCallWord[] {
     const randomWords = sortRandom(words);
-
     return randomWords
       .splice(0, AUDIOCALL_COUNT_WORDS)
       .map(({
@@ -239,7 +210,9 @@ class AudioCallModel {
   }
 
   private makeTranslateOptions(words: IWord[], wordPaste:string, index: number): string[] {
-    const randomSorted: string[] = sortRandom(words)
+    const wordsUsed = words.length < AUDIOCALL_COUNT_OPTIONS
+      ? wordsList : words;
+    const randomSorted: string[] = sortRandom(wordsUsed)
       .filter((word) => word.wordTranslate !== wordPaste)
       .map((word) => word.wordTranslate)
       .splice(0, AUDIOCALL_COUNT_OPTIONS - 1);
@@ -249,36 +222,3 @@ class AudioCallModel {
 }
 
 export default AudioCallModel;
-
-function getDateWithoutTime() {
-  throw new Error('Function not implemented.');
-}
-
-/* function getLocalStorage<T>(SPRINT_WORDS_STATISTIC: any) {
-  throw new Error('Function not implemented.');
-}
-
-function SPRINT_WORDS_STATISTIC<T>(SPRINT_WORDS_STATISTIC: any) {
-  throw new Error('Function not implemented.');
-}
-
-function setLocalStorage(SPRINT_WORDS_STATISTIC: any, arg1: { [x: number]: IWordStat[]; }) {
-  throw new Error('Function not implemented.');
-}
-
-function createDefaultWord(wordID: string) {
-  throw new Error('Function not implemented.');
-}
-
-function isFromDictionaryPage() {
-  throw new Error('Function not implemented.');
-}
-
-function WORDS_PER_PAGE(group: number, page: number, WORDS_PER_PAGE: any, arg3: string) {
-  throw new Error('Function not implemented.');
-}
-
-function generateIndex(length: number) {
-  throw new Error('Function not implemented.');
-}
-*/

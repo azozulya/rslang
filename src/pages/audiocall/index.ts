@@ -13,6 +13,7 @@ class AudioCall {
     this.view.bindGetWords(this.model.getWordsForGame);
     this.view.bindUpdateUserWord(this.model.updateUserWord);
     this.view.bindGetGameStatistic(this.model.getGameStatistic);
+    this.view.bindSendStatistic(this.model.sendStatistic);
   }
 
   draw(rootContainer: HTMLElement) {

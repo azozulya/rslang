@@ -253,6 +253,26 @@ class Api {
     return response.status !== 200 ? undefined : response.json();
   }
 
+  async getUserAggregatedWordsFilter(
+    userId: string,
+    token: string,
+    filter: string,
+    wordsPerPage = 3600,
+  ) {
+    const response = await fetch(
+      `${this.users}/${userId}/AggregatedWords?wordsPerPage=${wordsPerPage}&filter=${filter}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      },
+    ).catch();
+    return response.status !== 200 ? undefined : response.json();
+  }
+
   async getUserAggregatedWord(
     userId: string,
     token: string,
