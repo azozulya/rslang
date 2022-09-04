@@ -38,6 +38,12 @@ class AudioCallView {
     newWords: number;
   };
 
+  private onSendStatistic?: (
+    rightAnswers: number,
+    wrongAnswers: number,
+    bestSeries: number
+  ) => void;
+
   constructor() {
     this.isFromDictionary = isFromDictionaryPage();
     this.gameContainer = create({ tagname: 'section', class: 'audiocall' });
@@ -68,6 +74,16 @@ class AudioCallView {
     this.getGameStatistic = handler;
   }
 
+  bindSendStatistic(
+    handler: (
+      rightAnswers: number,
+      wrongAnswers: number,
+      bestSeries: number
+    ) => void,
+  ) {
+    this.onSendStatistic = handler;
+  }
+
   private createGameScreen(wordsList: IAudioCallWord[]) {
     if (!wordsList) {
       this.gameScreen?.insertAdjacentHTML(
@@ -93,6 +109,18 @@ class AudioCallView {
     return this.gameContainer;
   }
 
+  private createStartBtn() {
+    const startBtn = <HTMLButtonElement>(
+      create({ tagname: 'button', class: 'btn' })
+    );
+    startBtn.classList.add('btn--blue', 'game__start-btn');
+    startBtn.disabled = !this.isFromDictionary;
+    startBtn.innerText = 'Начать';
+
+    startBtn.addEventListener('click', this.onStartClickHandler);
+    return startBtn;
+  }
+
   private createStartScreen(): HTMLElement {
     const container = create({ tagname: 'div', class: 'audiocall__start' });
 
@@ -116,30 +144,26 @@ class AudioCallView {
     return container;
   }
 
-  private createStartBtn() {
-    const startBtn = <HTMLButtonElement>(
-      create({ tagname: 'button', class: 'btn' })
-    );
-    startBtn.classList.add('btn--blue', 'game__start-btn');
-    startBtn.disabled = !this.isFromDictionary;
-    startBtn.innerText = 'Начать';
-
-    startBtn.addEventListener('click', this.onStartClickHandler);
-    return startBtn;
-  }
-
   // eslint-disable-next-line max-lines-per-function
   private stopGame = (state: IGameStatistic, wordsList: IAudioCallWord[]) => {
     this.gameContainer.innerText = '';
 
-    const stateGame = this.getGameStatistic?.();
+    const {
+      score,
+      learnedWords,
+      newWords,
+      rightAnswer,
+      wrongAnswer,
+      winStreak,
+    } = { ...state, ...this.getGameStatistic?.() };
 
-    const totalState = {
+    this.onSendStatistic?.(rightAnswer, wrongAnswer, winStreak);
+
+    console.log('stopGame, gameStat: ', {
       ...state,
-      ...stateGame,
-      date: Date.now(),
-      name: 'sprint',
-    };
+      ...this.getGameStatistic?.(),
+    });
+
     if (this.resultScreen) {
       this.gameContainer.append(this.resultScreen);
 
@@ -148,19 +172,10 @@ class AudioCallView {
         'afterbegin',
         '<h3 class="game__result-title">Результат</h3>',
       );
-
       const statContainer = create({
         tagname: 'div',
         class: 'game__statistic',
       });
-
-      const {
-        newWords,
-        learnedWords,
-        winStreak,
-        rightAnswer,
-        wrongAnswer,
-      } = totalState;
 
       const totalAnswers = rightAnswer + wrongAnswer;
       const rightAnswersInPercent = Math.floor((rightAnswer * 100) / totalAnswers) || 0;
@@ -170,6 +185,7 @@ class AudioCallView {
       statContainer.insertAdjacentHTML(
         'beforeend',
         `<div class="game__statistic-text">
+              Счет: ${score}<br>
               Новые слова: ${newWords}<br>
               Изученные слова: ${learnedWords}<br>
               Серия правильных ответов: ${winStreak}<br>
@@ -193,6 +209,7 @@ class AudioCallView {
     playAgainBtn.classList.add('btn--blue', 'game__result-btn');
     playAgainBtn.addEventListener('click', () => {
       if (this.startScreen) {
+        console.log('clean container');
         this.gameContainer.innerText = '';
         this.gameContainer.append(this.startScreen);
       }
@@ -326,19 +343,16 @@ class AudioCallView {
       const storageObj = getLocalStorage<{ page: number; group: number }>(
         DICTIONARY_KEY,
       );
-      console.log(storageObj);
 
-      if (!storageObj) return;
-
-      group = storageObj.group;
-      pageNum = storageObj.page;
+      group = storageObj ? storageObj.group : 0;
+      pageNum = storageObj ? storageObj.page : 0;
     }
 
     const wordsList = await this.onGetWords?.(group, pageNum);
 
     if (!wordsList) return;
 
-    this.createGameScreen(wordsList);// , group, pageNum);
+    this.createGameScreen(wordsList);
 
     if (this.gameScreen) this.gameContainer.append(this.gameScreen);
   };

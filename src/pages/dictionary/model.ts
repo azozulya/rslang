@@ -48,36 +48,34 @@ class DictionaryModel {
     }
   }
 
-  async getHardWords(auth = false) {
+  async getHardWords() {
     const userWords = await userApi.getUserWords();
-    if (userWords) {
-      const hardWords = userWords.filter((word) => word.optional?.hard === true);
-      const words: Promise<IWord | undefined>[] = [];
-      // eslint-disable-next-line no-restricted-syntax
-      for (const userHardWord of hardWords) {
-        const { wordId } = userHardWord;
-        if (wordId) {
-          const wordInDictionary = this.api.getWord(wordId);
-          words.push(wordInDictionary);
-        }
-      }
-      const fullWords = await Promise.all(words);
+    if (!userWords) return;
+    const hardWords = userWords.filter((word) => word.optional?.hard === true);
 
-      if (auth) {
-        const wordsForAuthUser: (IWord | IAggregatedWord)[] = await this.getUserWords(
-          fullWords,
-        );
-        this.makeWordsforAuthUser(wordsForAuthUser);
-      } else {
-        this.makeWords(fullWords);
+    const words: Promise<IWord | undefined>[] = [];
+    // eslint-disable-next-line no-restricted-syntax
+    for (const userHardWord of hardWords) {
+      const { wordId } = userHardWord;
+      if (wordId) {
+        const wordInDictionary = this.api.getWord(wordId);
+        words.push(wordInDictionary);
       }
     }
+    const fullWords = await Promise.all(words);
+
+    const wordsForAuthUser: (IWord | IAggregatedWord)[] = await this.getUserWords(
+      fullWords,
+    );
+    this.makeWordsforAuthUser(wordsForAuthUser);
   }
 
   private async getUserWords(words: (IWord | undefined)[]) {
     const wordsForAuthUser: (IAggregatedWord | IWord)[] = [];
     const userWords = await userApi.getUserWords();
+
     if (!userWords) throw new Error('Not found saved user words');
+
     words.forEach((word) => {
       if (word) {
         const found = userWords.find((userWord) => word.id === userWord.wordId);

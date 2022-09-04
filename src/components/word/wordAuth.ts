@@ -16,9 +16,17 @@ class WordAuth extends Word implements IWordAppForAuthUser {
   constructor(word: IAggregatedWord | IWord) {
     super(word);
     this.word = word;
+    // this.addPropertyId();
   }
 
-  defineTarget(event: Event) {
+  addPropertyId() {
+    if ('_id' in this.word) {
+      // eslint-disable-next-line no-underscore-dangle
+      this.word.id = this.word._id;
+    }
+  }
+
+  async defineTarget(event: Event) {
     const element = <HTMLElement>event.target;
     if (element.classList.contains('word__audio')) this.playAudio(element);
 
@@ -26,8 +34,8 @@ class WordAuth extends Word implements IWordAppForAuthUser {
       if ('userWord' in this.word) {
         if (this.word.userWord.optional.hard) this.deleteWords('hard');
         else {
-          if (this.word.userWord.optional.learned) this.deleteWords('learned');
           this.updateWords('hard');
+          // if (this.word.userWord.optional.learned) this.deleteWords('learned');
         }
       } else this.updateWords('hard');
     }
@@ -36,11 +44,12 @@ class WordAuth extends Word implements IWordAppForAuthUser {
       if ('userWord' in this.word) {
         if (this.word.userWord.optional.learned) this.deleteWords('learned');
         else {
-          if (this.word.userWord.optional.hard) this.deleteWords('hard');
           this.updateWords('learned');
+        //  if (this.word.userWord.optional.hard) this.deleteWords('hard');
         }
       } else this.updateWords('learned');
     }
+    console.log('word', this.word);
   }
 
   async updateWords(type: 'hard' | 'learned') {
@@ -54,10 +63,22 @@ class WordAuth extends Word implements IWordAppForAuthUser {
 
     if (type === 'hard') DictionaryView.countHardWords += 1;
 
-    const word = await this.getUserWord();
-    if (!word) this.addWords(type);
+    const userWord = await this.getUserWord();
+    if (!userWord) this.addWords(type);
     else {
-      word.optional[type] = true;
+      const word: IUserWord = {
+        wordId: userWord.wordId,
+        difficulty: userWord.difficulty,
+        optional: userWord.optional,
+      };
+
+      if (type === 'hard') {
+        word.optional.hard = true;
+        word.optional.learned = false;
+      } else if (type === 'learned') {
+        word.optional.learned = true;
+        word.optional.hard = false;
+      }
       userApi.updateUserWord(this.word.id, word);
     }
   }
@@ -90,7 +111,17 @@ class WordAuth extends Word implements IWordAppForAuthUser {
 
   changeWord(option: 'hard' | 'learned', value: boolean) {
     if ('userWord' in this.word) {
-      this.word.userWord.optional[option] = value;
+      switch (option) {
+        case 'hard':
+          this.word.userWord.optional.hard = value;
+          this.word.userWord.optional.learned = false;
+          break;
+        case 'learned':
+          this.word.userWord.optional.learned = value;
+          this.word.userWord.optional.hard = false;
+          break;
+        default: throw new Error('Incorrect changing status word');
+      }
     } else {
       const userWord = createDefaultUserWord(this.word.id);
       this.word = { ...this.word, ...userWord };
@@ -164,11 +195,11 @@ class WordAuth extends Word implements IWordAppForAuthUser {
 
     if ('userWord' in this.word) {
       const rightAnswersSprint = this.word.userWord.optional.sprint.rightAnswer;
-      const wrongAnswersSprint = this.word.userWord.optional.sprint.rightAnswer;
+      const wrongAnswersSprint = this.word.userWord.optional.sprint.wrongAnswer;
       const totalAnswersSprint = rightAnswersSprint + wrongAnswersSprint;
 
       const rightAnswersAudio = this.word.userWord.optional.audiocall.rightAnswer;
-      const wrongAnswersAudio = this.word.userWord.optional.audiocall.rightAnswer;
+      const wrongAnswersAudio = this.word.userWord.optional.audiocall.wrongAnswer;
       const totalAnswersAudio = rightAnswersAudio + wrongAnswersAudio;
 
       const wordSprint = create({
