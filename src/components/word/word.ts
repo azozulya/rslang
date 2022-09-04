@@ -54,7 +54,7 @@ class Word implements IWordApp {
       class: 'word__image',
       parent: wordInDictionary,
     });
-    wordImage.style.backgroundImage = `url(${URL_FOR_STATIC}${this.word.image})`; // TODO change url after deploy backend
+    wordImage.style.backgroundImage = `url(${URL_FOR_STATIC}${this.word.image})`;
     const wordDescription = create({
       tagname: 'div',
       class: 'word__description',
@@ -65,37 +65,39 @@ class Word implements IWordApp {
       class: 'word__header',
       parent: wordDescription,
     });
+    const wordAudio = <HTMLElement>create({
+      tagname: 'div',
+      class: 'word__audio',
+      parent: wordHeader,
+    });
     const wordItem = create({
       tagname: 'div',
       class: 'word__item',
       parent: wordHeader,
     });
+
     create({
+      tagname: 'audio',
+      class: 'word__audio_player',
+      parent: wordAudio,
+    });
+    const wordName = create({
       tagname: 'div',
       class: 'word__name',
       parent: wordItem,
       text: `${this.word.word}`,
     });
     create({
-      tagname: 'div',
+      tagname: 'span',
       class: 'word__transcription',
-      parent: wordItem,
+      parent: wordName,
       text: `${this.word.transcription}`,
     });
-    const wordAudio = <HTMLElement>create({
-      tagname: 'div',
-      class: 'word__audio',
-      parent: wordItem,
-    });
-    create({
-      tagname: 'audio',
-      class: 'word__audio_player',
-      parent: wordAudio,
-    });
+
     create({
       tagname: 'div',
       class: 'word__translate',
-      parent: wordDescription,
+      parent: wordItem,
       text: `${this.word.wordTranslate}`,
     });
     const wordText = create({

@@ -1,4 +1,6 @@
 import createElement from '../utils/createElement';
+import ArrowBack from '../assets/img/arrow-back.svg';
+import ArrowForward from '../assets/img/arrow-forward.svg';
 
 class Pagination {
   private total: number;
@@ -69,7 +71,7 @@ class Pagination {
     return this.prevNextBtn(
       (currentPage - 1).toString(),
       `<svg class="pagination__icon">
-        <use xlink:href="../../assets/img/arrow-back.svg#arrow-back"></use>
+        <use xlink:href="${ArrowBack}#arrow-back"></use>
       </svg>`,
       currentPage === 1,
     );
@@ -79,7 +81,7 @@ class Pagination {
     return this.prevNextBtn(
       (currentPage + 1).toString(),
       `<svg class="pagination__icon">
-        <use xlink:href="../../assets/img/arrow-forward.svg#arrow-forward"></use>
+        <use xlink:href="${ArrowForward}#arrow-forward"></use>
       </svg>`,
       currentPage === totalPages,
     );

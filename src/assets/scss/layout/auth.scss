@@ -15,14 +15,16 @@
     flex-wrap: wrap;
     gap: 15px;
 
-    width: 30%;
     align-items: center;
     justify-content: center;
     font-size: 11px;
     border: 1px solid #00bcd4;
     border-radius: 20px;
-    padding: 20px 70px 70px 70px;
+    padding: 20px 2rem 70px;
     background: #ffffff;
+    max-width: 20rem;
+    margin: 0 2rem;
+
     .header {
       width: 100%;
       color: #00bcd4;
@@ -88,9 +90,9 @@
     .password:hover {
       cursor: pointer;
     }
-    .name[data-validate="false"],
-    .email[data-validate="false"],
-    .password[data-validate="false"] {
+    .name[data-validate='false'],
+    .email[data-validate='false'],
+    .password[data-validate='false'] {
       border: 1px solid #ff0000;
       color: #ff0000;
     }
@@ -142,8 +144,8 @@
       position: relative;
       width: 40px;
       height: 40px;
-      left: calc(100% + 20px);
-      top: -50px;
+      left: calc(100% - 10px);
+      top: -58px;
       align-items: center;
       justify-content: center;
 
