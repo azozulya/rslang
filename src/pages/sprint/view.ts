@@ -137,12 +137,12 @@ class GamesView {
   private createGameScreen(
     wordsList: IGameWord[],
     group: number,
-    page: number
+    page: number,
   ) {
     if (!wordsList) {
       this.gameScreen?.insertAdjacentHTML(
         'afterbegin',
-        'Что-то пошло не так...'
+        'Что-то пошло не так...',
       );
       return;
     }
@@ -153,7 +153,7 @@ class GamesView {
       page,
       this.stopGame,
       this.onUpdateUserWord,
-      this.onGetWords
+      this.onGetWords,
     );
 
     this.gameScreen?.append(game.render());
@@ -185,7 +185,7 @@ class GamesView {
       this.resultScreen.innerText = '';
       this.resultScreen.insertAdjacentHTML(
         'afterbegin',
-        '<h3 class="game__result-title">Результат</h3>'
+        '<h3 class="game__result-title">Результат</h3>',
       );
 
       const statContainer = create({
@@ -194,8 +194,7 @@ class GamesView {
       });
 
       const totalAnswers = rightAnswer + wrongAnswer;
-      const rightAnswersInPercent =
-        Math.floor((rightAnswer * 100) / totalAnswers) || 0;
+      const rightAnswersInPercent = Math.floor((rightAnswer * 100) / totalAnswers) || 0;
 
       const isUser = await userApi.isAuthenticated();
       const newAndLearnedWords = isUser
@@ -210,7 +209,7 @@ class GamesView {
               Счет: ${score}<br>
               ${newAndLearnedWords}
               Серия правильных ответов: ${winStreak}<br>
-            </div>`
+            </div>`,
       );
 
       const overflowContainer = create({
@@ -258,9 +257,8 @@ class GamesView {
     const wordsResult = create({ tagname: 'div', class: 'game__result-words' });
 
     const wrongAnswer = wordsList.filter(
-      (word) =>
-        Object.prototype.hasOwnProperty.call(word, 'isRightAnswer') &&
-        !word.isRightAnswer
+      (word) => Object.prototype.hasOwnProperty.call(word, 'isRightAnswer')
+        && !word.isRightAnswer,
     );
     const rightAnswers = wordsList.filter((word) => word.isRightAnswer);
 
@@ -269,7 +267,7 @@ class GamesView {
 
     wordsResult.insertAdjacentHTML(
       'beforeend',
-      `Знаю: <span class="right-number">${rightAnswers.length}</span>`
+      `Знаю: <span class="right-number">${rightAnswers.length}</span>`,
     );
     wordsResult.append(this.drawWordsListResult(rightAnswers));
 
@@ -280,7 +278,7 @@ class GamesView {
     const audioFragment = document.createDocumentFragment();
     const svgIcon = document.createElementNS(
       'http://www.w3.org/2000/svg',
-      'svg'
+      'svg',
     );
     svgIcon.classList.add('audio-icon');
     svgIcon.innerHTML = `<use xlink:href="${AudioIcon}#audio"></use>`;
@@ -310,7 +308,7 @@ class GamesView {
 
       wordElement.insertAdjacentHTML(
         'beforeend',
-        `<b>${word.word}</b>&nbsp;—&nbsp;${word.wordTranslate}`
+        `<b>${word.word}</b>&nbsp;—&nbsp;${word.wordTranslate}`,
       );
       wordsContainer.append(wordElement);
     });
@@ -326,19 +324,19 @@ class GamesView {
   }
 
   bindGetWords(
-    handler: (level: number, page: number) => Promise<IGameWord[] | null>
+    handler: (level: number, page: number) => Promise<IGameWord[] | null>,
   ) {
     this.onGetWords = handler;
   }
 
   bindUpdateUserWord(
-    handler: (wordId: string, isRightAnswer: boolean) => void
+    handler: (wordId: string, isRightAnswer: boolean) => void,
   ) {
     this.onUpdateUserWord = handler;
   }
 
   bindGetGameStatistic(
-    handler: () => { learnedWords: number; newWords: number }
+    handler: () => { learnedWords: number; newWords: number },
   ) {
     this.getGameStatistic = handler;
   }
@@ -348,7 +346,7 @@ class GamesView {
       rightAnswers: number,
       wrongAnswers: number,
       bestSeries: number
-    ) => void
+    ) => void,
   ) {
     this.onSendStatistic = handler;
   }
@@ -364,9 +362,7 @@ class GamesView {
   };
 
   private setActiveLevel(current: HTMLInputElement): void {
-    this.levels.forEach((level) =>
-      level.parentElement?.classList.remove('game__level--active')
-    );
+    this.levels.forEach((level) => level.parentElement?.classList.remove('game__level--active'));
     current.parentElement?.classList.add('game__level--active');
   }
 
@@ -381,7 +377,7 @@ class GamesView {
       console.log('menuLink or startPage: ', group, pageNum);
     } else if (isFromDictionaryPage()) {
       const storageObj = getLocalStorage<{ page: number; group: number }>(
-        DICTIONARY_KEY
+        DICTIONARY_KEY,
       );
 
       group = storageObj ? storageObj.group : 0;

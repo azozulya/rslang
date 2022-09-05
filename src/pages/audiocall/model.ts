@@ -73,21 +73,24 @@ class AudioCallModel {
     this.updateExistWord(userWord, isRightAnswer);
   };
 
+  // eslint-disable-next-line max-lines-per-function
   private updateExistWord = async (
     userWord: IUserWord,
     isRightAnswer: boolean,
   ) => {
-    const { audiocall } = userWord.optional;
+    const { audiocall, sprint } = userWord.optional;
     let { hard, learned } = userWord.optional;
-
-    if (audiocall.rightAnswer === 0 && audiocall.wrongAnswer === 0) {
+    if ((audiocall.rightAnswer === 0 && audiocall.wrongAnswer === 0)
+        && (sprint.rightAnswer === 0 && sprint.wrongAnswer === 0)) {
       this.gameState.newWords += 1;
     }
 
     if (isRightAnswer) {
       audiocall.rightAnswer += 1;
 
-      const diff = audiocall.rightAnswer - audiocall.wrongAnswer;
+      const diff = sprint.rightAnswer
+        - sprint.wrongAnswer
+        + (audiocall.rightAnswer - audiocall.wrongAnswer);
 
       if (
         (hard && diff >= POINTS_TO_LEARNED_HARD_WORD)
@@ -194,8 +197,7 @@ class AudioCallModel {
   }
 
   private formatWords(words: IWord[]): IAudioCallWord[] {
-    const randomWords = sortRandom(words);
-    return randomWords
+    return words
       .splice(0, AUDIOCALL_COUNT_WORDS)
       .map(({
         word,
