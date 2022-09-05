@@ -73,6 +73,7 @@ class AudioCallModel {
     this.updateExistWord(userWord, isRightAnswer);
   };
 
+  // eslint-disable-next-line max-lines-per-function
   private updateExistWord = async (
     userWord: IUserWord,
     isRightAnswer: boolean,
@@ -87,7 +88,9 @@ class AudioCallModel {
     if (isRightAnswer) {
       audiocall.rightAnswer += 1;
 
-      const diff = audiocall.rightAnswer - audiocall.wrongAnswer;
+      const diff = sprint.rightAnswer
+        - sprint.wrongAnswer
+        + (audiocall.rightAnswer - audiocall.wrongAnswer);
 
       if (
         (hard && diff >= POINTS_TO_LEARNED_HARD_WORD)

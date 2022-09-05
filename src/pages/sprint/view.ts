@@ -16,6 +16,7 @@ import {
   isStartPage,
 } from '../../utils/utils';
 import AudioIcon from '../../assets/img/audio_sprite.svg';
+import userApi from '../../components/user/user';
 
 class GamesView {
   isMenuLink = true;
@@ -159,7 +160,7 @@ class GamesView {
   }
 
   // eslint-disable-next-line max-lines-per-function
-  private stopGame = (state: IGameStatistic, wordsList: IGameWord[]) => {
+  private stopGame = async (state: IGameStatistic, wordsList: IGameWord[]) => {
     this.gameContainer.innerText = '';
 
     const {
@@ -195,14 +196,18 @@ class GamesView {
       const totalAnswers = rightAnswer + wrongAnswer;
       const rightAnswersInPercent = Math.floor((rightAnswer * 100) / totalAnswers) || 0;
 
+      const isUser = await userApi.isAuthenticated();
+      const newAndLearnedWords = isUser
+        ? `Новые слова: ${newWords}<br>Изученные слова: ${learnedWords}<br>`
+        : '';
+
       statContainer.append(animatedCircleProgressBar(rightAnswersInPercent));
 
       statContainer.insertAdjacentHTML(
         'beforeend',
         `<div class="game__statistic-text">
               Счет: ${score}<br>
-              Новые слова: ${newWords}<br>
-              Изученные слова: ${learnedWords}<br>
+              ${newAndLearnedWords}
               Серия правильных ответов: ${winStreak}<br>
             </div>`,
       );

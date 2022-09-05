@@ -122,7 +122,9 @@ export default class Auth {
     </div class="block">
       <div class="button">
         <button id="login">ВХОД</button>
+        <p>
         <button id="registerLink">Регистрация</button>
+        </p>
       </div>
   `;
 

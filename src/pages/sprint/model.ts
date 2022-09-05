@@ -81,7 +81,7 @@ class GamesModel {
     userWord: IUserWord,
     isRightAnswer: boolean,
   ) => {
-    const { audiocall, sprint } = userWord.optional;
+    const { sprint, audiocall } = userWord.optional;
     let { hard, learned } = userWord.optional;
 
     if ((audiocall.rightAnswer === 0 && audiocall.wrongAnswer === 0)
@@ -92,7 +92,10 @@ class GamesModel {
     if (isRightAnswer) {
       sprint.rightAnswer += 1;
 
-      const diff = sprint.rightAnswer - sprint.wrongAnswer;
+      const diff = sprint.rightAnswer
+        - sprint.wrongAnswer
+        + (audiocall.rightAnswer - audiocall.wrongAnswer);
+
       console.log(hard, diff, POINTS_TO_LEARNED_WORD);
       if (
         (hard && diff >= POINTS_TO_LEARNED_HARD_WORD)
