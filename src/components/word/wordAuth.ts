@@ -8,7 +8,6 @@ import userApi from '../user/user';
 import create from '../../utils/createElement';
 import Word from './word';
 import { createDefaultUserWord, createDefaultWord } from '../../utils/utils';
-import DictionaryView from '../../pages/dictionary/dictionary';
 
 class WordAuth extends Word implements IWordAppForAuthUser {
   word: IAggregatedWord | IWord;
@@ -16,14 +15,6 @@ class WordAuth extends Word implements IWordAppForAuthUser {
   constructor(word: IAggregatedWord | IWord) {
     super(word);
     this.word = word;
-    // this.addPropertyId();
-  }
-
-  addPropertyId() {
-    if ('_id' in this.word) {
-      // eslint-disable-next-line no-underscore-dangle
-      this.word.id = this.word._id;
-    }
   }
 
   async defineTarget(event: Event) {
@@ -35,7 +26,6 @@ class WordAuth extends Word implements IWordAppForAuthUser {
         if (this.word.userWord.optional.hard) this.deleteWords('hard');
         else {
           this.updateWords('hard');
-          // if (this.word.userWord.optional.learned) this.deleteWords('learned');
         }
       } else this.updateWords('hard');
     }
@@ -45,23 +35,16 @@ class WordAuth extends Word implements IWordAppForAuthUser {
         if (this.word.userWord.optional.learned) this.deleteWords('learned');
         else {
           this.updateWords('learned');
-        //  if (this.word.userWord.optional.hard) this.deleteWords('hard');
         }
       } else this.updateWords('learned');
     }
-    console.log('word', this.word);
   }
 
   async updateWords(type: 'hard' | 'learned') {
     this.changeWord(type, true);
     this.changeIcon();
 
-    if (type === 'learned') {
-      DictionaryView.countLearnedWords += 1;
-      userApi.updateWordStatistic(1);
-    }
-
-    if (type === 'hard') DictionaryView.countHardWords += 1;
+    if (type === 'learned') userApi.updateWordStatistic(1);
 
     const userWord = await this.getUserWord();
     if (!userWord) this.addWords(type);
@@ -95,11 +78,8 @@ class WordAuth extends Word implements IWordAppForAuthUser {
     this.changeIcon();
 
     if (type === 'learned') {
-      DictionaryView.countLearnedWords -= 1;
       userApi.updateWordStatistic(-1);
     }
-
-    if (type === 'hard') DictionaryView.countHardWords -= 1;
 
     if (type === 'learned') userApi.updateWordStatistic(-1);
 
