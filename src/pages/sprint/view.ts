@@ -174,11 +174,6 @@ class GamesView {
 
     this.onSendStatistic?.(rightAnswer, wrongAnswer, winStreak);
 
-    console.log('stopGame, gameStat: ', {
-      ...state,
-      ...this.getGameStatistic?.(),
-    });
-
     if (this.resultScreen) {
       this.gameContainer.append(this.resultScreen);
 
@@ -374,7 +369,6 @@ class GamesView {
     if (this.isMenuLink || isStartPage()) {
       group = Number(this.startBtn?.dataset.level) || 0;
       pageNum = generateIndex(TOTAL_WORDS / WORDS_PER_PAGE);
-      console.log('menuLink or startPage: ', group, pageNum);
     } else if (isFromDictionaryPage()) {
       const storageObj = getLocalStorage<{ page: number; group: number }>(
         DICTIONARY_KEY,
@@ -382,7 +376,6 @@ class GamesView {
 
       group = storageObj ? storageObj.group : 0;
       pageNum = storageObj ? storageObj.page : 0;
-      console.log('from dictionary: ', group, pageNum);
     }
 
     const wordsList = await this.onGetWords?.(group, pageNum);

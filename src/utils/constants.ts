@@ -22,13 +22,13 @@ export const POINTS_TO_LEARNED_HARD_WORD = 5;
 
 export const POINTS_TO_LEARNED_WORD = 3;
 
-export const COUNT_LAST_WORDS = 3; // load additional words for sprint
+export const COUNT_LAST_WORDS = 3;
 
 export const POINTS_FOR_RIGHT_ANSWER = 10;
 
 export const MAX_POINTS_FOR_RIGHT_ANSWER = 50;
 
-export const SERIA_RIGHT_ANSWER = 3; // 3 dots + 10
+export const SERIA_RIGHT_ANSWER = 3;
 
 export const URL_FOR_STATIC = 'https://react-rslang-backend.herokuapp.com/'; // 'http://localhost:3000/';
 

@@ -19,7 +19,6 @@ class Api {
   private signin: string;
 
   private constructor() {
-    // this.baseUrl = 'http://127.0.0.1:3000';
     this.baseUrl = 'https://react-rslang-backend.herokuapp.com';
 
     this.words = `${this.baseUrl}/words`;
@@ -162,7 +161,6 @@ class Api {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      // body: JSON.stringify(word),
       body: JSON.stringify({
         difficulty: word?.difficulty,
         optional: word?.optional,
@@ -203,13 +201,11 @@ class Api {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      // body: JSON.stringify(word),
       body: JSON.stringify({
         difficulty: word?.difficulty,
         optional: word?.optional,
       }),
     });
-    // return (await response.json()) as IUserWord;
     return response.status !== 200
       ? undefined
       : <IUserWord> await response.json();

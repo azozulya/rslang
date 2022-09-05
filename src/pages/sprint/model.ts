@@ -14,12 +14,10 @@ import {
 } from '../../utils/utils';
 import userApi from '../../components/user/user';
 import {
-  DICTIONARY_KEY,
   POINTS_TO_LEARNED_HARD_WORD,
   POINTS_TO_LEARNED_WORD,
   WORDS_PER_PAGE,
 } from '../../utils/constants';
-import { getLocalStorage } from '../../utils/localStorage';
 
 class GamesModel {
   private api?: API;
@@ -95,8 +93,6 @@ class GamesModel {
       const diff = sprint.rightAnswer
         - sprint.wrongAnswer
         + (audiocall.rightAnswer - audiocall.wrongAnswer);
-
-      console.log(hard, diff, POINTS_TO_LEARNED_WORD);
       if (
         (hard && diff >= POINTS_TO_LEARNED_HARD_WORD)
         || (!hard && diff >= POINTS_TO_LEARNED_WORD)
@@ -130,8 +126,6 @@ class GamesModel {
     if (isRightAnswer) newUserWord.optional.sprint.rightAnswer += 1;
     else newUserWord.optional.sprint.wrongAnswer += 1;
 
-    console.log('create newUserWord: ', newUserWord);
-
     await userApi.createUserWord(wordID, newUserWord);
   };
 
@@ -139,8 +133,6 @@ class GamesModel {
     if (isFromHardWords()) {
       const hardWords = await this.getAgreggatedHardWords();
       if (!hardWords) return null;
-      console.log('hardWords: ', hardWords);
-      console.log(this.formatWords(hardWords));
       return this.formatWords(hardWords);
     }
 
@@ -151,14 +143,8 @@ class GamesModel {
     ) {
       const words = await this.getAgreggatedUserWords(group, page);
 
-      console.log('getWOrds, user&&dictionary&&!menuLink, words: ', words);
-
       return words;
     }
-
-    console.log(
-      `getWords, fromMenuLink || notAuth, page: ${page}, group: ${group}`,
-    );
 
     const wordList = await this.getWords(group, page);
 
@@ -197,29 +183,21 @@ class GamesModel {
         }),
       ),
     );
-
-    console.log('group: ', group, 'page: ', page);
-    console.log('userLearnedWords: ', userLearnedWords);
     const learnedWords: IAggregatedWord[] | [] = userLearnedWords
       ? userLearnedWords[0]?.paginatedResults
       : [];
 
     const wordsList = await this.getWords(group, page);
 
-    // console.log('learned: ', learnedWords, userLearnedWords);
-    console.log('wordsList: ', wordsList);
-
     if (wordsList && learnedWords.length) {
       const excludeIDs: string[] = learnedWords.map(
         // eslint-disable-next-line no-underscore-dangle
         (word: IAggregatedWord) => word._id,
       );
-      // console.log('excludeIDs: ', excludeIDs);
 
       const filteredWords = wordsList.filter(
         (word: IWord) => !excludeIDs.includes(word.id),
       );
-      console.log('filteredWords: ', filteredWords);
 
       return this.formatWords(filteredWords);
     }

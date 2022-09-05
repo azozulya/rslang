@@ -65,13 +65,6 @@ class User {
     }
   }
 
-  /* static getInstance() {
-    if (!User.instance) {
-      User.instance = new User();
-    }
-    return User.instance;
-  } */
-
   getStorage(key: string): string | undefined {
     const result = localStorage.getItem(key);
     return result !== null ? result : undefined;

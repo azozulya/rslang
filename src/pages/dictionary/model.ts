@@ -108,7 +108,6 @@ class DictionaryModel {
   }
 
   private async makeWordsforAuthUser(words: Array<IAggregatedWord | IWord>) {
-    console.log(words);
     this.wordsForAuthUser = [];
     words.forEach((word) => {
       const wordInDictionary = new WordAuth(word);

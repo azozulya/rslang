@@ -28,17 +28,13 @@ export default class Auth {
   }
 
   // eslint-disable-next-line max-len
-  // private logoutBtn = `<button id="main_logout" class="btn btn--orange auth__btn" data-page="${getCurrentPageName()}">Выйти</button>`;
 
   drawButton = async () => {
-    // const button = <HTMLElement>document.getElementById('auth');
     if (await userApi.isAuthenticated()) {
       this.authBtnContainer.append(this.logoutBtn);
-      // '<button id="main_logout" class="btn btn--orange auth__btn" data-page="">Выйти</button>';
       this.logoutBtn.dataset.page = getCurrentPageName();
     } else {
       this.authBtnContainer.innerHTML = '<button id="main_login" class="btn btn--orange auth__btn">Войти</button>';
-      // delete button.dataset.page;
     }
   };
 

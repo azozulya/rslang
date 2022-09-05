@@ -187,7 +187,6 @@ class AudiocallGame {
 
   // eslint-disable-next-line max-lines-per-function
   renderGame() {
-    console.log(this.currentWordIndex);
     if (this.currentWordIndex === this.wordsInGame.length) {
       this.stopGame();
     }
@@ -222,7 +221,7 @@ class AudiocallGame {
       id: 'audiocallPlayer',
       parent: audioPlay,
     });
-    audioTrack.src = `${URL_FOR_STATIC}${this.currentWord.audio}`;
+    audioTrack.src = this.currentWord ? `${URL_FOR_STATIC}${this.currentWord.audio}` : '';
     audioTrack.preload = 'auto';
     this.audioTrack = audioTrack;
 
