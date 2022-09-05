@@ -46,13 +46,15 @@ class AudioCallModel {
     wrongAnswers: number,
     bestSeries: number,
   ) => {
-    await userApi.updateAudioStatistic(
-      this.gameState.learnedWords,
-      this.gameState.newWords,
-      rightAnswers,
-      wrongAnswers,
-      bestSeries,
-    );
+    if (await userApi.isAuthenticated()) {
+      await userApi.updateSprintStatistic(
+        this.gameState.learnedWords,
+        this.gameState.newWords,
+        rightAnswers,
+        wrongAnswers,
+        bestSeries,
+      );
+    }
     this.resetGameStatistic();
   };
 
@@ -88,8 +90,8 @@ class AudioCallModel {
       const diff = audiocall.rightAnswer - audiocall.wrongAnswer;
 
       if (
-        (hard && diff === POINTS_TO_LEARNED_HARD_WORD)
-        || (!hard && diff === POINTS_TO_LEARNED_WORD)
+        (hard && diff >= POINTS_TO_LEARNED_HARD_WORD)
+        || (!hard && diff >= POINTS_TO_LEARNED_WORD)
       ) {
         this.gameState.learnedWords += 1;
         learned = true;
@@ -101,7 +103,15 @@ class AudioCallModel {
       if (learned) learned = false;
     }
 
-    await userApi.updateUserWord(userWord.wordId, userWord);
+    await userApi.updateUserWord(userWord.wordId, {
+      ...userWord,
+      optional: {
+        ...userWord.optional,
+        learned,
+        hard,
+        audiocall,
+      },
+    });
   };
 
   private addNewUserWord = async (wordID: string, isRightAnswer: boolean) => {
