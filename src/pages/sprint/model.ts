@@ -47,7 +47,7 @@ class GamesModel {
   sendStatistic = async (
     rightAnswers: number,
     wrongAnswers: number,
-    bestSeries: number,
+    bestSeries: number
   ) => {
     if (await userApi.isAuthenticated()) {
       await userApi.updateSprintStatistic(
@@ -55,7 +55,7 @@ class GamesModel {
         this.gameState.newWords,
         rightAnswers,
         wrongAnswers,
-        bestSeries,
+        bestSeries
       );
     }
 
@@ -79,9 +79,9 @@ class GamesModel {
 
   private updateExistWord = async (
     userWord: IUserWord,
-    isRightAnswer: boolean,
+    isRightAnswer: boolean
   ) => {
-    const { sprint } = userWord.optional;
+    const { sprint, audiocall } = userWord.optional;
     let { hard, learned } = userWord.optional;
 
     if (sprint.rightAnswer === 0 && sprint.wrongAnswer === 0) {
@@ -91,11 +91,15 @@ class GamesModel {
     if (isRightAnswer) {
       sprint.rightAnswer += 1;
 
-      const diff = sprint.rightAnswer - sprint.wrongAnswer;
+      const diff =
+        sprint.rightAnswer -
+        sprint.wrongAnswer +
+        (audiocall.rightAnswer - audiocall.wrongAnswer);
+
       console.log(hard, diff, POINTS_TO_LEARNED_WORD);
       if (
-        (hard && diff >= POINTS_TO_LEARNED_HARD_WORD)
-        || (!hard && diff >= POINTS_TO_LEARNED_WORD)
+        (hard && diff >= POINTS_TO_LEARNED_HARD_WORD) ||
+        (!hard && diff >= POINTS_TO_LEARNED_WORD)
       ) {
         this.gameState.learnedWords += 1;
         learned = true;
@@ -141,9 +145,9 @@ class GamesModel {
     }
 
     if (
-      (await userApi.isAuthenticated())
-      && isFromDictionaryPage()
-      && !this.isMenuLink
+      (await userApi.isAuthenticated()) &&
+      isFromDictionaryPage() &&
+      !this.isMenuLink
     ) {
       const words = await this.getAgreggatedUserWords(group, page);
 
@@ -153,7 +157,7 @@ class GamesModel {
     }
 
     console.log(
-      `getWords, fromMenuLink || notAuth, page: ${page}, group: ${group}`,
+      `getWords, fromMenuLink || notAuth, page: ${page}, group: ${group}`
     );
 
     const wordList = await this.getWords(group, page);
@@ -170,8 +174,8 @@ class GamesModel {
       encodeURIComponent(
         JSON.stringify({
           $and: [{ 'userWord.optional.hard': true }],
-        }),
-      ),
+        })
+      )
     );
     const hardWords: IAggregatedWord[] | [] = aggregateHardWords
       ? aggregateHardWords[0]?.paginatedResults
@@ -182,7 +186,7 @@ class GamesModel {
 
   private async getAgreggatedUserWords(
     group: number,
-    page: number,
+    page: number
   ): Promise<IGameWord[] | null> {
     const userLearnedWords = await userApi.getUserAggregatedWords(
       group,
@@ -190,8 +194,8 @@ class GamesModel {
       encodeURIComponent(
         JSON.stringify({
           $and: [{ 'userWord.optional.learned': true }, { page }],
-        }),
-      ),
+        })
+      )
     );
 
     console.log('group: ', group, 'page: ', page);
@@ -208,12 +212,12 @@ class GamesModel {
     if (wordsList && learnedWords.length) {
       const excludeIDs: string[] = learnedWords.map(
         // eslint-disable-next-line no-underscore-dangle
-        (word: IAggregatedWord) => word._id,
+        (word: IAggregatedWord) => word._id
       );
       // console.log('excludeIDs: ', excludeIDs);
 
       const filteredWords = wordsList.filter(
-        (word: IWord) => !excludeIDs.includes(word.id),
+        (word: IWord) => !excludeIDs.includes(word.id)
       );
       console.log('filteredWords: ', filteredWords);
 
@@ -228,7 +232,8 @@ class GamesModel {
 
   private formatWords(words: IWord[] | IAggregatedWord[]): IGameWord[] {
     return words.map((wordItem, idx) => {
-      const randomIndex = Math.random() > 0.5 ? idx : generateIndex(words.length);
+      const randomIndex =
+        Math.random() > 0.5 ? idx : generateIndex(words.length);
       const { word, wordTranslate, audio } = wordItem;
       return {
         // eslint-disable-next-line no-underscore-dangle
