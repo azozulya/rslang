@@ -81,10 +81,11 @@ class GamesModel {
     userWord: IUserWord,
     isRightAnswer: boolean,
   ) => {
-    const { sprint } = userWord.optional;
+    const { audiocall, sprint } = userWord.optional;
     let { hard, learned } = userWord.optional;
 
-    if (sprint.rightAnswer === 0 && sprint.wrongAnswer === 0) {
+    if ((audiocall.rightAnswer === 0 && audiocall.wrongAnswer === 0)
+        && (sprint.rightAnswer === 0 && sprint.wrongAnswer === 0)) {
       this.gameState.newWords += 1;
     }
 

@@ -2,7 +2,6 @@ import AudiocallGame from '../../components/audiocall';
 import {
   IAudioCallWord,
   IGameStatistic,
-  IWord,
 } from '../../interfaces/interfaces';
 import {
   GROUP_LIST,
@@ -197,9 +196,10 @@ class AudioCallView {
       statContainer.insertAdjacentHTML(
         'beforeend',
         `<div class="game__statistic-text">
+              Серия правильных ответов: ${winStreak}<br>
               Новые слова: ${newWords}<br>
               Изученные слова: ${learnedWords}<br>
-              Серия правильных ответов: ${winStreak}<br>
+
             </div>`,
       );
 

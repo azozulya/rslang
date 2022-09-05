@@ -77,10 +77,10 @@ class AudioCallModel {
     userWord: IUserWord,
     isRightAnswer: boolean,
   ) => {
-    const { audiocall } = userWord.optional;
+    const { audiocall, sprint } = userWord.optional;
     let { hard, learned } = userWord.optional;
-
-    if (audiocall.rightAnswer === 0 && audiocall.wrongAnswer === 0) {
+    if ((audiocall.rightAnswer === 0 && audiocall.wrongAnswer === 0)
+        && (sprint.rightAnswer === 0 && sprint.wrongAnswer === 0)) {
       this.gameState.newWords += 1;
     }
 
@@ -194,8 +194,7 @@ class AudioCallModel {
   }
 
   private formatWords(words: IWord[]): IAudioCallWord[] {
-    const randomWords = sortRandom(words);
-    return randomWords
+    return words
       .splice(0, AUDIOCALL_COUNT_WORDS)
       .map(({
         word,
