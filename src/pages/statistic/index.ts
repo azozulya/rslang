@@ -97,7 +97,6 @@ class Statistic {
   }
 
   async draw(rootContainer: HTMLElement) {
-    // const isAuthenticated = JSON.parse(userApi.getStorage('Authenticated'));
     const isAuthenticated = await userApi.isAuthenticated();
 
     if (isAuthenticated) {
@@ -113,7 +112,6 @@ class Statistic {
       this.drawToday();
       this.drawAllTime();
     } else {
-      // this.drawModal();
       const container = rootContainer;
       container.innerHTML = `
     <div id="statistic">

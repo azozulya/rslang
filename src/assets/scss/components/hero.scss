@@ -109,11 +109,6 @@ $bg-color: #b2ebf2;
         top: -5rem;
       }
 
-      // @include tablet {
-      //   right: -6%;
-      //   top: -7rem;
-      // }
-
       @include media(600px, 501px) {
         top: -4rem;
       }

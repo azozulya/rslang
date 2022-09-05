@@ -20,6 +20,7 @@ import {
   isStartPage,
 } from '../../utils/utils';
 import AudioIcon from '../../assets/img/audio_sprite.svg';
+import userApi from '../../components/user/user';
 
 class AudioCallView {
   isMenuLink = true;
@@ -157,7 +158,7 @@ class AudioCallView {
   }
 
   // eslint-disable-next-line max-lines-per-function
-  private stopGame = (state: IGameStatistic, wordsList: IAudioCallWord[]) => {
+  private stopGame = async (state: IGameStatistic, wordsList: IAudioCallWord[]) => {
     this.gameContainer.innerText = '';
 
     const {
@@ -169,11 +170,6 @@ class AudioCallView {
     } = { ...state, ...this.getGameStatistic?.() };
 
     this.onSendStatistic?.(rightAnswer, wrongAnswer, winStreak);
-
-    console.log('stopGame, gameStat: ', {
-      ...state,
-      ...this.getGameStatistic?.(),
-    });
 
     if (this.resultScreen) {
       this.gameContainer.append(this.resultScreen);
@@ -191,23 +187,28 @@ class AudioCallView {
       const totalAnswers = rightAnswer + wrongAnswer;
       const rightAnswersInPercent = Math.floor((rightAnswer * 100) / totalAnswers) || 0;
 
+      const isUser = await userApi.isAuthenticated();
+      const newAndLearnedWords = isUser
+        ? `Новые слова: ${newWords}<br>Изученные слова: ${learnedWords}<br>`
+        : '';
+
       statContainer.append(animatedCircleProgressBar(rightAnswersInPercent));
 
       statContainer.insertAdjacentHTML(
         'beforeend',
         `<div class="game__statistic-text">
-              Серия правильных ответов: ${winStreak}<br>
-              Новые слова: ${newWords}<br>
-              Изученные слова: ${learnedWords}<br>
-
-            </div>`,
+            ${newAndLearnedWords}
+            Серия правильных ответов: ${winStreak}<br>
+      </div>`,
       );
 
-      this.resultScreen.append(
-        statContainer,
-        this.drawWordsResult(wordsList),
-        this.drawBtns(),
-      );
+      const overflowContainer = create({
+        tagname: 'div',
+        class: 'game__statistic-overflow',
+      });
+      overflowContainer.append(statContainer, this.drawWordsResult(wordsList));
+
+      this.resultScreen.append(overflowContainer, this.drawBtns());
     }
   };
 
@@ -220,7 +221,6 @@ class AudioCallView {
     playAgainBtn.classList.add('btn--blue', 'game__result-btn');
     playAgainBtn.addEventListener('click', () => {
       if (this.startScreen) {
-        console.log('clean container');
         this.gameContainer.innerText = '';
         this.gameContainer.append(this.startScreen);
       }
@@ -363,7 +363,7 @@ class AudioCallView {
 
     if (!wordsList) return;
 
-    this.createGameScreen(wordsList); // , group, pageNum);
+    this.createGameScreen(wordsList);
 
     if (this.gameScreen) this.gameContainer.append(this.gameScreen);
   };

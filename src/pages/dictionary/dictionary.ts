@@ -47,9 +47,7 @@ class DictionaryView {
       document.getElementById('dictionaryGroups')
     );
     this.onGetWords = callback;
-    dictionaryGroups.addEventListener('click', (e: Event) =>
-      this.updateGroup(e)
-    );
+    dictionaryGroups.addEventListener('click', (e: Event) => this.updateGroup(e));
   }
 
   bindGetHardWords(callback: { (): void }) {
@@ -58,9 +56,7 @@ class DictionaryView {
     );
     this.onGetHardWords = callback;
     if (dictionaryHardWords) {
-      dictionaryHardWords.addEventListener('click', (e: Event) =>
-        this.switchHardWords(e)
-      );
+      dictionaryHardWords.addEventListener('click', (e: Event) => this.switchHardWords(e));
       dictionaryHardWords.addEventListener('click', callback);
     }
   }
@@ -72,8 +68,8 @@ class DictionaryView {
     dictionaryWords.addEventListener('click', (event) => {
       const element = <HTMLElement>event.target;
       if (
-        element.classList.contains('word__hard') ||
-        element.classList.contains('word__learned')
+        element.classList.contains('word__hard')
+        || element.classList.contains('word__learned')
       ) {
         if (this.isActiveHardWords) this.removeWordFromHardList(element);
         else this.changeViewIfAllLearned();
@@ -86,7 +82,7 @@ class DictionaryView {
       TOTAL_WORDS,
       WORDS_PER_PAGE,
       this.page + 1,
-      this.goToPage
+      this.goToPage,
     );
 
     if (this.paginationContainer) {
@@ -278,8 +274,6 @@ class DictionaryView {
 
     const dictionary = <HTMLElement>document.getElementById('dictionaryWords');
 
-    console.log('drawWords: ', words);
-
     if (!words.length) {
       this.highlightMenu();
       dictionary.innerText = '';
@@ -287,7 +281,7 @@ class DictionaryView {
 
       this.showTextInfo(
         true,
-        'Здесь пока пусто. Вы не добавили слова в список сложных слов. '
+        'Здесь пока пусто. Вы не добавили слова в список сложных слов. ',
       );
       return;
     }
