@@ -174,40 +174,46 @@ class WordAuth extends Word implements IWordAppForAuthUser {
     });
 
     if ('userWord' in this.word) {
-      const rightAnswersSprint = this.word.userWord.optional.sprint.rightAnswer;
-      const wrongAnswersSprint = this.word.userWord.optional.sprint.wrongAnswer;
-      const totalAnswersSprint = rightAnswersSprint + wrongAnswersSprint;
+      if (this.word.userWord.optional.sprint.rightAnswer !== 0
+      || this.word.userWord.optional.sprint.wrongAnswer !== 0
+      || this.word.userWord.optional.audiocall.rightAnswer !== 0
+      || this.word.userWord.optional.audiocall.wrongAnswer !== 0
+      ) {
+        const rightAnswersSprint = this.word.userWord.optional.sprint.rightAnswer;
+        const wrongAnswersSprint = this.word.userWord.optional.sprint.wrongAnswer;
+        const totalAnswersSprint = rightAnswersSprint + wrongAnswersSprint;
 
-      const rightAnswersAudio = this.word.userWord.optional.audiocall.rightAnswer;
-      const wrongAnswersAudio = this.word.userWord.optional.audiocall.wrongAnswer;
-      const totalAnswersAudio = rightAnswersAudio + wrongAnswersAudio;
+        const rightAnswersAudio = this.word.userWord.optional.audiocall.rightAnswer;
+        const wrongAnswersAudio = this.word.userWord.optional.audiocall.wrongAnswer;
+        const totalAnswersAudio = rightAnswersAudio + wrongAnswersAudio;
 
-      const wordSprint = create({
-        tagname: 'div',
-        class: 'word__sprint',
-        parent: wordProgress,
-        text: 'Спринт',
-      });
+        const wordSprint = create({
+          tagname: 'div',
+          class: 'word__sprint',
+          parent: wordProgress,
+          text: 'Спринт',
+        });
 
-      create({
-        tagname: 'div',
-        class: 'word__sprint_score',
-        parent: wordSprint,
-        text: `${rightAnswersSprint}/${totalAnswersSprint}`,
-      });
+        create({
+          tagname: 'div',
+          class: 'word__sprint_score',
+          parent: wordSprint,
+          text: `${rightAnswersSprint}/${totalAnswersSprint}`,
+        });
 
-      const wordAudio = create({
-        tagname: 'div',
-        class: 'word__sprint',
-        parent: wordProgress,
-        text: 'Аудиовызов',
-      });
-      create({
-        tagname: 'div',
-        class: 'word__sprint_score',
-        parent: wordAudio,
-        text: `${rightAnswersAudio}/${totalAnswersAudio}`,
-      });
+        const wordAudio = create({
+          tagname: 'div',
+          class: 'word__sprint',
+          parent: wordProgress,
+          text: 'Аудиовызов',
+        });
+        create({
+          tagname: 'div',
+          class: 'word__sprint_score',
+          parent: wordAudio,
+          text: `${rightAnswersAudio}/${totalAnswersAudio}`,
+        });
+      }
     }
   }
 }
