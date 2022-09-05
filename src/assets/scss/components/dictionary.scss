@@ -55,6 +55,7 @@
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
+    margin-bottom: 1.8rem;
   }
 
   &__hardwords,
@@ -113,9 +114,14 @@
     display: flex;
   }
   &__info {
-    height: 2rem;
     text-align: center;
-    font-size: 1.5em;
+    font-size: 1.3em;
+    line-height: 1.7rem;
+    margin: 2rem;
+    background-color: rgba($secondary-light, 0.3);
+    border: solid 1px $accent-light;
+    padding: 1rem;
+    border-radius: 1rem;
   }
 
   &__words {
