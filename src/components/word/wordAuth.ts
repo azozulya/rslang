@@ -49,19 +49,19 @@ class WordAuth extends Word implements IWordAppForAuthUser {
         }
       } else this.updateWords('learned');
     }
-    console.log('word', this.word);
   }
 
   async updateWords(type: 'hard' | 'learned') {
     this.changeWord(type, true);
     this.changeIcon();
+    // this.countUserWords();
 
     if (type === 'learned') {
-      DictionaryView.countLearnedWords += 1;
+      // DictionaryView.countLearnedWords += 1;
       userApi.updateWordStatistic(1);
     }
 
-    if (type === 'hard') DictionaryView.countHardWords += 1;
+    // if (type === 'hard') DictionaryView.countHardWords += 1;
 
     const userWord = await this.getUserWord();
     if (!userWord) this.addWords(type);
@@ -95,11 +95,11 @@ class WordAuth extends Word implements IWordAppForAuthUser {
     this.changeIcon();
 
     if (type === 'learned') {
-      DictionaryView.countLearnedWords -= 1;
+      // DictionaryView.countLearnedWords -= 1;
       userApi.updateWordStatistic(-1);
     }
 
-    if (type === 'hard') DictionaryView.countHardWords -= 1;
+    // if (type === 'hard') DictionaryView.countHardWords -= 1;
 
     if (type === 'learned') userApi.updateWordStatistic(-1);
 
@@ -142,6 +142,12 @@ class WordAuth extends Word implements IWordAppForAuthUser {
     if (this.word.userWord.optional.hard) {
       iconHard?.classList.add('word__hard_active');
     } else iconHard?.classList.remove('word__hard_active');
+  }
+
+  countUserWords() {
+    const word = <HTMLElement>document.getElementById(this.word.id);
+    const hard = word.querySelector('.word__hard_active');
+    const learned = word.querySelector('.word__learned_active');
   }
 
   async getUserWord() {

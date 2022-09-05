@@ -33,9 +33,9 @@ class DictionaryView {
 
   private wordsForAuthUser: (IWordApp | IWordAppForAuthUser)[];
 
-  static countHardWords = 0;
+  private countHardWords = 0;
 
-  static countLearnedWords = 0;
+  private countLearnedWords = 0;
 
   constructor() {
     this.words = [];
@@ -228,18 +228,16 @@ class DictionaryView {
   }
 
   private checkWordsOnPage() {
-    const userWordsOnPage = DictionaryView.countHardWords + DictionaryView.countLearnedWords;
-    return userWordsOnPage === this.wordsForAuthUser.length;
-  }
-
-  countUserWordsOnPage() {
+    this.countHardWords = 0;
+    this.countLearnedWords = 0;
     this.wordsForAuthUser.forEach((item) => {
       if ('userWord' in item.word) {
-        if (item.word.userWord.optional.hard) DictionaryView.countHardWords += 1;
-        if (item.word.userWord.optional.learned) DictionaryView.countLearnedWords += 1;
+        if (item.word.userWord.optional.hard) this.countHardWords += 1;
+        if (item.word.userWord.optional.learned) this.countLearnedWords += 1;
       }
     });
-    this.changeViewIfAllLearned();
+    const userWordsOnPage = this.countHardWords + this.countLearnedWords;
+    return userWordsOnPage === this.wordsForAuthUser.length;
   }
 
   removeWordFromHardList(element:HTMLElement) {
@@ -263,8 +261,6 @@ class DictionaryView {
 
   async drawWordsAuth(words: (IWordAppForAuthUser | IWordApp)[]) {
     this.wordsForAuthUser = words;
-    DictionaryView.countHardWords = 0;
-    DictionaryView.countLearnedWords = 0;
 
     const dictionary = <HTMLElement>document.getElementById('dictionaryWords');
     if (dictionary) {
@@ -281,7 +277,7 @@ class DictionaryView {
 
     if (!this.isActiveHardWords) {
       this.drawPagination();
-      this.countUserWordsOnPage();
+      this.changeViewIfAllLearned();
     } else this.pageDisable(false);
 
     this.highlightMenu();
