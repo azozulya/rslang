@@ -162,7 +162,6 @@ class AudioCallView {
     this.gameContainer.innerText = '';
 
     const {
-      score,
       learnedWords,
       newWords,
       rightAnswer,
@@ -198,7 +197,6 @@ class AudioCallView {
       statContainer.insertAdjacentHTML(
         'beforeend',
         `<div class="game__statistic-text">
-              Счет: ${score}<br>
               Новые слова: ${newWords}<br>
               Изученные слова: ${learnedWords}<br>
               Серия правильных ответов: ${winStreak}<br>

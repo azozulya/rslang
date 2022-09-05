@@ -174,7 +174,7 @@ class AudioCallModel {
 
     const userWords = await userApi.getUserWords();
     const hardWords = userWords?.filter((userWord) => userWord.optional.hard === true);
-    console.log('hard', hardWords);
+
     if (!hardWords) return [];
     // eslint-disable-next-line no-restricted-syntax
     for (const hardWord of hardWords) {
