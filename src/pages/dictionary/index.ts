@@ -19,12 +19,16 @@ class Dictionary {
   async draw(rootContainer: HTMLElement) {
     const container = rootContainer;
 
-    if (await this.checkUserAuth()) container.append(this.view.drawForAuthUser());
+    if (await this.checkUserAuth())
+      container.append(this.view.drawForAuthUser());
     else container.append(this.view.draw());
 
     const { group, page, isActiveHardWords } = this.view.getNavigate();
-    if (isActiveHardWords) this.handleGetHardWords();
-    this.handleGetWords(group, page);
+    if (isActiveHardWords) {
+      this.handleGetHardWords();
+    } else {
+      this.handleGetWords(group, page);
+    }
     this.addHandlers();
   }
 
