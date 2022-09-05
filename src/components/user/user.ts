@@ -29,12 +29,15 @@ class User {
 
   private name: string;
 
+  private timerId: NodeJS.Timer | unknown;
+
   private defaultStatistic: IStatistic;
 
   static User: User;
 
   constructor() {
     this.api = Api.getInstance();
+    this.timerId = '';
     this.defaultStatistic = {
       L: 0,
       sN: 0,
@@ -86,6 +89,8 @@ class User {
     this.refreshToken = '';
     this.message = '';
     this.name = '';
+
+    clearInterval(<NodeJS.Timer> this.timerId);
   }
 
   async isAuthenticated() {
@@ -173,6 +178,8 @@ class User {
 
       this.setStorage(AUTH_KEY, JSON.stringify(result));
       this.setStorage('Authenticated', JSON.stringify(true));
+
+      this.timerId = setInterval(() => { this.getUserToken(); }, 14400000);
     }
     return response.status;
   }

@@ -6,11 +6,7 @@ import {
 import create from '../../utils/createElement';
 import { getLocalStorage, setLocalStorage } from '../../utils/localStorage';
 import Pagination from '../../components/pagination';
-import {
-  GROUP_LIST,
-  TOTAL_WORDS,
-  WORDS_PER_PAGE,
-} from '../../utils/constants';
+import { GROUP_LIST, TOTAL_WORDS, WORDS_PER_PAGE } from '../../utils/constants';
 
 class DictionaryView {
   onGetWords!: (group: number, page: number) => void;
@@ -166,7 +162,7 @@ class DictionaryView {
 
   private switchHardWords(event: Event) {
     const element = <HTMLElement>event.target;
-    if (element.classList.contains('dictionary__groups_item')) this.isActiveHardWords = false;
+    if (element.classList.contains('dictionary__groups_item')) { this.isActiveHardWords = false; }
     if (element.classList.contains('dictionary__hardwords')) {
       this.isActiveHardWords = true;
       this.highlightGroupBtn();
@@ -185,8 +181,7 @@ class DictionaryView {
       document.getElementById('dictionaryHardWords')
     );
     if (hardWords) {
-      if (this.isActiveHardWords) hardWords.classList.add('dictionary__hardwords_active');
-      else hardWords.classList.remove('dictionary__hardwords_active');
+      if (this.isActiveHardWords) { hardWords.classList.add('dictionary__hardwords_active'); } else hardWords.classList.remove('dictionary__hardwords_active');
     }
   }
 
@@ -200,17 +195,26 @@ class DictionaryView {
     });
   }
 
-  private showTextInfo(IsShow: boolean) {
+  private showTextInfo(IsShow: boolean, message?: string) {
     const textContainer = <HTMLElement>(
       document.getElementById('dictionaryInfo')
     );
+    if (!IsShow) {
+      textContainer.innerText = '';
+      textContainer.classList.add('hidden');
+      return;
+    }
+
     textContainer.textContent = IsShow
-      ? 'Вы отметили все слова на странице'
+      ? message || 'Вы отметили все слова на странице'
       : '';
+    textContainer.classList.remove('hidden');
   }
 
   disablePage(IsDisable: boolean) {
-    const page = <HTMLElement>document.querySelector('.pagination__label--current');
+    const page = <HTMLElement>(
+      document.querySelector('.pagination__label--current')
+    );
 
     if (IsDisable) page.classList.add('pagination__label--inactive');
     else page.classList.remove('pagination__label--inactive');
@@ -240,13 +244,14 @@ class DictionaryView {
     return userWordsOnPage === this.wordsForAuthUser.length;
   }
 
-  removeWordFromHardList(element:HTMLElement) {
+  removeWordFromHardList(element: HTMLElement) {
     const wordItem = <HTMLElement>element.closest('.word');
     wordItem.remove();
   }
 
   drawWords(words: IWordApp[]) {
     const dictionary = <HTMLElement>document.getElementById('dictionaryWords');
+
     if (dictionary) {
       while (dictionary.firstChild) {
         dictionary.removeChild(dictionary.firstChild);
@@ -259,17 +264,33 @@ class DictionaryView {
     this.highlightMenu();
   }
 
+  // eslint-disable-next-line max-lines-per-function
   async drawWordsAuth(words: (IWordAppForAuthUser | IWordApp)[]) {
     this.wordsForAuthUser = words;
 
     const dictionary = <HTMLElement>document.getElementById('dictionaryWords');
+
+    console.log('drawWords: ', words);
+
+    if (!words.length) {
+      this.highlightMenu();
+      dictionary.innerText = '';
+      if (this.paginationContainer) this.paginationContainer.innerHTML = '';
+
+      this.showTextInfo(
+        true,
+        'Здесь пока пусто. Вы не добавили слова в список сложных слов. ',
+      );
+      return;
+    }
+
     if (dictionary) {
       while (dictionary.firstChild) {
         dictionary.removeChild(dictionary.firstChild);
       }
     }
     words.forEach((wordInDictionary) => {
-      if ('drawForAuthUser' in wordInDictionary) wordInDictionary.drawForAuthUser();
+      if ('drawForAuthUser' in wordInDictionary) { wordInDictionary.drawForAuthUser(); }
     });
     if (this.paginationContainer) this.paginationContainer.innerHTML = '';
 
@@ -389,7 +410,6 @@ class DictionaryView {
       class: 'dictionary__info',
       id: 'dictionaryInfo',
       parent: dictionaryGroups,
-
     });
     return container;
   }
