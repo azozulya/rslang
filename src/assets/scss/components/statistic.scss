@@ -1,0 +1,190 @@
+$font-size: 4rem;
+$height: 4.1rem;
+
+#statistic {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  .title {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: left;
+  }
+  #body_statistic {
+    display: flex;
+    flex-wrap: wrap;
+    width: 70%;
+    align-items: center;
+    justify-content: center;
+    #body_title {
+      display: flex;
+      flex-wrap: wrap;
+      width: 100%;
+      justify-content: center;
+      align-items: center;
+      font-size: 40px;
+      padding-top: 40px;
+      padding-bottom: 20px;
+    }
+    .today_statistic {
+      display: grid;
+      width: 100%;
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-areas:
+        "A A  B B  C C"
+        "D D D  E E E";
+      @media (max-width: 768px) {
+        grid-template-areas:
+          "A A A A A A"
+          "B B B B B B "
+          "C C C C C C"
+          "D D D D D D"
+          "E E E E E E";
+      }
+      gap: 30px;
+      .today_statistic-block {
+        display: flex;
+        flex-wrap: wrap;
+        border: 1px solid #00bcd4;
+
+        border-radius: 8px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.15);
+      }
+      #learnedWords,
+      #newWords,
+      #percentAnswer {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        gap: 10px;
+        .number {
+          display: flex;
+          width: 100%;
+          height: $height;
+          font-size: $font-size;
+          font-weight: 700;
+          align-items: center;
+          justify-content: center;
+        }
+        .content {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          font-size: 14px;
+          text-align: center;
+          line-height: 0.8rem;
+        }
+      }
+      #learnedWords {
+        grid-area: A;
+      }
+      #newWords {
+        grid-area: B;
+      }
+      #percentAnswer {
+        grid-area: C;
+      }
+      #sprint {
+        grid-area: D;
+      }
+      #audio {
+        grid-area: E;
+      }
+      #sprint,
+      #audio {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        .title {
+          display: flex;
+          flex-wrap: nowrap;
+          width: 100%;
+          height: 40px;
+          align-items: center;
+          justify-content: left;
+          border-bottom: 2px solid #00bcd4;
+          padding: 5px 10px;
+          .title {
+            &_sprint,
+            &_audio {
+              display: flex;
+              height: 40px;
+              background-repeat: no-repeat;
+              background-size: contain;
+              background-position-x: left;
+              font-size: 24px;
+              padding-left: 50px;
+              align-items: center;
+            }
+            &_sprint {
+              background-image: url(../../assets/img/game_sprint.svg);
+            }
+            &_audio {
+              background-image: url(../../assets/img/game_audio.svg);
+            }
+          }
+        }
+        .results {
+          display: flex;
+          padding-top: 10px;
+          padding-left: 10px;
+          padding-bottom: 10px;
+          .results_grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            column-gap: 10px;
+            row-gap: 5px;
+            div {
+              display: flex;
+              flex-wrap: wrap;
+              align-content: center;
+              line-height: 1rem;
+            }
+          }
+        }
+      }
+    }
+    .allTime_statistic {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-areas: "A B";
+      @media (max-width: 1024px) {
+        grid-template-areas:
+          "A A"
+          "B B";
+      }
+      #chart_1 {
+        grid-area: A;
+      }
+      #chart_2 {
+        grid-area: B;
+      }
+      grid-gap: 30px;
+      .allTime_statistic-block {
+        display: flex;
+        flex-wrap: wrap;
+        border: 1px solid #00bcd4;
+        border-radius: 8px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.15);
+        padding: 10px;
+        .title {
+          width: 100%;
+          height: 25px;
+          align-items: flex-start;
+          justify-content: center;
+        }
+        .graph {
+          display: flex;
+          width: 100%;
+        }
+      }
+    }
+  }
+}

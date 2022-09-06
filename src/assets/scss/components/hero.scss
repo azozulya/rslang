@@ -1,0 +1,135 @@
+$bg-width: 1510px;
+$bg-height: 1200px;
+$bg-color: #b2ebf2;
+
+.hero {
+  box-sizing: border-box;
+  height: 835px;
+
+  overflow: hidden;
+  z-index: 5;
+  position: relative;
+
+  &::before {
+    content: '';
+    display: block;
+    height: $bg-height;
+    width: $bg-width;
+    background-color: $bg-color;
+    opacity: 0.4;
+    mix-blend-mode: normal;
+    border-radius: 4.4rem;
+    transform: rotate(-10deg);
+    position: absolute;
+    left: calc((100vw - $bg-width) / 2);
+    top: -27rem;
+  }
+
+  &__container {
+    align-items: flex-start;
+    position: relative;
+    display: flex;
+
+    justify-content: space-between;
+    padding-top: 10rem;
+
+    @include tablet-phone {
+      flex-direction: column;
+    }
+  }
+  &__content {
+    @include all-desktop {
+      max-width: 50%;
+      min-width: 16rem;
+    }
+
+    @include media(1000px, 769px) {
+      max-width: 60%;
+    }
+
+    @include tablet-phone {
+    }
+  }
+
+  &__text {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1.7rem;
+    line-height: 2.6rem;
+    color: $text-secondary;
+    margin-bottom: 2rem;
+
+    @include media(1030px, 611px) {
+      font-size: 1.5rem;
+    }
+
+    @include media(610px) {
+      font-size: 1.4rem;
+      line-height: 1.9rem;
+    }
+  }
+
+  &__img {
+    position: relative;
+    z-index: 2;
+
+    @include all-desktop {
+      width: 50%;
+      height: 100%;
+    }
+
+    @include tablet-phone {
+      width: 100%;
+    }
+
+    &--img {
+      position: absolute;
+
+      @include large-screens {
+        right: -34%;
+        border-top-right-radius: 53%;
+        border-bottom-right-radius: 10%;
+      }
+      @include desktop {
+        right: -40%;
+      }
+
+      @include media(1023px, 1001px) {
+        right: -30%;
+        top: 3rem;
+      }
+
+      @include media(1000px, 769px) {
+        right: -2rem;
+        top: 5rem;
+      }
+
+      @include media(768px) {
+        right: -2rem;
+        top: -5rem;
+      }
+
+      @include media(600px, 501px) {
+        top: -4rem;
+      }
+
+      @include media(500px) {
+        top: -3rem;
+        right: -2rem;
+        width: 80%;
+      }
+    }
+  }
+
+  &__btn {
+    @include media($min-width: 611px) {
+      font-size: 1.5rem;
+      padding: 1.2rem 1.5rem;
+    }
+
+    @include media(610px) {
+      font-size: 1.2rem;
+      padding: 1rem 1.2rem;
+    }
+  }
+}

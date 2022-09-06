@@ -1,0 +1,81 @@
+.dictionary__pagination {
+  padding: 2rem 0;
+}
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &__label {
+    border: solid 1px transparent;
+    position: relative;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    margin: 0 0.2rem;
+
+    @include phone {
+      height: 1.5rem;
+    }
+
+    &--current {
+      color: $light-color;
+      background-color: $accent-main;
+    }
+
+    &:not(&--disabled):not(&--current):hover {
+      background-color: $accent-light;
+      cursor: pointer;
+    }
+
+    &--inactive {
+      background-color: #808080;
+    }
+
+    &--disabled {
+      cursor: default;
+      color: #ccc;
+
+      & .pagination__icon {
+        fill: $text-disabled;
+        cursor: default;
+      }
+
+      & .pagination__inp {
+        cursor: default;
+      }
+    }
+  }
+
+  &__inp {
+    opacity: 0;
+    position: absolute;
+    width: 1.5rem;
+    height: 1.5rem;
+    cursor: pointer;
+  }
+
+  &__dots {
+    margin: 0 0.2em;
+  }
+
+  &__icon {
+    width: 1rem;
+    fill: $text-primary;
+  }
+}
+/*
+.dictionary__pagination_prev,
+.dictionary__pagination_next {
+  width: 1em;
+  height: 1em;
+  background-image: url(../../assets/img/arrow-forward.svg);
+  background-size: contain;
+}
+.dictionary__pagination_prev {
+  background-image: url(../../assets/img/arrow-back.svg);
+}
+*/

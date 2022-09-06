@@ -1,0 +1,381 @@
+.game {
+  box-sizing: border-box;
+  background-color: $secondary-light;
+  max-width: 30rem;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 2rem;
+  padding: 2rem;
+  border-radius: 2rem;
+  min-height: 400px;
+
+  @include all-desktop {
+    margin-top: 2rem;
+  }
+
+  @include media(600px) {
+    margin-left: 1rem;
+    margin-right: 1rem;
+    margin-top: 0;
+    padding: 1rem;
+  }
+
+  &__start {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    &-btn {
+      @include media($min-width: 611px) {
+        font-size: 1.5rem;
+        padding: 1.2rem 1.5rem;
+      }
+
+      @include media(610px) {
+        font-size: 1.2rem;
+        padding: 1rem 1.2rem;
+      }
+    }
+  }
+
+  &__description {
+    text-align: center;
+    margin: 0 0 3rem;
+  }
+
+  &__levels {
+    display: flex;
+    margin-bottom: 4rem;
+
+    @include phone {
+      margin-top: 1.3rem;
+    }
+  }
+
+  &__level {
+    position: relative;
+    border: solid 1px $secondary-dark;
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0.5rem;
+
+    @include phone {
+      margin: 0 0.2rem 0 0;
+    }
+
+    @each $name, $color in $levels {
+      &--#{$name}:hover,
+      &--#{$name}.game__level--active {
+        background-color: $color;
+        border-color: $color;
+        color: $light-color;
+      }
+    }
+
+    label[checked] {
+      background-color: red;
+    }
+
+    &:hover,
+    &:checked {
+      box-shadow: 0 0 1rem $secondary-main;
+      cursor: pointer;
+
+      transform: scale(1.1);
+    }
+
+    &--inp {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+    }
+  }
+
+  &__sprint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+
+    &-title {
+      margin-bottom: 2rem;
+    }
+  }
+
+  &__result {
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    &-title {
+      margin-bottom: 1rem;
+    }
+
+    &-words {
+      margin-top: 1rem;
+      margin-bottom: 1.5rem;
+      width: 100%;
+
+      @include media($min-width: 501px) {
+        height: 200px;
+        overflow-y: auto;
+      }
+    }
+
+    &-btns {
+      display: flex;
+      gap: 2rem;
+
+      @include phone {
+        flex-direction: column;
+        gap: 1rem;
+      }
+    }
+    &-btn {
+      font-size: 1rem;
+      padding: 0.6rem 1rem;
+    }
+  }
+
+  &__statistic {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    @include media($max-width: 500px) {
+      flex-direction: column;
+    }
+
+    &-text {
+      font-size: 0.9rem;
+      line-height: 1.5rem;
+    }
+    &-overflow {
+      @include media(500px) {
+        overflow-y: auto;
+        width: 100%;
+        margin-bottom: 2rem;
+      }
+    }
+  }
+}
+
+.errors-number,
+.right-number {
+  padding: 0 0.3rem;
+  line-height: 1.6rem;
+  border-radius: 0.3rem;
+  color: $light-color;
+  font-weight: 700;
+}
+.errors-number {
+  background-color: $no-color;
+}
+.right-number {
+  background-color: $yes-color;
+}
+
+.words-list {
+  margin: 0;
+  list-style: none;
+  padding: 0;
+  margin-bottom: 2rem;
+  padding-top: 0.7rem;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+
+    @include phone {
+      flex-wrap: wrap;
+    }
+  }
+}
+
+.words-list:last-child {
+  margin-bottom: 0;
+}
+
+.audio-icon {
+  display: block;
+  width: 1.5rem;
+  height: 1.5rem;
+  fill: $text-primary;
+  margin-right: 0.5rem;
+
+  &:hover {
+    cursor: pointer;
+    fill: $secondary-dark;
+  }
+}
+
+.sprint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &__timer {
+    display: flex;
+    align-items: center;
+    font-size: 3rem;
+    margin-bottom: 2rem;
+    position: absolute;
+    left: 0;
+    top: 0;
+
+    @include phone {
+      top: 4rem;
+    }
+
+    &--icon {
+      width: 2rem;
+      height: 2.5rem;
+      margin-right: 0.5rem;
+    }
+  }
+
+  &__score {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    border-radius: 0.3rem;
+    text-align: center;
+    width: fit-content;
+    margin: 0 auto 1rem;
+
+
+    &-points {
+      font-size: 0.8rem;
+      margin-bottom: 0.5rem;
+      color: $text-secondary;
+    }
+
+    &-dots {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+  }
+
+  &__word {
+    background-color: $secondary-light;
+    padding: 2rem 0;
+    box-sizing: border-box;
+    border-radius: 1rem;
+
+    &--title {
+      text-align: center;
+      font-size: 2rem;
+      padding: 0.7rem 1.5rem;
+      line-height: 2.3rem;
+      width: fit-content;
+      margin: 0 auto;
+    }
+
+    &--translate {
+      text-align: center;
+      padding-bottom: 2rem;
+    }
+  }
+
+  &__keys {
+    font-size: 2rem;
+    color: $text-secondary;
+    display: flex;
+    width: 10rem;
+    justify-content: space-between;
+  }
+
+  &__right-answer .sprint__word--title,
+  &__wrong-answer .sprint__word--title {
+    animation-timing-function: linear;
+    animation-duration: 200ms;
+    animation-iteration-count: 1;
+  }
+
+  &__right-answer .sprint__word--title {
+    animation-name: blinkRight;
+  }
+
+  &__wrong-answer .sprint__word--title {
+    animation-name: blinkWrong;
+  }
+
+  @keyframes blinkRight {
+    50% {
+      background-color: $yes-color;
+    }
+  }
+
+  @keyframes blinkWrong {
+    50% {
+      background-color: $no-color;
+    }
+  }
+
+  &__btns {
+    display: flex;
+    gap: 2rem;
+  }
+}
+
+.progressbar {
+  box-sizing: border-box;
+  position: relative;
+  width: 170px;
+  height: 170px;
+  transform: rotate(-90deg);
+
+  &__svg {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  &__circle {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke-width: 12;
+    stroke-dasharray: 440;
+    stroke: $yes-color;
+    stroke-linecap: round;
+  }
+
+  &__default-circle {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke-width: 10;
+    stroke-dasharray: 440;
+    stroke-dashoffset: 0;
+    stroke: $no-color;
+    stroke-linecap: round;
+  }
+
+  &__text {
+    position: absolute;
+    top: 47%;
+    left: 47%;
+    transform: translate(-50%, -50%) rotate(90deg);
+    text-align: center;
+    font-size: 0.7rem;
+    line-height: 0.8rem;
+  }
+
+  &__progress {
+    font-size: 2rem;
+    line-height: 2.2rem;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+}

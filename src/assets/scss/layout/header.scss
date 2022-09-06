@@ -1,0 +1,132 @@
+header {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 10;
+}
+
+.header {
+  &__container {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    background-color: $bg-header-color;
+    box-shadow: 0 0.1rem 0.5rem $bg-header-color;
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+
+    @include media($min-width: $burger-menu-start-from + 1) {
+      padding-top: 1.3rem;
+      padding-bottom: 1.3rem;
+    }
+    @include media($max-width: $burger-menu-start-from) {
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
+  }
+  &__right-block {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.logo {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 2rem;
+  line-height: 2.3rem;
+  text-decoration: none;
+  white-space: nowrap;
+  color: $logo-color;
+
+  @include phone {
+    font-size: 1.5rem;
+  }
+
+  &::before {
+    content: '';
+    width: 3rem;
+    height: 3.2rem;
+    position: absolute;
+    left: 0;
+    background-image: url(../img/logo.svg);
+
+    @include phone {
+      background-size: 2rem;
+      width: 2rem;
+      height: 2.2rem;
+    }
+  }
+}
+
+h1 {
+  position: relative;
+  z-index: 3;
+  line-height: 3.2rem;
+  margin: 0;
+  padding: 0 0 0 4rem;
+
+  @include phone {
+    padding-left: 2.4rem;
+    line-height: 2rem;
+  }
+}
+
+.auth {
+  display: flex;
+  justify-content: flex-end;
+  position: relative;
+
+  &:after {
+    content: '';
+    width: 20.8rem;
+    height: 14.4rem;
+    position: absolute;
+    right: -8.8rem;
+    top: -10rem;
+    z-index: 1;
+    background: $primary-light;
+    border-radius: 2rem;
+    transform: rotate(-11deg);
+
+    @include tablet {
+      right: -11rem;
+    }
+
+    @include tablet-phone {
+      right: -13rem;
+      top: -11.5rem;
+    }
+
+    @include media(500px) {
+      right: -16rem;
+      top: -12rem;
+    }
+  }
+
+  &__btn {
+    position: relative;
+    z-index: 2;
+
+    @include media(500px) {
+      font-size: 0;
+
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+  }
+}
+
+#main_logout {
+  @include media(500px) {
+    background-image: url(../img/logout.svg);
+    background-size: 1.5rem;
+  }
+}
+
+#main_login {
+  @include media(500px) {
+    background-image: url(../img/login.svg);
+    background-size: 1.3rem;
+  }
+}

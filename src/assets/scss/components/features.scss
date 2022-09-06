@@ -1,0 +1,116 @@
+.feature {
+  max-width: 48rem;
+  margin: 0 auto 10rem;
+
+  &__container {
+    display: flex;
+
+    flex-direction: column;
+
+    @include media($min-width: 500px) {
+      align-items: center;
+    }
+  }
+
+  &__title {
+    margin-bottom: 1rem;
+  }
+
+  & .subtitle {
+    margin-bottom: 4rem;
+
+    @include tablet {
+      text-align: center;
+      line-height: 1.4rem;
+    }
+  }
+
+  &__list {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    list-style: none;
+    gap: 4rem;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+
+    @include media(780px) {
+      flex-direction: column;
+      justify-content: center;
+      padding-left: 2rem;
+    }
+  }
+  &__item {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    @include media($min-width: 826px) {
+      width: 17.8rem;
+    }
+
+    @include phone {
+      width: 100%;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    @include media(380px) {
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      border: 1px solid #00bcd4;
+      border-radius: 20px;
+      transform: rotate(45deg);
+      left: 0;
+      top: 0;
+      width: 6.5rem;
+      height: 6.5rem;
+    }
+  }
+  &__img {
+    width: 10rem;
+    margin-right: 0.5rem;
+
+    @include phone {
+      width: 8rem;
+      margin-right: 1.5rem;
+    }
+
+    &--img {
+      position: relative;
+      z-index: 3;
+      display: block;
+      margin-right: 2rem;
+    }
+  }
+
+  &__content {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1.3rem;
+    line-height: 1.5rem;
+
+    color: $text-secondary;
+
+    @include phone {
+      margin-top: 3rem;
+    }
+
+    & > b {
+      font-size: 2.2rem;
+      display: block;
+      color: $text-primary;
+      margin-bottom: 1rem;
+
+      @include phone {
+        font-size: 1.9rem;
+        display: inline-block;
+        margin-right: 0.5rem;
+      }
+    }
+  }
+}

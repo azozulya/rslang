@@ -1,0 +1,130 @@
+.audiocall {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  box-sizing: border-box;
+  background-color: #f8bbd0a1;
+  max-width: 40em;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 2rem;
+  padding: 2rem;
+  border-radius: 2rem;
+  min-height: 500px;
+
+  &__start {
+    display: flex;
+    flex-direction: column;;
+    align-items: center;
+  }
+  
+  &-title {
+    margin: 0;
+  }
+
+  &__screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1em;
+  }
+
+  &__name {
+    margin: 0;
+  }
+
+  &__content{
+    text-align: center;
+  }
+
+  &__player {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+  }
+
+  &__answer {
+    display: flex;
+    align-items: center;
+
+    &_word {
+      font-size: 1.5em;
+    }
+  }
+
+  &__play {
+    width: 4em;
+    height: 4em;
+    background-color: $primary-light;
+    border-radius: 2em;
+    background-image: url(../../assets/img/audio.svg);
+    background-repeat: no-repeat;
+    background-size: 70%;
+    background-position: center;
+    cursor: pointer;
+    transition: 0.5s;
+    &:hover {
+      background-color: $primary-main;
+    }
+  } 
+  
+  &__words-group{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+  }
+  &__words-item{
+    padding: 0.2em 0.5em;
+    border-radius: 0.6em;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    user-select: none;
+    cursor: pointer;
+    transition: 0.25s;
+    &:hover {
+      border: 1px solid $primary-main;
+    }
+  }
+
+  &__next{
+    @include button($secondary-main, $light-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1rem;
+    padding: 0.6rem 1rem;
+    border-radius: 0.6em;
+    border: 1px solid $secondary-main;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: 0.25s;
+  }
+
+  &__image {
+      width: 7em;
+      height: 7em;
+      border-radius: 1.5em;
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+  }
+
+  .wrong-answer {
+    text-decoration: line-through;
+    pointer-events: none;
+  }
+  .right-answer {
+    background-color: $yes-color;
+    pointer-events: none;
+  }
+  .not-answer {
+    color: $text-disabled;
+    pointer-events: none;
+  }
+  .play_answer {
+    transform: scale(0.5);
+  }
+}

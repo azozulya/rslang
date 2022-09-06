@@ -1,0 +1,111 @@
+footer {
+  min-height: 500px;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+}
+
+.footer {
+  &__bg {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    overflow: hidden;
+
+    @include phone {
+      top: -5rem;
+    }
+
+    &::before {
+      content: '';
+      width: 1391px;
+      height: 802px;
+      left: calc((100vw - 1391px) / 2);
+      top: 21%;
+      background: #b2ebf2;
+      mix-blend-mode: normal;
+      opacity: 0.27;
+      border-radius: 80px;
+      transform: rotate(-10deg);
+      display: block;
+      position: relative;
+    }
+  }
+  &__container {
+    width: 100%;
+    padding-bottom: 2rem;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 10%;
+    z-index: 2;
+    position: relative;
+
+    @include phone {
+      padding-bottom: 1rem;
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+
+  &__leaves {
+    width: 7rem;
+    height: 7rem;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    @include phone {
+      display: none;
+    }
+  }
+
+  &__plant {
+    width: 5.5rem;
+    height: 8.9rem;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+  }
+
+  &__menu {
+    display: flex;
+    flex-direction: column;
+
+    @include phone {
+      flex-direction: row;
+      flex-wrap: wrap;
+      margin-right: 3rem;
+    }
+
+    &--link {
+      font-size: 0.8rem;
+      line-height: 1.3rem;
+      color: $text-secondary;
+      text-decoration: none;
+      margin-bottom: 1rem;
+
+      @include phone {
+        margin-right: 1rem;
+        margin-bottom: 0.1rem;
+      }
+    }
+    &--link:hover {
+      color: $text-primary;
+    }
+  }
+}
+
+.rs-about {
+  font-size: 0.8rem;
+  line-height: 1.3rem;
+  max-width: 15.8rem;
+  color: $text-secondary;
+}
+.copyright,
+.copyright a {
+  font-size: 0.7rem;
+  line-height: 24px;
+}

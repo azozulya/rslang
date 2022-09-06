@@ -1,0 +1,125 @@
+.team {
+  @include media($min-width: 621px) {
+    margin-bottom: 2rem;
+  }
+
+  &__container {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-areas: "A  B  C";
+    @media (max-width: 621px) {
+      grid-template-areas:
+      "A A A"
+      "B B B"
+      "C C C";
+    }
+    gap: 30px;
+    #Natasha {
+      grid-area: A;
+    }
+    #Alex {
+      grid-area: B;
+    }
+    #Anna {
+      grid-area: C;
+    }
+    &--container {
+      border: 1px solid #00bcd4;
+      border-radius: 8px;
+      padding: 0px 10px 10px;
+    }
+    &--photo {
+      display: flex;
+      justify-content: center;
+    }
+    &--name {
+      display: flex;
+      justify-content: center;
+      padding-bottom: 10px;
+    }
+    &--content {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      column-gap: 10px;
+      row-gap: 5px;
+      div {
+        display: flex;
+        flex-wrap: wrap;
+        align-content: center;
+        font-size: 0.8rem;
+        line-height: 0.8rem;
+      }
+
+    }
+
+  }
+
+
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    max-width: 40rem;
+    width: 100%;
+
+    @include media(620px) {
+      justify-content: center;
+    }
+  }
+  &__item {
+    @include media($min-width: 621px) {
+      margin: 0 1rem;
+    }
+
+    @include media(620px) {
+      margin: 0 2rem 3rem;
+    }
+
+    &--photo {
+      border-bottom-left-radius: 0.5rem;
+      border-bottom-right-radius: 0.5rem;
+      display: block;
+      margin-bottom: 1rem;
+    }
+    &--name {
+      color: $text-primary;
+      display: flex;
+      text-align: center;
+      align-items: center;
+      justify-content: center;
+      align-content: center;
+      font-size: 1.3rem;
+    }
+    &--content {
+      color: $text-primary;
+      display: flex;
+      flex-wrap: wrap;
+      text-align: left;
+      font-size: 0.8rem;
+    }
+    &--github-icon {
+      margin-left: 0.3rem;
+      display: block;
+
+      &:hover {
+        fill: red;
+      }
+    }
+  }
+}
+
+.github-icon {
+  width: 1rem;
+  height: 1rem;
+  fill: #212121;
+}
