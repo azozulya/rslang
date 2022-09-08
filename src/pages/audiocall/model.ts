@@ -47,7 +47,7 @@ class AudioCallModel {
     bestSeries: number,
   ) => {
     if (await userApi.isAuthenticated()) {
-      await userApi.updateSprintStatistic(
+      await userApi.updateAudioStatistic(
         this.gameState.learnedWords,
         this.gameState.newWords,
         rightAnswers,
