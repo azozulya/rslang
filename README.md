@@ -19,5 +19,8 @@ RS Lang — это SPA для изучения английского языка
 
 [Деплой](https://azozulya.github.io/rslang/) на gh-pages
 
+### Визуализация разработки
+[Смотреть](https://youtu.be/jGcktViBCfk) на youtube
+
 ## Структура проекта
 ![Visualization of the codebase](./diagram.svg)
